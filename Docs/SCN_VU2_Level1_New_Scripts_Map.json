@@ -1,0 +1,181 @@
+{
+  "scene": "Assets/Scenes/VU2/SCN_VU2_Level1_New.unity",
+  "generatedAt": "2026-01-23",
+  "note": "Mô tả tác dụng được suy luận nhanh từ tên file/lớp. Nếu cần độ chính xác tuyệt đối, hãy đọc nội dung từng script để xác nhận.",
+  "scripts": [
+    {
+      "path": "Assets/Scripts/VU1/BoatController.cs",
+      "classes": ["BoatController"],
+      "purpose": "Điều khiển chuyển động/thao tác của thuyền trong scene."
+    },
+    {
+      "path": "Assets/Scripts/VU1/rotateTaget.cs",
+      "classes": ["rotateTaget"],
+      "purpose": "Xoay một đối tượng/target theo trục hoặc theo thời gian."
+    },
+    {
+      "path": "Assets/Scripts/VU1/waterSound.cs",
+      "classes": ["waterSound"],
+      "purpose": "Phát âm thanh nước/ambient liên quan đến nước."
+    },
+    {
+      "path": "Assets/Scripts/VU2/Game_Logic/FarmArea.cs",
+      "classes": ["FarmArea"],
+      "purpose": "Quản lý khu vực nông trại (vùng tương tác/luật canh tác)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/DavidNguyen/David_Fruit.cs",
+      "classes": ["David_Fruit"],
+      "purpose": "Hành vi của trái cây (trạng thái, thu hoạch, tương tác)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/DavidNguyen/David_SeasonHUD.cs",
+      "classes": ["David_SeasonHUD"],
+      "purpose": "HUD hiển thị thông tin mùa vụ."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/DavidNguyen/David_TreeSpawner.cs",
+      "classes": ["David_TreeSpawner"],
+      "purpose": "Sinh cây trong scene theo cấu hình/kịch bản."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/DavidNguyen/David_TreeWiltController.cs",
+      "classes": ["David_TreeWiltController"],
+      "purpose": "Điều khiển trạng thái héo/khô của cây."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Dinh_23034/Dinh_SkyboxController.cs",
+      "classes": ["Dinh_SkyboxController"],
+      "purpose": "Điều khiển skybox (ánh sáng/màu theo thời gian hoặc mùa)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Dinh_23034/PlantArea.cs",
+      "classes": ["PlantArea"],
+      "purpose": "Xác định khu vực trồng cây và logic tương tác trồng."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Dinh_23034/PlantUIManager.cs",
+      "classes": ["PlantUIManager"],
+      "purpose": "Quản lý UI liên quan đến trồng cây (menu, thông tin)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Dinh_23034/UICamera.cs",
+      "classes": ["UICamera"],
+      "purpose": "Cấu hình/cập nhật camera phục vụ UI."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/LinhH_B2110085/AnimalSound.cs",
+      "classes": ["AnimalSound"],
+      "purpose": "Âm thanh cho động vật trong scene."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/LinhH_B2110085/ConversationUIController.cs",
+      "classes": ["ConversationUIController"],
+      "purpose": "Điều khiển giao diện hội thoại/đối thoại."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/PlantBadLookApplier.cs",
+      "classes": ["PlantBadLookApplier"],
+      "purpose": "Áp hiệu ứng/visual xấu cho cây (héo, bệnh, thiếu nước)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/rotateTagetHub.cs",
+      "classes": ["rotateTagetHub"],
+      "purpose": "Xoay một hub/target (thường là vật thể trung tâm hoặc UI)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_AreaHUD.cs",
+      "classes": ["Thuan_23127_AreaHUD"],
+      "purpose": "HUD hiển thị thông tin khu vực."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_ChickenEggSpawner.cs",
+      "classes": ["Thuan_23127_ChickenEggSpawner"],
+      "purpose": "Sinh trứng gà theo thời gian/điều kiện."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_GameManager.cs",
+      "classes": ["Thuan_23127_GameManager"],
+      "purpose": "Quản lý logic gameplay cấp cao (state, quy trình)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_HoverHealthXR.cs",
+      "classes": ["Thuan_23127_HoverHealthXR"],
+      "purpose": "Hiển thị máu/health khi hover trong XR."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_JsonReader.cs",
+      "classes": ["Thuan_23127_JsonReader"],
+      "purpose": "Đọc dữ liệu JSON để cấu hình gameplay/UI."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_PlantGrowth.cs",
+      "classes": ["Thuan_23127_PlantGrowth"],
+      "purpose": "Xử lý tăng trưởng của cây theo thời gian/trạng thái."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_PlantHoverHandler.cs",
+      "classes": ["Thuan_23127_PlantHoverHandler"],
+      "purpose": "Xử lý tương tác hover trên cây (hiển thị info, highlight)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_SeasonalSummary.cs",
+      "classes": ["Thuan_23127_SeasonalSummary"],
+      "purpose": "Tổng kết theo mùa (UI thống kê/mùa vụ)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_SeedTag.cs",
+      "classes": ["Thuan_23127_SeedTag"],
+      "purpose": "Gắn nhãn/định danh loại hạt giống."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/Thuan_23127_TotalBoard.cs",
+      "classes": ["Thuan_23127_TotalBoard"],
+      "purpose": "Bảng tổng kết/điểm tổng (UI)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/InternCode/Thuan_23127/UI_ProductRow.cs",
+      "classes": ["UI_ProductRow"],
+      "purpose": "Dòng hiển thị sản phẩm trong UI (list/summary)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/Managers/RulesoftheGame_VU2_1.cs",
+      "classes": ["RulesoftheGame_VU2_1"],
+      "purpose": "Quản lý luật chơi cho VU2 (ràng buộc, điều kiện)."
+    },
+    {
+      "path": "Assets/Scripts/VU2/Managers/Weather_Rain.cs",
+      "classes": ["Weather_Rain"],
+      "purpose": "Điều khiển hiệu ứng/thời tiết mưa."
+    },
+    {
+      "path": "Assets/ThirdParty/Samples_XR/XR Interaction Toolkit/2.5.2/Starter Assets/Scripts/DynamicMoveProvider.cs",
+      "classes": ["DynamicMoveProvider"],
+      "purpose": "Cung cấp locomotion/di chuyển XR (từ XR Interaction Toolkit)."
+    }
+  ],
+  "map": {
+    "type": "tree",
+    "nodes": [
+      {"id": "scene", "label": "SCN_VU2_Level1_New"},
+      {"id": "vu1", "label": "Assets/Scripts/VU1"},
+      {"id": "vu2_logic", "label": "Assets/Scripts/VU2/Game_Logic"},
+      {"id": "vu2_intern_david", "label": "Assets/Scripts/VU2/InternCode/DavidNguyen"},
+      {"id": "vu2_intern_dinh", "label": "Assets/Scripts/VU2/InternCode/Dinh_23034"},
+      {"id": "vu2_intern_linh", "label": "Assets/Scripts/VU2/InternCode/LinhH_B2110085"},
+      {"id": "vu2_intern_thuan", "label": "Assets/Scripts/VU2/InternCode/Thuan_23127"},
+      {"id": "vu2_managers", "label": "Assets/Scripts/VU2/Managers"},
+      {"id": "thirdparty_xr", "label": "Assets/ThirdParty/Samples_XR"}
+    ],
+    "edges": [
+      {"from": "scene", "to": "vu1"},
+      {"from": "scene", "to": "vu2_logic"},
+      {"from": "scene", "to": "vu2_intern_david"},
+      {"from": "scene", "to": "vu2_intern_dinh"},
+      {"from": "scene", "to": "vu2_intern_linh"},
+      {"from": "scene", "to": "vu2_intern_thuan"},
+      {"from": "scene", "to": "vu2_managers"},
+      {"from": "scene", "to": "thirdparty_xr"}
+    ]
+  }
+}

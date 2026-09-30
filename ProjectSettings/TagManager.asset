@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Tower
+  - Turret
+  - Enemy
+  - WaterPump
+  - Water
+  - Construction
+  - textIP
+  - Teleportation
+  - locomotion
+  - GameManager
+  - Ally
+  - levelManager
+  - Tree
+  - subsidenceManager
+  - Note
+  - GroupTree
+  - GroupRocks
+  - BigPet
+  - HUD
+  - Undefined
+  - Bag
+  - Rice
+  - Shrimp
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Hands
+  - Water
+  - UI
+  - Grab
+  - Enemy
+  - Tree
+  - Surface
+  - BuildConnector
+  - TeleportArea
+  - Construction
+  - Lake
+  - PlayerPositionInMap
+  - Ground
+  - Forest
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

@@ -1,0 +1,1824 @@
+{
+  "vi": {
+    "labels": {
+      "info": "THÔNG TIN",
+      "name": "Tên",
+      "level": "Cấp độ",
+      "score": "Sản lượng",
+      "language": "Ngôn ngữ",
+      "playagain": "Chơi lại",
+      "setting": "Cài đặt",
+      "salinity": "Độ mặn"
+    },
+    "gameplay": {
+      "name": "SIMPLE VU2",
+      "level": 1,
+      "score": 0
+    },
+    "interpretation": {
+      "fields": {
+        "id": "Mã",
+        "tag_name": "Tên cây",
+        "growth_time": "Thời gian sinh trưởng",
+        "status": "Trạng thái",
+        "economic_benefits": "Lợi ích kinh tế",
+        "information": "Thông tin",
+        "salinity": "Độ mặn",
+        "status_good": "Tốt",
+        "status_sick": "Bệnh",
+        "status_dead": "Chết",
+        "productivity": "Sản lượng",
+        "base_yield": "Chuẩn",
+        "adjusted_yield": "Sau mặn",
+        "threshold_label": "Ngưỡng chịu mặn",
+        "current_salinity_label": "Độ mặn hiện tại",
+        "unit_ppt": "‰"
+      },
+      "units": {
+        "growth_time": "ngày"
+      },
+      "status_values": [
+        "Tốt",
+        "Bệnh",
+        "Chết"
+      ],
+      "status_text": {
+        "healthy": "Tốt",
+        "diseased": "Bệnh",
+        "dead": "Chết"
+      },
+      "templates": {
+        "healthy_desc": "{tag} đang {status}. {currentLabel}: {current}{unit} | {thresholdLabel}: {threshold}{unit}.",
+        "diseased_desc": "{tag} đang {status} do mặn vượt ngưỡng. {currentLabel}: {current}{unit} > {thresholdLabel}: {threshold}{unit}."
+      }
+    },
+    "plants": [
+      {
+        "id": 1,
+        "tag_name": "Cây sầu riêng",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 4,
+        "information": "Thông tin của sầu riêng",
+        "salinity_threshold": 0.8,
+        "harvest_time": 10
+      },
+      {
+        "id": 2,
+        "tag_name": "Chuối",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 5,
+        "information": "Thông tin của chuối",
+        "salinity_threshold": 0.8,
+        "harvest_time": 10
+      },
+      {
+        "id": 3,
+        "tag_name": "Bắp cải",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 2,
+        "information": "Thông tin của bắp cải",
+        "salinity_threshold": 1.15,
+        "harvest_time": 10
+      },
+      {
+        "id": 4,
+        "tag_name": "Bắp",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của bắp",
+        "salinity_threshold": 1.09,
+        "harvest_time": 10
+      },
+      {
+        "id": 5,
+        "tag_name": "Thanh long",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 2,
+        "information": "Thông tin của thanh long",
+        "salinity_threshold": 2,
+        "harvest_time": 10
+      },
+      {
+        "id": 6,
+        "tag_name": "Ổi",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của ổi",
+        "salinity_threshold": 3.01,
+        "harvest_time": 10
+      },
+      {
+        "id": 7,
+        "tag_name": "Lúa",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 4,
+        "information": "Thông tin của lúa",
+        "salinity_threshold": 1.92,
+        "harvest_time": 10
+      },
+      {
+        "id": 8,
+        "tag_name": "Mía",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của mía",
+        "salinity_threshold": 12,
+        "harvest_time": 10
+      },
+      {
+        "id": 9,
+        "tag_name": "Cam",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của cam",
+        "salinity_threshold": 0.83,
+        "harvest_time": 10
+      },
+      {
+        "id": 10,
+        "tag_name": "Dừa",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của dừa",
+        "salinity_threshold": 0.8,
+        "harvest_time": 10
+      },
+      {
+        "id": 11,
+        "tag_name": "Chuối",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của chuối",
+        "salinity_threshold": 12,
+        "harvest_time": 10
+      },
+      {
+        "id": 12,
+        "tag_name": "Ổi",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của ổi",
+        "salinity_threshold": 12,
+        "harvest_time": 10
+      },
+      {
+        "id": 13,
+        "tag_name": "Xoài",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của xoài",
+        "salinity_threshold": 12,
+        "harvest_time": 10
+      }
+    ],
+    "livestock": [
+      {
+        "id": 1,
+        "tag_name": "Bò",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của bò",
+        "salinity_threshold": 0.5,
+        "harvest_time": 10
+      },
+      {
+        "id": 2,
+        "tag_name": "Heo",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 4,
+        "information": "Thông tin của heo",
+        "salinity_threshold": 0.5,
+        "harvest_time": 10
+      },
+      {
+        "id": 3,
+        "tag_name": "Gà",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 2,
+        "information": "Thông tin của gà",
+        "salinity_threshold": 0.5,
+        "harvest_time": 10
+      },
+      {
+        "id": 4,
+        "tag_name": "Vịt",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của vịt",
+        "salinity_threshold": 1,
+        "harvest_time": 10
+      },
+      {
+        "id": 5,
+        "tag_name": "Thỏ",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của thỏ",
+        "salinity_threshold": 12,
+        "harvest_time": 10
+      },
+      {
+        "id": 6,
+        "tag_name": "Dê",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của dê",
+        "salinity_threshold": 12,
+        "harvest_time": 10
+      }
+    ],
+    "fish": [
+      {
+        "id": 1,
+        "tag_name": "Cá lóc",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 4,
+        "information": "Thông tin của cá lóc",
+        "salinity_threshold": 3,
+        "harvest_time": 10
+      },
+      {
+        "id": 2,
+        "tag_name": "Cá điêu hồng",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của cá điêu hồng",
+        "salinity_threshold": 2.5,
+        "harvest_time": 10
+      },
+      {
+        "id": 3,
+        "tag_name": "Cá rô phi",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của cá rô phi",
+        "salinity_threshold": 0.5,
+        "harvest_time": 10
+      },
+      {
+        "id": 4,
+        "tag_name": "Cá chép",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 2,
+        "information": "Thông tin của cá chép",
+        "salinity_threshold": 2,
+        "harvest_time": 10
+      },
+      {
+        "id": 5,
+        "tag_name": "Tôm sú",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 5,
+        "information": "Thông tin của tôm sú",
+        "salinity_threshold": 15,
+        "harvest_time": 10
+      },
+      {
+        "id": 6,
+        "tag_name": "Tôm càng xanh",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của tôm càng xanh",
+        "salinity_threshold": 2,
+        "harvest_time": 10
+      },
+      {
+        "id": 7,
+        "tag_name": "Nghêu",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của nghêu",
+        "salinity_threshold": 2,
+        "harvest_time": 10
+      },
+      {
+        "id": 6,
+        "tag_name": "Cua biển",
+        "growth_time": 0,
+        "status": [
+          "Tốt",
+          "Bệnh",
+          "Chết"
+        ],
+        "economic_benefits": 3,
+        "information": "Thông tin của cua biển",
+        "salinity_threshold": 2,
+        "harvest_time": 10
+      }
+    ],
+    "npcDialogues": [
+      {
+        "npcId": "Farmer",
+        "npcName": "Nông dân",
+        "dialogues": [
+          "Xin chào, tôi là một nông dân trong khu vườn này.",
+          "Đây là một khu canh tác ven biển vùng đồng bằng sông Cửu Long",
+          "nơi đang gặp một vấn đề rắc rối nho nhỏ.",
+          "Hãy hỗ trợ chúng tôi, những người dân địa phương việc canh tác, ",
+          "bảo vệ cây trồng và vật nuôi nhé.",
+          "Nào, đi thôi!"
+        ]
+      },
+      {
+        "npcId": "LinhH",
+        "npcName": "LinhH",
+        "dialogues": [
+          "Xin chào, tên tôi là LinhH.",
+          "Tôi là sinh viên CTU, còn bạn?"
+        ]
+      },
+      {
+        "npcId": "EngineerLinh",
+        "npcName": "Kỹ Sư Linh",
+        "dialogues": [
+          "Chào An, chú robot thông minh.",
+          "Anh là Linh, kĩ sư nông nghiệp. Mừng em đến với khu canh tác này.",
+          "Đây là một khu canh tác ở vùng đồng bằng sông Cửu Long, ...",
+          "nơi này đang gặp một vấn đề rắc rối nho nhỏ.",
+          "Hãy cùng anh hỗ trợ người dân địa phương canh tác, ...",
+          "và bảo vệ cây trồng và vật nuôi nhé.",
+          "Hãy canh tác và thu hoạch nhanh em nhé ...",
+          "đừng quên chọn loại cây trồng và vật nuôi phù hợp với điều kiện hạn mặn.",
+          "Nào, đi thôi!"
+        ]
+      }
+    ]
+  },
+  "en": {
+    "labels": {
+      "info": "INFO",
+      "name": "Name",
+      "level": "Level",
+      "score": "Yield",
+      "language": "Language",
+      "playagain": "Play Again",
+      "setting": "Setting",
+      "salinity": "Salinity"
+    },
+    "gameplay": {
+      "name": "SIMPLE VU2",
+      "level": 1,
+      "score": 0,
+      "assessment": {
+        "remarks": {
+          "win": [
+            "Mangrove belt is restored and protects the village.",
+            "Salinity is under control; freshwater sources recover.",
+            "Livelihoods rebound thanks to sustainable aquaculture."
+          ],
+          "lose": [
+            "Coastal erosion worsens; defenses fail.",
+            "Salinity spikes and crops collapse.",
+            "Funding and community engagement break down."
+          ]
+        },
+        "results": [
+          "Residents relocate due to salinity and erosion.",
+          "Fisheries decline; household income drops.",
+          "Community adopts mangrove-friendly farming and gradually recovers."
+        ]
+      }
+    },
+    "interpretation": {
+      "fields": {
+        "id": "ID",
+        "tag_name": "Plant name",
+        "growth_time": "Growth time",
+        "status": "Status",
+        "economic_benefits": "Economic benefits",
+        "information": "Information",
+        "salinity": "Salinity",
+        "status_good": "Good",
+        "status_sick": "Sick",
+        "status_dead": "Dead",
+        "productivity": "Productivity",
+        "base_yield": "Base",
+        "adjusted_yield": "After salinity",
+        "threshold_label": "Salinity threshold",
+        "current_salinity_label": "Current salinity",
+        "unit_ppt": "‰"
+      },
+      "units": {
+        "growth_time": "days"
+      },
+      "status_values": [
+        "Good",
+        "Sick",
+        "Dead"
+      ],
+      "status_text": {
+        "healthy": "Good",
+        "diseased": "Sick",
+        "dead": "Dead"
+      },
+      "templates": {
+        "healthy_desc": "{tag} is {status}. {currentLabel}: {current}{unit} | {thresholdLabel}: {threshold}{unit}.",
+        "diseased_desc": "{tag} is {status} due to salinity exceeding the threshold. {currentLabel}: {current}{unit} > {thresholdLabel}: {threshold}{unit}."
+      }
+    },
+    "plants": [
+      {
+        "id": 1,
+        "tag_name": "Durian",
+        "growth_time": 100,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 4,
+        "information": "Information about durian",
+        "salinity_threshold": 0.8,
+        "harvest_time": 5
+      },
+      {
+        "id": 2,
+        "tag_name": "Banana",
+        "growth_time": 40,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 2,
+        "information": "Information about banana",
+        "salinity_threshold": 0.8,
+        "harvest_time": 5
+      },
+      {
+        "id": 3,
+        "tag_name": "Cabbage",
+        "growth_time": 60,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 2,
+        "information": "Information about cabbage",
+        "salinity_threshold": 1.15,
+        "harvest_time": 1
+      },
+      {
+        "id": 4,
+        "tag_name": "Corn",
+        "growth_time": 70,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about corn",
+        "salinity_threshold": 1.09,
+        "harvest_time": 2
+      },
+      {
+        "id": 5,
+        "tag_name": "Dragon fruit",
+        "growth_time": 180,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 2,
+        "information": "Information about dragon fruit",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      },
+      {
+        "id": 6,
+        "tag_name": "Guava",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about guava",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 7,
+        "tag_name": "Rice",
+        "growth_time": 80,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 4,
+        "information": "Information about rice",
+        "salinity_threshold": 1.92,
+        "harvest_time": 2
+      },
+      {
+        "id": 8,
+        "tag_name": "Sugarcane",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about sugarcane",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 9,
+        "tag_name": "Orange",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about orange",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 10,
+        "tag_name": "Coconut",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about coconut",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 11,
+        "tag_name": "Banana",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about banana",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 12,
+        "tag_name": "Guava",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about Guava",
+        "salinity_threshold": 12,
+        "harvest_time": 160
+      },
+      {
+        "id": 13,
+        "tag_name": "Mango",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about Mango",
+        "salinity_threshold": 12,
+        "harvest_time": 160
+      }
+    ],
+    "livestock": [
+      {
+        "id": 1,
+        "tag_name": "Cow",
+        "growth_time": 180,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about cow",
+        "salinity_threshold": 0.5,
+        "harvest_time": 4
+      },
+      {
+        "id": 2,
+        "tag_name": "Pig",
+        "growth_time": 140,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 4,
+        "information": "Information about pig",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 3,
+        "tag_name": "Chicken",
+        "growth_time": 120,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 2,
+        "information": "Information about chicken",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 4,
+        "tag_name": "Duck",
+        "growth_time": 110,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about duck",
+        "salinity_threshold": 1,
+        "harvest_time": 3
+      },
+      {
+        "id": 5,
+        "tag_name": "Rabbit",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about rabbit",
+        "salinity_threshold": 12,
+        "harvest_time": 16
+      },
+      {
+        "id": 6,
+        "tag_name": "Goat",
+        "growth_time": 160,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about goat",
+        "salinity_threshold": 12,
+        "harvest_time": 16
+      }
+    ],
+    "fish": [
+      {
+        "id": 1,
+        "tag_name": "Snake head fish",
+        "growth_time": 100,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 4,
+        "information": "Information about snake head fish",
+        "salinity_threshold": 3,
+        "harvest_time": 3
+      },
+      {
+        "id": 2,
+        "tag_name": "Red tilapia",
+        "growth_time": 110,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about red tilapia",
+        "salinity_threshold": 2.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 3,
+        "tag_name": "Tilapia",
+        "growth_time": 80,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about tilapia",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 4,
+        "tag_name": "Carp",
+        "growth_time": 120,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 2,
+        "information": "Information about carp",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      },
+      {
+        "id": 5,
+        "tag_name": "Giant tiger prawn",
+        "growth_time": 110,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 5,
+        "information": "Information about giant tiger prawn",
+        "salinity_threshold": 15,
+        "harvest_time": 2
+      },
+      {
+        "id": 6,
+        "tag_name": "Freshwater prawn",
+        "growth_time": 100,
+        "status": [
+          "Good",
+          "Sick",
+          "Dead"
+        ],
+        "economic_benefits": 3,
+        "information": "Information about freshwater prawn",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      }
+    ],
+    "npcDialogues": [
+      {
+        "npcId": "Farmer",
+        "npcName": "Farmer",
+        "dialogues": [
+          "Hello, I'm a farmer in this farm.",
+          "Who are you?"
+        ]
+      },
+      {
+        "npcId": "LinhH",
+        "npcName": "LinhH",
+        "dialogues": [
+          "Hi, my name is LinhH.",
+          "I'm a CTU student, and you?"
+        ]
+      }
+    ]
+  },
+  "fr": {
+    "labels": {
+      "info": "INFO",
+      "name": "Nom",
+      "level": "Niveau",
+      "score": "Rendement",
+      "play_again": "Rejouer",
+      "language": "Langue",
+      "setting": "Paramètre"
+    },
+    "gameplay": {
+      "name": "SIMPLE VU2",
+      "level": 1,
+      "score": 0,
+      "assessment": {
+        "remarks": {
+          "win": [
+            "La ceinture de mangrove est restaurée et protège le village.",
+            "La salinité est sous contrôle; les sources d'eau douce se rétablissent.",
+            "Les moyens de subsistance rebondissent grâce à l'aquaculture durable."
+          ],
+          "lose": [
+            "L'érosion côtière s'aggrave; les défenses échouent.",
+            "La salinité augmente et les cultures s'effondrent.",
+            "Le financement et l'engagement communautaire se dégradent."
+          ]
+        },
+        "results": [
+          "Les résidents déménagent en raison de la salinité et de l'érosion.",
+          "Les pêcheries déclinent; le revenu des ménages diminue.",
+          "La communauté adopte une agriculture respectueuse des mangroves et se rétablit progressivement."
+        ]
+      }
+    },
+    "interpretation": {
+      "fields": {
+        "id": "ID",
+        "tag_name": "Nom de la plante",
+        "growth_time": "Temps de croissance",
+        "status": "Statut",
+        "economic_benefits": "Avantages économiques",
+        "information": "Information",
+        "assessment": "Évaluation",
+        "remarks": "Remarques",
+        "win": "Gagner",
+        "lose": "Perdre",
+        "play_again": ""
+      },
+      "units": {
+        "growth_time": "jours"
+      },
+      "status_values": [
+        "Bon",
+        "Malade",
+        "Mort"
+      ]
+    },
+    "plants": [
+      {
+        "id": 1,
+        "tag_name": "Durian",
+        "growth_time": 20,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 4,
+        "information": "Informations sur le durian",
+        "salinity_threshold": 0.8,
+        "harvest_time": 5
+      },
+      {
+        "id": 2,
+        "tag_name": "Banane",
+        "growth_time": 40,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 2,
+        "information": "Informations sur la banane",
+        "salinity_threshold": 0.8,
+        "harvest_time": 5
+      },
+      {
+        "id": 3,
+        "tag_name": "Chou",
+        "growth_time": 60,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 2,
+        "information": "Informations sur le chou",
+        "salinity_threshold": 1.15,
+        "harvest_time": 1
+      },
+      {
+        "id": 4,
+        "tag_name": "Maïs",
+        "growth_time": 70,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur le maïs",
+        "salinity_threshold": 1.09,
+        "harvest_time": 2
+      },
+      {
+        "id": 5,
+        "tag_name": "Fruit du dragon",
+        "growth_time": 180,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 2,
+        "information": "Informations sur le fruit du dragon",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      },
+      {
+        "id": 6,
+        "tag_name": "Goyave",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la goyave",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 7,
+        "tag_name": "Riz",
+        "growth_time": 80,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 4,
+        "information": "Informations sur le riz",
+        "salinity_threshold": 1.92,
+        "harvest_time": 2
+      },
+      {
+        "id": 8,
+        "tag_name": "Canne à sucre",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la canne à sucre",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 9,
+        "tag_name": "Orange",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur l'orange",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 10,
+        "tag_name": "Noix de coco",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la noix de coco",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 11,
+        "tag_name": "Banane",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la banane",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 12,
+        "tag_name": "Goyave",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la goyave",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 13,
+        "tag_name": "Mangue",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la mangue",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      }
+    ],
+    "livestock": [
+      {
+        "id": 1,
+        "tag_name": "Vache",
+        "growth_time": 180,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la vache",
+        "salinity_threshold": 0.5,
+        "harvest_time": 4
+      },
+      {
+        "id": 2,
+        "tag_name": "Cochon",
+        "growth_time": 140,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 4,
+        "information": "Informations sur le cochon",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 3,
+        "tag_name": "Poulet",
+        "growth_time": 120,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 2,
+        "information": "Informations sur le poulet",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 4,
+        "tag_name": "Canard",
+        "growth_time": 110,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur le canard",
+        "salinity_threshold": 1,
+        "harvest_time": 3
+      },
+      {
+        "id": 5,
+        "tag_name": "Lapin",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur le lapin",
+        "salinity_threshold": 12,
+        "harvest_time": 16
+      },
+      {
+        "id": 6,
+        "tag_name": "Chèvre",
+        "growth_time": 160,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la chèvre",
+        "salinity_threshold": 12,
+        "harvest_time": 16
+      }
+    ],
+    "fish": [
+      {
+        "id": 1,
+        "tag_name": "Poisson tête de serpent",
+        "growth_time": 100,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 4,
+        "information": "Informations sur le poisson tête de serpent",
+        "salinity_threshold": 3,
+        "harvest_time": 3
+      },
+      {
+        "id": 2,
+        "tag_name": "Tilapia rouge",
+        "growth_time": 110,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur le tilapia rouge",
+        "salinity_threshold": 2.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 3,
+        "tag_name": "Tilapia",
+        "growth_time": 80,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur le tilapia",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 4,
+        "tag_name": "Carpe",
+        "growth_time": 120,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 2,
+        "information": "Informations sur la carpe",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      },
+      {
+        "id": 5,
+        "tag_name": "Crevette géante",
+        "growth_time": 110,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 5,
+        "information": "Informations sur la crevette géante",
+        "salinity_threshold": 15,
+        "harvest_time": 2
+      },
+      {
+        "id": 6,
+        "tag_name": "Crevette d'eau douce",
+        "growth_time": 100,
+        "status": [
+          "Bon",
+          "Malade",
+          "Mort"
+        ],
+        "economic_benefits": 3,
+        "information": "Informations sur la crevette d'eau douce",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      }
+    ],
+    "npcDialogues": [
+      {
+        "npcId": "Farmer",
+        "npcName": "Agriculteur",
+        "dialogues": [
+          "Bonjour, je suis un agriculteur dans cette ferme.",
+          "Qui êtes-vous?"
+        ]
+      },
+      {
+        "npcId": "LinhH",
+        "npcName": "LinhH",
+        "dialogues": [
+          "Salut, je m'appelle LinhH.",
+          "Je suis étudiant à CTU, et vous?"
+        ]
+      },
+      {
+        "npcId": "EngineerLinh",
+        "npcName": "Engineer Linh",
+        "dialogues": [
+          "Hello An, the smart robot. I'm Linh, an agricultural engineer. Welcome to the farming zone!",
+          "This is a cultivation area in the Mekong Delta, which is currently facing a small problem.",
+          "Let's work together to help local farmers cultivate, protect their crops, and care for their livestock.",
+          "The rain will help the plants grow. Stay focused on farming!",
+          "Keep farming and harvesting quickly. And don't forget to choose the right crops and livestock for the saline and drought conditions.",
+          "Alright, let’s get going!"
+        ]
+      },
+      {
+        "npcId": "EngineerLinh",
+        "npcName": "Ingénieur Linh",
+        "dialogues": [
+          "Bonjour An, le robot intelligent. Je suis Linh, ingénieur agronome. Bienvenue dans la zone de culture !",
+          "Voici une zone agricole du delta du Mékong, qui rencontre actuellement un petit problème.",
+          "Travaillons ensemble pour aider les agriculteurs locaux à cultiver, protéger leurs cultures et s’occuper de leurs animaux.",
+          "La pluie aidera les plantes à pousser. Reste concentré sur la culture !",
+          "Continue à cultiver et à récolter rapidement. Et n’oublie pas de choisir les cultures et les animaux adaptés aux conditions de salinité et de sécheresse.",
+          "Allez, c’est parti !"
+        ]
+      }
+    ]
+  },
+  "th": {
+    "labels": {
+      "info": "ข้อมูล",
+      "name": "ชื่อ",
+      "level": "ระดับ",
+      "score": "ผลผลิต",
+      "language": "ภาษา",
+      "play_again": "เล่นอีกครั้ง",
+      "setting": "การตั้งค่า"
+    },
+    "gameplay": {
+      "name": "SIMPLE VU2",
+      "level": 1,
+      "score": 0,
+      "assessment": {
+        "remarks": {
+          "win": [
+            "ป่าชายเลนได้รับการฟื้นฟูและปกป้องหมู่บ้าน",
+            "ความเค็มอยู่ภายใต้การควบคุม แหล่งน้ำจืดฟื้นตัว",
+            "วิถีชีวิตฟื้นตัวขึ้นด้วยการเพาะเลี้ยงสัตว์น้ำอย่างยั่งยืน"
+          ],
+          "lose": [
+            "การกัดเซาะชายฝั่งแย่ลง การป้องกันล้มเหลว",
+            "ความเค็มพุ่งสูงและพืชผลล้มเหลว",
+            "การระดมทุนและการมีส่วนร่วมของชุมชนล่มสลาย"
+          ]
+        },
+        "results": [
+          "ผู้อยู่อาศัยย้ายออกเนื่องจากความเค็มและการกัดเซาะ",
+          "ประมงลดลง รายได้ครัวเรือนลดลง",
+          "ชุมชนหันมาใช้การทำฟาร์มที่เป็นมิตรกับป่าชายเลนและฟื้นตัวอย่างค่อยเป็นค่อยไป"
+        ]
+      }
+    },
+    "interpretation": {
+      "fields": {
+        "id": "รหัส",
+        "tag_name": "ชื่อพืช",
+        "growth_time": "เวลาการเจริญเติบโต",
+        "status": "สถานะ",
+        "economic_benefits": "ผลประโยชน์ทางเศรษฐกิจ",
+        "information": "ข้อมูล",
+        "assessment": "การประเมินผล",
+        "remarks": "หมายเหตุ",
+        "win": "ชนะ",
+        "lose": "แพ้",
+        "play_again": ""
+      },
+      "units": {
+        "growth_time": "วัน"
+      },
+      "status_values": [
+        "ดี",
+        "ป่วย",
+        "ตาย"
+      ]
+    },
+    "plants": [
+      {
+        "id": 1,
+        "tag_name": "ทุเรียน",
+        "growth_time": 20,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 4,
+        "information": "ข้อมูลเกี่ยวกับทุเรียน",
+        "salinity_threshold": 0.8,
+        "harvest_time": 5
+      },
+      {
+        "id": 2,
+        "tag_name": "กล้วย",
+        "growth_time": 40,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 2,
+        "information": "ข้อมูลเกี่ยวกับกล้วย",
+        "salinity_threshold": 0.8,
+        "harvest_time": 5
+      },
+      {
+        "id": 3,
+        "tag_name": "กะหล่ำปลี",
+        "growth_time": 60,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 2,
+        "information": "ข้อมูลเกี่ยวกับกะหล่ำปลี",
+        "salinity_threshold": 1.15,
+        "harvest_time": 1
+      },
+      {
+        "id": 4,
+        "tag_name": "ข้าวโพด",
+        "growth_time": 70,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับข้าวโพด",
+        "salinity_threshold": 1.09,
+        "harvest_time": 2
+      },
+      {
+        "id": 5,
+        "tag_name": "แก้วมังกร",
+        "growth_time": 180,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 2,
+        "information": "ข้อมูลเกี่ยวกับแก้วมังกร",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      },
+      {
+        "id": 6,
+        "tag_name": "ฝรั่ง",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับฝรั่ง",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 7,
+        "tag_name": "ข้าว",
+        "growth_time": 80,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 4,
+        "information": "ข้อมูลเกี่ยวกับข้าว",
+        "salinity_threshold": 1.92,
+        "harvest_time": 2
+      },
+      {
+        "id": 8,
+        "tag_name": "อ้อย",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับอ้อย",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 9,
+        "tag_name": "ส้ม",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับส้ม",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 10,
+        "tag_name": "มะพร้าว",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับมะพร้าว",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 11,
+        "tag_name": "กล้วย",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับกล้วย",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 12,
+        "tag_name": "ฝรั่ง",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับฝรั่ง",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      },
+      {
+        "id": 13,
+        "tag_name": "มะม่วง",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับมะม่วง",
+        "salinity_threshold": 12,
+        "harvest_time": 5
+      }
+    ],
+    "livestock": [
+      {
+        "id": 1,
+        "tag_name": "วัว",
+        "growth_time": 180,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับวัว",
+        "salinity_threshold": 0.5,
+        "harvest_time": 4
+      },
+      {
+        "id": 2,
+        "tag_name": "หมู",
+        "growth_time": 140,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 4,
+        "information": "ข้อมูลเกี่ยวกับหมู",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 3,
+        "tag_name": "ไก่",
+        "growth_time": 120,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 2,
+        "information": "ข้อมูลเกี่ยวกับไก่",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 4,
+        "tag_name": "เป็ด",
+        "growth_time": 110,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับเป็ด",
+        "salinity_threshold": 1,
+        "harvest_time": 3
+      },
+      {
+        "id": 5,
+        "tag_name": "กระต่าย",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับกระต่าย",
+        "salinity_threshold": 12,
+        "harvest_time": 16
+      },
+      {
+        "id": 6,
+        "tag_name": "แพะ",
+        "growth_time": 160,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับแพะ",
+        "salinity_threshold": 12,
+        "harvest_time": 16
+      }
+    ],
+    "fish": [
+      {
+        "id": 1,
+        "tag_name": "ปลาช่อน",
+        "growth_time": 100,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 4,
+        "information": "ข้อมูลเกี่ยวกับปลาช่อน",
+        "salinity_threshold": 3,
+        "harvest_time": 3
+      },
+      {
+        "id": 2,
+        "tag_name": "ปลาทับทิม",
+        "growth_time": 110,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับปลาทับทิม",
+        "salinity_threshold": 2.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 3,
+        "tag_name": "ปลาร็อปี้",
+        "growth_time": 80,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับปลาร็อปี้",
+        "salinity_threshold": 0.5,
+        "harvest_time": 3
+      },
+      {
+        "id": 4,
+        "tag_name": "ปลาคาร์พ",
+        "growth_time": 120,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 2,
+        "information": "ข้อมูลเกี่ยวกับปลาคาร์พ",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      },
+      {
+        "id": 5,
+        "tag_name": "กุ้งก้ามกราม",
+        "growth_time": 110,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 5,
+        "information": "ข้อมูลเกี่ยวกับกุ้งก้ามกราม",
+        "salinity_threshold": 15,
+        "harvest_time": 2
+      },
+      {
+        "id": 6,
+        "tag_name": "กุ้งฝอย",
+        "growth_time": 100,
+        "status": [
+          "ดี",
+          "ป่วย",
+          "ตาย"
+        ],
+        "economic_benefits": 3,
+        "information": "ข้อมูลเกี่ยวกับกุ้งฝอย",
+        "salinity_threshold": 2,
+        "harvest_time": 3
+      }
+    ],
+    "npcDialogues": [
+      {
+        "npcId": "Farmer",
+        "npcName": "ชาวนา",
+        "dialogues": [
+          "สวัสดี ฉันเป็นชาวนาในฟาร์มนี้",
+          "คุณคือใคร?"
+        ]
+      },
+      {
+        "npcId": "LinhH",
+        "npcName": "LinhH",
+        "dialogues": [
+          "สวัสดี ฉันชื่อ LinhH",
+          "ฉันเป็นนักศึกษาของ CTU แล้วคุณล่ะ?"
+        ]
+      },
+      {
+        "npcId": "EngineerLinh",
+        "npcName": "วิศวกรหลิน",
+        "dialogues": [
+          "สวัสดีอัน หุ่นยนต์อัจฉริยะ ฉันชื่อหลิน วิศวกรเกษตร ยินดีต้อนรับสู่พื้นที่เพาะปลูกนี้!",
+          "นี่คือพื้นที่เพาะปลูกในเขตสามเหลี่ยมปากแม่น้ำโขง ซึ่งกำลังเผชิญกับปัญหาเล็กน้อยอยู่ตอนนี้",
+          "มาช่วยกันสนับสนุนเกษตรกรท้องถิ่นในการเพาะปลูก ปกป้องพืชผล และดูแลปศุสัตว์กันเถอะ",
+          "ฝนจะช่วยให้พืชเจริญเติบโตได้ดี มุ่งมั่นกับการเพาะปลูกนะ!",
+          "รีบเพาะปลูกและเก็บเกี่ยวให้เร็ว และอย่าลืมเลือกพืชและสัตว์เลี้ยงที่เหมาะสมกับสภาพดินเค็มและภัยแล้งนะ",
+          "เอาล่ะ ไปกันเถอะ!"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d2b26a536044448bf4d75ab6755dba, type: 3}
+  m_Name: TreeConstruction
+  m_EditorClassIdentifier: 
+  modelBuildPrefab: {fileID: 7599516399362716348, guid: 8d00d54f3c5975849a5647e40b8a1bdd,
+    type: 3}
+  finalPrefab: {fileID: 2717827323811412664, guid: 0ee7ff43615a4c746b98cd97a8756bca,
+    type: 3}
+  cost: 0
+  description: "Nh\u1EA5n n\xFAt c\xF2 \u0111\u1EC3 ch\u1ECDn\nSau \u0111\xF3 ch\u1ECDn
+    v\xED tr\xED tr\xEAn b\u1EDD s\xF4ng"
+  maxQuantity: 10
+  cooldownTime: 0
+  requireCarryToPlant: 1
+  carryPrefab: {fileID: 0}
+  carryScale: 0.333
