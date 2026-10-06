@@ -20,3 +20,10 @@ Recordings/
 
 .DS_Store
 Thumbs.db
+
+# Build artifacts & temp files
+*.apk
+*.aab
+*.lnk
+UpgradeLog.htm
+*_BurstDebugInformation_DoNotShip/
