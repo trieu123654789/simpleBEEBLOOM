@@ -5,7 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 // David_EggGrab - Dedicated instant grab script for eggs ONLY
 // Simple, focused implementation without tree/fruit complexity
 // =============================================================================
-[RequireComponent(typeof(XRGrabInteractable))]
+[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
 public class David_EggGrab : MonoBehaviour
@@ -20,7 +20,7 @@ public class David_EggGrab : MonoBehaviour
     [SerializeField] private Vector3 grabOffset = new Vector3(0, -0.3f, 0.3f);
     [SerializeField] private float grabScale = 0.5f;
     
-    private XRGrabInteractable _grabInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grabInteractable;
     private Rigidbody _rb;
     private Transform _currentHandTransform;
     private bool _isGrabbed = false;
@@ -34,7 +34,7 @@ public class David_EggGrab : MonoBehaviour
     
     private void Awake()
     {
-        _grabInteractable = GetComponent<XRGrabInteractable>();
+        _grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         _rb = GetComponent<Rigidbody>();
         
         // Save original scale for restoration
@@ -46,7 +46,7 @@ public class David_EggGrab : MonoBehaviour
     private void SetupInstantGrab()
     {
         if (_grabInteractable == null) return;
-        _grabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
+        _grabInteractable.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
         _grabInteractable.attachEaseInTime = 0f;
         _grabInteractable.useDynamicAttach = false;
         _grabInteractable.retainTransformParent = false;
@@ -75,7 +75,7 @@ public class David_EggGrab : MonoBehaviour
     private void OnGrabbed(SelectEnterEventArgs args)
     {
         // Get controller transform
-        if (args.interactorObject is XRBaseInteractor interactor)
+        if (args.interactorObject is UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor)
         {
             _currentHandTransform = interactor.transform;
             _isGrabbed = true;
@@ -85,7 +85,7 @@ public class David_EggGrab : MonoBehaviour
             if (_rb != null)
             {
                 _rb.isKinematic = true;
-                _rb.velocity = Vector3.zero;
+                _rb.linearVelocity = Vector3.zero;
                 _rb.angularVelocity = Vector3.zero;
             }
             

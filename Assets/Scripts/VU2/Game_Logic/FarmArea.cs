@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 // =============================================================================
 // WaterType - Classifies farm zones by water salinity level.
@@ -374,7 +374,7 @@ public class FarmArea : MonoBehaviour
 
             // Setup XR interactable colliders.
             // Setup collider cho XR interactable.
-            var xrInteractable = go.GetComponent<XRSimpleInteractable>();
+            var xrInteractable = go.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
             if (xrInteractable != null && xrInteractable.colliders.Count == 0)
             {
                 var colliders = go.GetComponentsInChildren<Collider>();

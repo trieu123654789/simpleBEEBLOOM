@@ -12,7 +12,7 @@ using System.Collections;
 // If player releases during fishing phase, the attempt is cancelled.
 // Nếu người chơi thả trong giai đoạn câu, lần câu bị hủy.
 // =============================================================================
-[RequireComponent(typeof(XRGrabInteractable))]
+[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
 public class David_ShrimpGrab : MonoBehaviour
@@ -73,7 +73,7 @@ public class David_ShrimpGrab : MonoBehaviour
     // =========================================================================
     // INTERNAL STATE / TRẠNG THÁI NỘI BỘ
     // =========================================================================
-    private XRGrabInteractable _grabInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grabInteractable;
     private Rigidbody _rb;
     private Transform _currentHandTransform;
     private Vector3 _originalScale;
@@ -94,7 +94,7 @@ public class David_ShrimpGrab : MonoBehaviour
 
     private void Awake()
     {
-        _grabInteractable = GetComponent<XRGrabInteractable>();
+        _grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         _rb = GetComponent<Rigidbody>();
         _originalScale = transform.localScale;
         _swimmingAI = GetComponent("Thuan_23127_ShrimpAI") as MonoBehaviour;
@@ -110,7 +110,7 @@ public class David_ShrimpGrab : MonoBehaviour
     {
         if (_grabInteractable == null) return;
 
-        _grabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
+        _grabInteractable.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
         _grabInteractable.attachEaseInTime = 0f;
         _grabInteractable.useDynamicAttach = false;
         _grabInteractable.retainTransformParent = false;
@@ -145,7 +145,7 @@ public class David_ShrimpGrab : MonoBehaviour
     {
         if (_state == FishingState.Collected) return;
 
-        if (args.interactorObject is XRBaseInteractor interactor)
+        if (args.interactorObject is UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor)
         {
             _currentHandTransform = interactor.transform;
 
@@ -163,7 +163,7 @@ public class David_ShrimpGrab : MonoBehaviour
             if (_rb != null)
             {
                 _rb.isKinematic = true;
-                _rb.velocity = Vector3.zero;
+                _rb.linearVelocity = Vector3.zero;
                 _rb.angularVelocity = Vector3.zero;
             }
 

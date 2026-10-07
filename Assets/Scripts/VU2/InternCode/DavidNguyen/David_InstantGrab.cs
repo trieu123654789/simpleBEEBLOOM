@@ -8,7 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// Add this script to any object with XRGrabInteractable to enable instant grab.
 /// Thêm script này vào bất kỳ object nào có XRGrabInteractable để bật instant grab.
 /// </summary>
-[RequireComponent(typeof(XRGrabInteractable))]
+[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
 public class David_InstantGrab : MonoBehaviour
 {
     [Header("Debug")]
@@ -16,7 +16,7 @@ public class David_InstantGrab : MonoBehaviour
     
     // Track grab state
     private Transform _currentGrabTarget;
-    private XRGrabInteractable _grabInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grabInteractable;
     
     private void Start()
     {
@@ -25,11 +25,11 @@ public class David_InstantGrab : MonoBehaviour
     
     private void SetupInstantGrab()
     {
-        _grabInteractable = GetComponent<XRGrabInteractable>();
+        _grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (_grabInteractable != null)
         {
             // Configure for instant snap
-            _grabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
+            _grabInteractable.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
             _grabInteractable.attachEaseInTime = 0f;
             _grabInteractable.useDynamicAttach = false;
             
@@ -53,7 +53,7 @@ public class David_InstantGrab : MonoBehaviour
     
     private void OnGrabbed(SelectEnterEventArgs args)
     {
-        if (args.interactorObject is XRBaseInteractor interactor)
+        if (args.interactorObject is UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor)
         {
             // Use controller position, NOT ray hit point!
             _currentGrabTarget = interactor.transform;

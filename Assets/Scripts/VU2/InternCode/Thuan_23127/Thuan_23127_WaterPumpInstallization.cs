@@ -78,7 +78,7 @@ using UnityEngine.InputSystem;
 public class Thuan_23127_WaterPumpInstallization : MonoBehaviour
 {
     [Header("Setup VR")]
-    [SerializeField] private XRSimpleInteractable interactable;
+    [SerializeField] private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable interactable;
     [SerializeField] private Thuan_23127_GhostConstruction ghostConstructionScript;
     
     [Header("Input Settings (2 Hands)")]
@@ -94,7 +94,7 @@ public class Thuan_23127_WaterPumpInstallization : MonoBehaviour
 
     private void OnEnable()
     {
-        if (interactable == null) interactable = GetComponent<XRSimpleInteractable>();
+        if (interactable == null) interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
 
         if (interactable != null)
         {

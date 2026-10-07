@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 // =============================================================================
 // David_Sickle - Sickle tool for cutting rice.
@@ -29,7 +29,7 @@ public class David_Sickle : MonoBehaviour
     // References
     private David_RiceField _riceField;
     private Rigidbody _rb;
-    private XRGrabInteractable _grabInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grabInteractable;
     private Vector3 _lastPosition;
     private float _currentSpeed;
 
@@ -40,7 +40,7 @@ public class David_Sickle : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-        _grabInteractable = GetComponent<XRGrabInteractable>();
+        _grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
     }
 
     private void Start()

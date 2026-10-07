@@ -39,7 +39,7 @@ public class David_ToolManager : MonoBehaviour
     private HarvestZone _currentZone;
     private List<Renderer> _leftRenderers = new List<Renderer>();
     private List<Renderer> _rightRenderers = new List<Renderer>();
-    private List<XRDirectInteractor> _directInteractors = new List<XRDirectInteractor>();
+    private List<UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor> _directInteractors = new List<UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor>();
 
     // =========================================================================
     // UNITY LIFECYCLE
@@ -99,7 +99,7 @@ public class David_ToolManager : MonoBehaviour
             // Fallback to XRDirectInteractor
             if (leftController == null || rightController == null)
             {
-                var interactors = FindObjectsOfType<XRDirectInteractor>();
+                var interactors = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor>();
                 foreach (var interactor in interactors)
                 {
                     string name = interactor.name.ToLower();
@@ -167,7 +167,7 @@ public class David_ToolManager : MonoBehaviour
     private void FindDirectInteractors()
     {
         _directInteractors.Clear();
-        var allDirectInteractors = FindObjectsOfType<XRDirectInteractor>();
+        var allDirectInteractors = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor>();
         foreach (var interactor in allDirectInteractors)
         {
             _directInteractors.Add(interactor);
@@ -244,7 +244,7 @@ public class David_ToolManager : MonoBehaviour
         tool.transform.localScale = Vector3.one * config.scale;
         
         // Disable XR Grab since it's attached
-        var grabInteractable = tool.GetComponent<XRGrabInteractable>();
+        var grabInteractable = tool.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grabInteractable != null)
         {
             grabInteractable.enabled = false;

@@ -164,7 +164,7 @@ public class David_TreeSpawner : MonoBehaviour
                 Rigidbody rb = fruitObj.GetComponent<Rigidbody>();
                 if (rb != null)
                 {
-                    rb.velocity = Vector3.zero;
+                    rb.linearVelocity = Vector3.zero;
                     rb.angularVelocity = Vector3.zero;
                     // FIX: Ensure physics is disabled so fruit sticks to tree
                     // FIX: Đảm bảo tắt vật lý để quả dính trên cây

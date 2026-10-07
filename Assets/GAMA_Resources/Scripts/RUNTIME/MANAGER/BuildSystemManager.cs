@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 /// <summary>
 /// Quản lý hệ thống xây dựng dựa trên SurfaceConnector.
@@ -15,7 +15,7 @@ public class BuildSystemManager : MonoBehaviour
     [SerializeField] private BuildUI buildIU;
 
     [Header("Build Ray (XR Ray Interactor)")]
-    [SerializeField] private XRRayInteractor buildRayInteractor;
+    [SerializeField] private UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor buildRayInteractor;
 
     [Header("Build Mode Indicator")]
     [Tooltip("Icon '!' hiển thị trên ray tay phải khi đang ở chế độ xây dựng")]

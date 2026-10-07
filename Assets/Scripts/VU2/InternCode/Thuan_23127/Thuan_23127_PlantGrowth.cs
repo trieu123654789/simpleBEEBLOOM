@@ -3,7 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 // =============================================================================
 // Thuan_23127_PlantGrowth - Manages the complete lifecycle of plants/animals/fish.
@@ -65,7 +65,7 @@ public class Thuan_23127_PlantGrowth : MonoBehaviour
     [Header("XR (Harvest optional)")]
     // XR interactable for VR harvest interaction.
     // XR interactable cho tương tác thu hoạch VR.
-    public XRSimpleInteractable harvestInteractable;
+    public UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable harvestInteractable;
 
     // =========================================================================
     // TIMING CONFIGURATION
@@ -309,7 +309,7 @@ public class Thuan_23127_PlantGrowth : MonoBehaviour
     {
         // Setup XR harvest interaction.
         // Thiết lập tương tác thu hoạch XR.
-        if (!harvestInteractable) harvestInteractable = GetComponent<XRSimpleInteractable>();
+        if (!harvestInteractable) harvestInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
         if (harvestInteractable)
         {
             harvestInteractable.selectEntered.RemoveAllListeners();

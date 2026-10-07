@@ -255,14 +255,16 @@ public class BeeKeyboardAssist : MonoBehaviour
     /// </summary>
     private bool IsFlapRequested(Keyboard k, bool vr)
     {
-        // --- NGUON VR: trigger/ nut tren tay cam (XRI "Activate"). Uu tien khi choi VR. ---
-        if (bee != null && bee.FlapPressed) return true;
+        // --- NGUON VR: trigger / nut tren tay cam (XRI "Activate") hoac phim thuc te. ---
+        // QUAN TRỌNG: Chỉ đọc RawHardwareFlapPressed (input phần cứng gốc).
+        // Tuyệt đối KHÔNG đọc bee.FlapPressed vì thuộc tính đó chứa cả ExternalFlapOverride,
+        // nếu đọc lại sẽ tạo vòng lặp feedback vô tận: bấm 1 lần là ong bay mãi không dừng!
+        if (bee != null && bee.RawHardwareFlapPressed) return true;
 
         // Cho phep Space/Shift van hoat dong khi dang test trong Editor (khong co headset).
         if (k == null || (vr && !allowKeyboardFallback)) return false;
 
-        // Chi doc phim THAT. KHONG doc lai ExternalFlapOverride vi day la GIA TRI
-        // script nay tu ghi -> se tao vong lap kep: bam 1 lan la ong voc canh mai mai.
+        // Chi doc phim THAT. KHONG doc lai ExternalFlapOverride.
         return (useSpace && k.spaceKey.isPressed)
             || (useShift && (k.leftShiftKey.isPressed || k.rightShiftKey.isPressed));
     }

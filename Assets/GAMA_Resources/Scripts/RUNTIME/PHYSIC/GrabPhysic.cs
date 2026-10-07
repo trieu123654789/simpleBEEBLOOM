@@ -24,7 +24,7 @@ public class GrabPhysic : MonoBehaviour
         transform.rotation = handler.transform.rotation;
 
         Rigidbody rbHandler = handler.GetComponent<Rigidbody>();
-        rbHandler.velocity = Vector3.zero;
+        rbHandler.linearVelocity = Vector3.zero;
         rbHandler.angularVelocity = Vector3.zero;
     }
 }

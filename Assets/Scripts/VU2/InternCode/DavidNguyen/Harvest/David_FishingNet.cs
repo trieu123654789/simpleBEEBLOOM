@@ -33,7 +33,7 @@ public class David_FishingNet : MonoBehaviour
 
     // References
     private David_FishPond _pond;
-    private XRGrabInteractable _grabInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grabInteractable;
 
     // =========================================================================
     // UNITY LIFECYCLE
@@ -41,7 +41,7 @@ public class David_FishingNet : MonoBehaviour
 
     private void Awake()
     {
-        _grabInteractable = GetComponent<XRGrabInteractable>();
+        _grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
     }
 
     private void OnEnable()

@@ -33,7 +33,7 @@ public class BarrackRefillGrab : MonoBehaviour
 
     [Header("XR Grab Mode (optional) / Chế độ Grab XR (tuỳ chọn)")]
     [Tooltip("Interactable lắng nghe sự kiện select. Nếu bỏ trống tự lấy XRBaseInteractable trên cùng GameObject.")]
-    [SerializeField] private XRBaseInteractable interactable;
+    [SerializeField] private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable interactable;
 
     [Header("Proximity Mode / Chế độ chạm tay")]
     [Tooltip("Bật để cho phép nạp khi tay chỉ cần CHẠM vào Sphere Collider (không cần bóp grip).")]
@@ -60,7 +60,7 @@ public class BarrackRefillGrab : MonoBehaviour
     {
         _barrack = GetComponent<Barrack>();
         if (interactable == null)
-            interactable = GetComponent<XRBaseInteractable>();
+            interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable>();
     }
 
     private void OnEnable()
@@ -88,7 +88,7 @@ public class BarrackRefillGrab : MonoBehaviour
     // =========================================================================
     private void OnGrabbed(SelectEnterEventArgs args)
     {
-        if (args.interactorObject is XRBaseInteractor interactor)
+        if (args.interactorObject is UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor)
             _currentController = interactor.GetComponentInParent<XRBaseController>();
         StartRefill();
     }
@@ -110,7 +110,7 @@ public class BarrackRefillGrab : MonoBehaviour
         // B\u1eaft bu\u1ed9c ph\u1ea3i l\u00e0 tay XR th\u1eadt s\u1ef1: c\u00f3 XRBaseController ho\u1eb7c XRBaseInteractor.
         // Tr\u00e1nh tr\u01b0\u1eddng h\u1ee3p player capsule / collider kh\u00e1c v\u00f4 t\u00ecnh ch\u1ea1m sphere t\u1eeb xa.
         bool isXrHand = other.GetComponentInParent<XRBaseController>() != null
-                        || other.GetComponentInParent<XRBaseInteractor>() != null;
+                        || other.GetComponentInParent<UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor>() != null;
         if (!isXrHand) return false;
 
         // L\u1ecdc th\u00eam theo tag/layer n\u1ebfu \u0111\u01b0\u1ee3c c\u1ea5u h\u00ecnh.

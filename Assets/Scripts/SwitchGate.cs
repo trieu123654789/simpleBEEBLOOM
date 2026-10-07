@@ -42,7 +42,7 @@ public class SwitchGate : MonoBehaviour
     public float blockRadius = 5f;
 
     private bool isClosed = false;
-    private XRBaseInteractable interactable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable interactable;
 
     // Enemy blocking state
     private GameObject _gateObject;
@@ -86,21 +86,21 @@ public class SwitchGate : MonoBehaviour
         if (toggleObject != null)
         {
             // Ưu tiên dùng XRGrabInteractable có sẵn nhưng tắt di chuyển
-            XRGrabInteractable grab = toggleObject.GetComponent<XRGrabInteractable>();
+            UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab = toggleObject.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
             if (grab != null)
             {
                 grab.trackPosition = false;
                 grab.trackRotation = false;
                 grab.throwOnDetach = false;
-                grab.movementType = XRGrabInteractable.MovementType.Instantaneous;
+                grab.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable.MovementType.Instantaneous;
                 interactable = grab;
             }
             else
             {
                 // Fallback: dùng XRSimpleInteractable
-                XRSimpleInteractable simple = toggleObject.GetComponent<XRSimpleInteractable>();
+                UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable simple = toggleObject.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
                 if (simple == null)
-                    simple = toggleObject.gameObject.AddComponent<XRSimpleInteractable>();
+                    simple = toggleObject.gameObject.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
                 interactable = simple;
             }
 

@@ -525,14 +525,14 @@ public class SimulationManager : MonoBehaviour
 
             if (isFirst)
             {
-                sws += (t.GetInstanceID());
+                sws += (t.GetHashCode());
                 xs += (int)(t.transform.position.x * parameters.precision);
                 ys += (int)(t.transform.position.z * parameters.precision);
                 isFirst = false;
             }
             else
             {
-                sws += "," + (t.GetInstanceID());
+                sws += "," + (t.GetHashCode());
                 xs += "," + (int)(t.transform.position.x * parameters.precision);
                 ys += "," + (int)(t.transform.position.z * parameters.precision);
             }
@@ -647,7 +647,7 @@ public class SimulationManager : MonoBehaviour
         {
 
             GameObject t = s.gameObject;
-            string spawnKey = t.GetInstanceID() + "";
+            string spawnKey = t.GetHashCode() + "";
             if (enemySpawners.ContainsKey(spawnKey))
             {
                 Debug.LogWarning("[SimulationManager] Duplicate EnemySpawner InstanceID skipped: " + spawnKey);
@@ -657,14 +657,14 @@ public class SimulationManager : MonoBehaviour
 
             if (isFirst)
             {
-                idTs += (t.GetInstanceID());
+                idTs += (t.GetHashCode());
                 xs += (int)(t.transform.position.x * parameters.precision);
                 ys += (int)(t.transform.position.z * parameters.precision);
                 isFirst = false;
             }
             else
             {
-                idTs += "," + (t.GetInstanceID());
+                idTs += "," + (t.GetHashCode());
                 xs += "," + (int)(t.transform.position.x * parameters.precision);
                 ys += "," + (int)(t.transform.position.z * parameters.precision);
             }
@@ -687,10 +687,10 @@ public class SimulationManager : MonoBehaviour
     public void createMovePumper(GameObject pumper)
     {
 
-        waterPumps.Add(pumper.GetInstanceID() + "", pumper.GetComponent<Barrack>());
+        waterPumps.Add(pumper.GetHashCode() + "", pumper.GetComponent<Barrack>());
         Dictionary<string, string> args = new Dictionary<string, string> {
             {"idP", ConnectionManager.Instance.GetConnectionId()},
-             {"idwp", pumper.GetInstanceID()+"" },
+             {"idwp", pumper.GetHashCode()+"" },
               {"x", ""+pumper.transform.position.x * parameters.precision },
               {"y",""+pumper.transform.position.z * parameters.precision}
 
@@ -722,7 +722,7 @@ public class SimulationManager : MonoBehaviour
             return;
         }
 
-        string key = treeBarrier.GetInstanceID() + "";
+        string key = treeBarrier.GetHashCode() + "";
         if (treeBarriers.ContainsKey(key))
         {
             Debug.LogWarning($"[SimulationManager] Duplicate TreeBarrier InstanceID skipped: {key}");
@@ -732,7 +732,7 @@ public class SimulationManager : MonoBehaviour
 
         Dictionary<string, string> args = new Dictionary<string, string> {
             {"idP", ConnectionManager.Instance.GetConnectionId()},
-            {"idtb", treeBarrier.GetInstanceID() + ""},
+            {"idtb", treeBarrier.GetHashCode() + ""},
             {"x", "" + treeBarrier.transform.position.x * parameters.precision},
             {"y", "" + treeBarrier.transform.position.z * parameters.precision}
         };
@@ -753,7 +753,7 @@ public class SimulationManager : MonoBehaviour
             return;
         }
 
-        string key = treeBarrier.GetInstanceID() + "";
+        string key = treeBarrier.GetHashCode() + "";
         if (treeBarriers.ContainsKey(key))
         {
             treeBarriers.Remove(key);
@@ -761,7 +761,7 @@ public class SimulationManager : MonoBehaviour
 
         Dictionary<string, string> args = new Dictionary<string, string> {
             {"idP", ConnectionManager.Instance.GetConnectionId()},
-            {"idtb", treeBarrier.GetInstanceID() + ""}
+            {"idtb", treeBarrier.GetHashCode() + ""}
         };
 
         ConnectionManager.Instance.SendExecutableAsk("delete_tree_barrier", args);
@@ -789,14 +789,14 @@ public class SimulationManager : MonoBehaviour
             if (!t.activeSelf) continue;
             if (isFirst)
             {
-                sws += (t.GetInstanceID());
+                sws += (t.GetHashCode());
                 xs += (int)(t.transform.position.x * parameters.precision);
                 ys += (int)(t.transform.position.z * parameters.precision);
                 isFirst = false;
             }
             else
             {
-                sws += "," + (t.GetInstanceID());
+                sws += "," + (t.GetHashCode());
                 xs += "," + (int)(t.transform.position.x * parameters.precision);
                 ys += "," + (int)(t.transform.position.z * parameters.precision);
             }
@@ -839,14 +839,14 @@ public class SimulationManager : MonoBehaviour
                 continue;
             if (isFirst)
             {
-                idTs += (t.GetInstanceID());
+                idTs += (t.GetHashCode());
                 xs += (int)(t.transform.position.x * parameters.precision);
                 ys += (int)(t.transform.position.z * parameters.precision);
                 isFirst = false;
             }
             else
             {
-                idTs += "," + (t.GetInstanceID());
+                idTs += "," + (t.GetHashCode());
                 xs += "," + (int)(t.transform.position.x * parameters.precision);
                 ys += "," + (int)(t.transform.position.z * parameters.precision);
             }
@@ -954,13 +954,13 @@ public class SimulationManager : MonoBehaviour
             polyGen = PolygonGenerator.GetInstance();
             polyGen.Init(converter);
         }
-        TeleportationArea ta = null;
+        UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationArea ta = null;
         GameObject[] objs = GameObject.FindGameObjectsWithTag("Teleportation");
         foreach (GameObject o in objs)
         {
             if (o.name.Equals(dataTeleport.teleportId))
             {
-                ta = o.GetComponent<TeleportationArea>();
+                ta = o.GetComponent<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationArea>();
                 if (ta != null)
                 {
                     foreach (Collider col in ta.colliders)
@@ -978,7 +978,7 @@ public class SimulationManager : MonoBehaviour
             GameObject prefabObj = Resources.Load("Prefabs/Player/TeleportAreaRaw") as GameObject;
             GameObject obj = Instantiate(prefabObj);
 
-            ta = obj.GetComponent<TeleportationArea>();
+            ta = obj.GetComponent<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationArea>();
             obj.name = dataTeleport.teleportId;
             obj.tag = "Teleportation";
         }
@@ -1360,10 +1360,10 @@ public class SimulationManager : MonoBehaviour
 
         if (prop.isInteractable)
         {
-            XRBaseInteractable interaction = null;
+            UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable interaction = null;
             if (prop.isGrabable)
             {
-                interaction = obj.AddComponent<XRGrabInteractable>();
+                interaction = obj.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
                 Rigidbody rb = obj.GetComponent<Rigidbody>();
                 if (prop.constraints != null && prop.constraints.Count == 6)
                 {
@@ -1386,7 +1386,7 @@ public class SimulationManager : MonoBehaviour
             else
             {
 
-                interaction = obj.AddComponent<XRSimpleInteractable>();
+                interaction = obj.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
 
 
             }

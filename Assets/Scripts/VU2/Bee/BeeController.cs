@@ -11,6 +11,9 @@
 // =============================================================================
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR;
+using XRInputDevice = UnityEngine.XR.InputDevice;
+using XRCommonUsages = UnityEngine.XR.CommonUsages;
 
 public class BeeController : MonoBehaviour
 {
@@ -29,6 +32,16 @@ public class BeeController : MonoBehaviour
 
     [Tooltip("Cho phép điều khiển trực tiếp bằng bàn phím (W, A, S, D, Space).")]
     public bool enableKeyboardInput = true;
+
+    [Header("VR Direct Input / Đọc trực tiếp tay cầm VR")]
+    [Tooltip("Tự động đọc trực tiếp phần cứng VR Controller (Thumbstick, Trigger, Buttons) kể cả khi Action chưa bind.")]
+    public bool enableDirectXrInput = true;
+
+    [Tooltip("Cho phép lắc/vung tay cầm để đập cánh bay (VR Shake Flap).")]
+    public bool enableShakeToFlap = true;
+
+    [Tooltip("Ngưỡng gia tốc lắc tay để đập cánh (m/s²). Lắc nhẹ trên Quest khoảng 2.5 - 3.5 m/s².")]
+    public float shakeThreshold = 3.0f;
 
     // =========================================================================
     // FLIGHT SETTINGS / CÀI ĐẶT BAY
@@ -52,6 +65,9 @@ public class BeeController : MonoBehaviour
 
     [Tooltip("Tốc độ rơi tối đa khi thả nút bay (m/s).")]
     public float maxFallSpeed = 4f;
+
+    [Tooltip("Độ cao trần tối đa cho phép bay (m). 0 = không giới hạn.")]
+    public float maxFlightAltitude = 20f;
 
     [Header("Horizontal Movement / Di chuyển tới - lui bằng Joystick")]
     [Tooltip("Tốc độ tiến tối đa khi đẩy joystick về phía trước (m/s).")]
@@ -172,8 +188,44 @@ public class BeeController : MonoBehaviour
     /// <summary>Override từ bên ngoài (shake adapter hoặc test script).</summary>
     public bool ExternalFlapOverride { get; set; }
 
-    /// <summary>Nút đập cánh đang được nhấn hay không.</summary>
+    /// <summary>Nút đập cánh đang được nhấn hay không (bao gồm cả ExternalFlapOverride).</summary>
     public bool FlapPressed => ReadCombinedFlapInput();
+
+    /// <summary>
+    /// Đọc tín hiệu nút bay trực tiếp từ phần cứng / Input Action / Phím, KHÔNG bao gồm ExternalFlapOverride.
+    /// Hỗ trợ cả Input Action, phần cứng VR Controller (Trigger/Button), lắc tay (Shake), và bàn phím.
+    /// </summary>
+    public bool RawHardwareFlapPressed
+    {
+        get
+        {
+            // 1. Input Action nếu đã cấu hình binding
+            if (flapAction.action != null && flapAction.action.enabled && flapAction.action.IsPressed())
+                return true;
+
+            // 2. Đọc trực tiếp phần cứng VR Controller (Trigger / Grip / Nút A, B, X, Y)
+            if (enableDirectXrInput)
+            {
+                UpdateXrDevices();
+                if (CheckXrFlapInput(_rightHand) || CheckXrFlapInput(_leftHand))
+                    return true;
+
+                // 3. Vung tay / Lắc tay đập cánh (Shake Flapping)
+                if (CheckXrShakeFlap())
+                    return true;
+            }
+
+            // 4. Bàn phím máy tính (dùng test trên Editor / PC)
+            if (enableKeyboardInput && Keyboard.current != null)
+            {
+                var k = Keyboard.current;
+                if (k.spaceKey.isPressed || k.leftShiftKey.isPressed || k.rightShiftKey.isPressed)
+                    return true;
+            }
+
+            return false;
+        }
+    }
 
     /// <summary>Đẩy thẳng lên/xuống theo trục Y (m/s²).</summary>
     public float ExternalVerticalThrust { get; set; }
@@ -255,10 +307,76 @@ public class BeeController : MonoBehaviour
     // =========================================================================
     // INPUT READING / ĐỌC TÍN HIỆU ĐẦU VÀO TỔNG HỢP (VR + KEYBOARD)
     // =========================================================================
+    private readonly System.Collections.Generic.List<XRInputDevice> _leftDevices = new System.Collections.Generic.List<XRInputDevice>();
+    private readonly System.Collections.Generic.List<XRInputDevice> _rightDevices = new System.Collections.Generic.List<XRInputDevice>();
+    private XRInputDevice _leftHand;
+    private XRInputDevice _rightHand;
+    private float _deviceSearchTimer;
+    private float _shakeHoldTimer;
+
+    private void UpdateXrDevices()
+    {
+        if (_leftHand.isValid && _rightHand.isValid) return;
+        _deviceSearchTimer -= Time.unscaledDeltaTime;
+        if (_deviceSearchTimer > 0f) return;
+        _deviceSearchTimer = 1.0f;
+
+        InputDevices.GetDevicesAtXRNode(XRNode.LeftHand, _leftDevices);
+        if (_leftDevices.Count > 0) _leftHand = _leftDevices[0];
+
+        InputDevices.GetDevicesAtXRNode(XRNode.RightHand, _rightDevices);
+        if (_rightDevices.Count > 0) _rightHand = _rightDevices[0];
+    }
+
+    private bool CheckXrFlapInput(XRInputDevice device)
+    {
+        if (!device.isValid) return false;
+
+        // Bóp cò (Trigger)
+        if (device.TryGetFeatureValue(XRCommonUsages.triggerButton, out bool trigBtn) && trigBtn) return true;
+        if (device.TryGetFeatureValue(XRCommonUsages.trigger, out float trigVal) && trigVal > 0.25f) return true;
+
+        // Nút chính A/X hoặc B/Y
+        if (device.TryGetFeatureValue(XRCommonUsages.primaryButton, out bool btnPrimary) && btnPrimary) return true;
+        if (device.TryGetFeatureValue(XRCommonUsages.secondaryButton, out bool btnSecondary) && btnSecondary) return true;
+
+        // Nút bóp hông (Grip)
+        if (device.TryGetFeatureValue(XRCommonUsages.gripButton, out bool gripBtn) && gripBtn) return true;
+        if (device.TryGetFeatureValue(XRCommonUsages.grip, out float gripVal) && gripVal > 0.4f) return true;
+
+        return false;
+    }
+
+    private bool CheckXrShakeFlap()
+    {
+        if (!enableShakeToFlap) return false;
+
+        bool shaking = false;
+        if (_rightHand.isValid && _rightHand.TryGetFeatureValue(XRCommonUsages.deviceAcceleration, out Vector3 rightAcc))
+        {
+            if (rightAcc.magnitude >= shakeThreshold) shaking = true;
+        }
+        if (!shaking && _leftHand.isValid && _leftHand.TryGetFeatureValue(XRCommonUsages.deviceAcceleration, out Vector3 leftAcc))
+        {
+            if (leftAcc.magnitude >= shakeThreshold) shaking = true;
+        }
+
+        if (shaking)
+        {
+            _shakeHoldTimer = 0.25f;
+        }
+        else if (_shakeHoldTimer > 0f)
+        {
+            _shakeHoldTimer -= Time.deltaTime;
+        }
+
+        return _shakeHoldTimer > 0f;
+    }
+
     /// <summary>
     /// Đọc input điều hướng 2D kết hợp từ:
-    /// - Tay cầm VR (steerAction - thường là Left Thumbstick)
-    /// - Tay cầm VR cần xoay phụ (turnAction - thường là Right Thumbstick)
+    /// - Tay cầm VR (steerAction nếu có gán, hoặc trực tiếp từ Left Thumbstick phần cứng)
+    /// - Cần xoay phụ (turnAction hoặc Right Thumbstick)
     /// - Bàn phím máy tính (phím W, A, S, D hoặc Mũi tên)
     /// Y = đi tới / đi lui, X = rẽ trái / rẽ phải / lách ngang.
     /// </summary>
@@ -272,6 +390,16 @@ public class BeeController : MonoBehaviour
             input = steerAction.action.ReadValue<Vector2>();
         }
 
+        // 1b. Fallback trực tiếp từ phần cứng VR Controller (Left Thumbstick)
+        if (enableDirectXrInput && input.sqrMagnitude < 0.01f)
+        {
+            UpdateXrDevices();
+            if (_leftHand.isValid && _leftHand.TryGetFeatureValue(XRCommonUsages.primary2DAxis, out Vector2 stick))
+            {
+                input = stick;
+            }
+        }
+
         // 2. Đọc bổ sung từ cần xoay tay cầm VR phải nếu có
         if (turnAction.action != null && turnAction.action.enabled)
         {
@@ -281,9 +409,18 @@ public class BeeController : MonoBehaviour
                 input.x = turn.x;
             }
         }
+        else if (enableDirectXrInput && _rightHand.isValid)
+        {
+            if (_rightHand.TryGetFeatureValue(XRCommonUsages.primary2DAxis, out Vector2 rightStick))
+            {
+                if (Mathf.Abs(rightStick.x) > 0.1f)
+                {
+                    input.x = rightStick.x;
+                }
+            }
+        }
 
         // 3. Fallback / Test trực tiếp bằng bàn phím (W, A, S, D):
-        // Nếu tay cầm VR không gạt (hoặc đang test trên PC), nhận phím trực tiếp
         if (enableKeyboardInput && Keyboard.current != null)
         {
             var k = Keyboard.current;
@@ -312,17 +449,7 @@ public class BeeController : MonoBehaviour
     {
         if (ExternalFlapOverride) return true;
 
-        if (flapAction.action != null && flapAction.action.enabled && flapAction.action.IsPressed())
-            return true;
-
-        if (enableKeyboardInput && Keyboard.current != null)
-        {
-            var k = Keyboard.current;
-            if (k.spaceKey.isPressed || k.leftShiftKey.isPressed || k.rightShiftKey.isPressed)
-                return true;
-        }
-
-        return false;
+        return RawHardwareFlapPressed;
     }
 
     // =========================================================================
@@ -476,15 +603,24 @@ public class BeeController : MonoBehaviour
         }
         else
         {
-            // Thả nút bay: rơi dần theo trọng lực
-            _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, -maxFallSpeed, gravity * Time.deltaTime);
+            // Thả nút bay: triệt tiêu nhanh đà bay lên (hãm phanh), sau đó rơi từ từ theo trọng lực
+            float damping = (_verticalVelocity > 0f) ? (gravity * 3f) : gravity;
+            _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, -maxFallSpeed, damping * Time.deltaTime);
         }
 
-        // Lực nâng bổ sung từ bên ngoài (phím test Q/E hoặc effect đặc biệt)
+        // Lực nâng bổ sung từ bên ngoài (phím test Q/E hoặc assist)
         if (Mathf.Abs(ExternalVerticalThrust) > 0.001f)
         {
             _verticalVelocity += ExternalVerticalThrust * Time.deltaTime;
-            _verticalVelocity = Mathf.Clamp(_verticalVelocity, -maxFallSpeed * 2f, maxAscendSpeed * 2f);
+        }
+
+        // Kẹp chặt vận tốc đứng trong ngưỡng an toàn, KHÔNG để vọt quá tốc độ cho phép
+        _verticalVelocity = Mathf.Clamp(_verticalVelocity, -maxFallSpeed, maxAscendSpeed);
+
+        // Trần bay tối đa (nếu có giới hạn)
+        if (maxFlightAltitude > 0f && transform.position.y >= maxFlightAltitude)
+        {
+            if (_verticalVelocity > 0f) _verticalVelocity = 0f;
         }
 
         // ---------------------------------------------------------------------
@@ -497,6 +633,12 @@ public class BeeController : MonoBehaviour
         {
             next = ResolveGroundCollision(next, velocity);
         }
+
+        if (maxFlightAltitude > 0f && next.y > maxFlightAltitude)
+        {
+            next.y = maxFlightAltitude;
+        }
+
         transform.position = next;
 
         // ---------------------------------------------------------------------
@@ -517,11 +659,21 @@ public class BeeController : MonoBehaviour
     private readonly RaycastHit[] _hitBuffer = new RaycastHit[16];
     private readonly RaycastHit[] _hitBuffer2 = new RaycastHit[16];
 
+    private bool IsIgnoredCollider(Collider col)
+    {
+        if (col == null) return true;
+        Transform t = col.transform;
+        // Bỏ qua chính con ong và toàn bộ các bộ phận con cháu của nó (Head, Body...)
+        if (t == transform || t.IsChildOf(transform)) return true;
+        return false;
+    }
+
     private void PickGround(RaycastHit h, ref RaycastHit best, ref bool hasHit,
                             ref float bestDist, float ceiling)
     {
         if (h.collider == null) return;
-        if (h.normal.y < 0.5f) return;
+        if (IsIgnoredCollider(h.collider)) return; // BỎ QUA CHÍNH MÌNH ĐỂ KHÔNG BỊ TỰ BẮN LÊN TRỜI!
+        if (h.normal.y < 0.3f) return;
         if (h.point.y > ceiling) return;
 
         float d = Vector3.SqrMagnitude(h.point - transform.position);
@@ -536,16 +688,17 @@ public class BeeController : MonoBehaviour
         float r = BodyRadius;
         float clear = Mathf.Max(0f, groundClearance);
 
-        float dist = motion.magnitude + r + clear;
-        Vector3 from = new Vector3(desiredPosition.x, transform.position.y, desiredPosition.z);
+        float dist = Mathf.Max(motion.magnitude, 0.1f) + r + clear;
+        Vector3 from = new Vector3(desiredPosition.x, transform.position.y + r, desiredPosition.z);
         int downCount = Physics.SphereCastNonAlloc(
             from, r, Vector3.down, _hitBuffer, dist, mask, QueryTriggerInteraction.Ignore);
 
         int motionCount = 0;
-        if (motion.sqrMagnitude > 0.000001f)
+        // Chỉ quét theo hướng chuyển động nếu đang hạ cánh / rơi xuống đất (motion.y <= 0)
+        if (motion.y <= 0.05f && motion.sqrMagnitude > 0.0001f)
         {
             motionCount = Physics.SphereCastNonAlloc(
-                transform.position, r, motion.normalized, _hitBuffer2, dist, mask,
+                transform.position, r, motion.normalized, _hitBuffer2, motion.magnitude + clear, mask,
                 QueryTriggerInteraction.Ignore);
         }
 
@@ -558,10 +711,10 @@ public class BeeController : MonoBehaviour
 
         if (!hasHit) return desiredPosition;
 
-        Vector3 probe = new Vector3(desiredPosition.x, best.point.y, desiredPosition.z);
-        float floorY = best.collider.ClosestPoint(probe).y + clear;
+        // Điểm chạm thực tế trên bề mặt đất + khoảng cách giữ an toàn clear
+        float floorY = best.point.y + clear;
 
-        if (desiredPosition.y <= floorY)
+        if (desiredPosition.y < floorY)
         {
             desiredPosition.y = floorY;
             IsGrounded = true;

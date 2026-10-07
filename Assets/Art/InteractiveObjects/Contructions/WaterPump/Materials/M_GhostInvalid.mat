@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_GhostInvalid
-  m_Shader: {fileID: -6465566751694194690, guid: 0dbca2a74f588124ead4d9bb5945e296,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 0dbca2a74f588124ead4d9bb5945e296, type: 3}
   m_Parent: {fileID: 2100000, guid: d500e11e8f038a842ba0f1f38979b6f6, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -19,7 +18,8 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -37,6 +37,7 @@ Material:
     - _Color1: {r: 1, g: 1, b: 1, a: 0}
     - _Shadow_Color: {r: 0.6784314, g: 0.19550294, b: 0.047058802, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &4335519573377203481
 MonoBehaviour:
   m_ObjectHideFlags: 11
@@ -49,4 +50,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 10

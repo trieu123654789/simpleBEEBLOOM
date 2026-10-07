@@ -300,7 +300,7 @@ public class David_TreeWiltController : MonoBehaviour, IDamageable
     public void Die()
     {
         Debug.Log($"[David_TreeWiltController] Die() called on '{gameObject.name}' " +
-                  $"(instanceID={gameObject.GetInstanceID()}, hp={_currentHealth})");
+                  $"(instanceID={gameObject.GetHashCode()}, hp={_currentHealth})");
 
         // Thống kê: 1 cây ăn quả (durian wilt controller) chết.
         // Statistics: a fruit tree died.
@@ -321,7 +321,7 @@ public class David_TreeWiltController : MonoBehaviour, IDamageable
                 var args = new System.Collections.Generic.Dictionary<string, string>
                 {
                     { "idP", ConnectionManager.Instance.GetConnectionId() },
-                    { "idT", gameObject.GetInstanceID().ToString() }
+                    { "idT", gameObject.GetHashCode().ToString() }
                 };
                 ConnectionManager.Instance.SendExecutableAsk("delete_tree", args);
             }

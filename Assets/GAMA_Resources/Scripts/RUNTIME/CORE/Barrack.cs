@@ -191,7 +191,7 @@ public class Barrack : MonoBehaviour, ISpawner, IDamageable
             // Thông báo GAMA server rằng máy bơm đã bị phá hủy.
             Dictionary<string, string> args = new Dictionary<string, string> {
                 {"idP", ConnectionManager.Instance.GetConnectionId()},
-                {"idwp", gameObject.GetInstanceID()+"" }};
+                {"idwp", gameObject.GetHashCode()+"" }};
 
             ConnectionManager.Instance.SendExecutableAsk("delete_water_pump", args);
             animator.Play("ANIM_WaterPump_Broken");

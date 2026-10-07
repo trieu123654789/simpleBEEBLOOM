@@ -60,7 +60,7 @@ public class David_WaterCreature : MonoBehaviour
 
     // Components (Single Object Logic)
     private Rigidbody _rb;
-    private XRGrabInteractable _grab;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grab;
     private David_Fruit _fruitLogic;
     private Collider _collider;
 
@@ -71,7 +71,7 @@ public class David_WaterCreature : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-        _grab = GetComponent<XRGrabInteractable>();
+        _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         _fruitLogic = GetComponent<David_Fruit>();
         _collider = GetComponent<Collider>();
     }
@@ -96,7 +96,7 @@ public class David_WaterCreature : MonoBehaviour
         // Configure XR Grab for INSTANT snap (like Durian/Coconut)
         if (_grab != null)
         {
-            _grab.movementType = XRBaseInteractable.MovementType.Instantaneous;
+            _grab.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
             _grab.attachEaseInTime = 0f;
             _grab.useDynamicAttach = false; // Snap to hand, not ray point
             _grab.retainTransformParent = false; // Don't keep parent

@@ -372,7 +372,7 @@ public class BeeHud : MonoBehaviour
         text.color = color;
         text.alignment = alignment;
         text.fontStyle = style;
-        text.enableWordWrapping = false;
+        text.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
         text.overflowMode = TextOverflowModes.Overflow;
         text.raycastTarget = false;
         if (font != null) text.font = font;

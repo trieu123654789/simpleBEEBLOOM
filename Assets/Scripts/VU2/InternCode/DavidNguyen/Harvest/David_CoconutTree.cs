@@ -59,7 +59,7 @@ public class David_CoconutTree : MonoBehaviour
     private Vector3 _originalPosition;
     private bool _isShaking = false;
     private David_TreeWiltController _wiltController;
-    private XRBaseInteractable _currentInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable _currentInteractable;
 
     // =========================================================================
     // UNITY LIFECYCLE
@@ -87,8 +87,8 @@ public class David_CoconutTree : MonoBehaviour
     
     private void SetupInteraction()
     {
-        var existingGrab = GetComponent<XRGrabInteractable>();
-        var existingSimple = GetComponent<XRSimpleInteractable>();
+        var existingGrab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        var existingSimple = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
 
         switch (interactionMode)
         {
@@ -116,7 +116,7 @@ public class David_CoconutTree : MonoBehaviour
     // =========================================================================
     // XR INTERACTABLE SETUP - Allows VR controller to shake tree
     // =========================================================================
-    private XRSimpleInteractable _xrInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable _xrInteractable;
     private bool _xrListenerAdded = false;
 
     [ContextMenu("Setup XR Components (Click Me)")]
@@ -139,8 +139,8 @@ public class David_CoconutTree : MonoBehaviour
     
     private void SetupXRSimple()
     {
-        var simple = GetComponent<XRSimpleInteractable>();
-        if (simple == null) simple = gameObject.AddComponent<XRSimpleInteractable>();
+        var simple = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
+        if (simple == null) simple = gameObject.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
         
         _currentInteractable = simple;
         
@@ -150,8 +150,8 @@ public class David_CoconutTree : MonoBehaviour
 
     private void SetupXRGrab()
     {
-        var grab = GetComponent<XRGrabInteractable>();
-        if (grab == null) grab = gameObject.AddComponent<XRGrabInteractable>();
+        var grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        if (grab == null) grab = gameObject.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         
         _currentInteractable = grab;
         
@@ -238,7 +238,7 @@ public class David_CoconutTree : MonoBehaviour
             rb.useGravity = false;
         }
         
-        var grabInteractable = coconut.GetComponent<XRGrabInteractable>();
+        var grabInteractable = coconut.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grabInteractable != null) grabInteractable.enabled = false;
     }
 
@@ -320,7 +320,7 @@ public class David_CoconutTree : MonoBehaviour
         }
         
         // Require XR Grab to pick up
-        var grabInteractable = coconut.GetComponent<XRGrabInteractable>();
+        var grabInteractable = coconut.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grabInteractable != null)
         {
             grabInteractable.enabled = true;

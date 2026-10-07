@@ -18,9 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/VU2/SCN_BeeBloom.unity
     guid: ccfdca7d16e464a419c364666a11e916
   m_configObjects:
-    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: e0be089d44b97214485d635fe5f63445,
-      type: 2}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: fd0b8587f11fe5d42954a6b40d5f1ae9,
-      type: 2}
-    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 18c8e69a875f92e469ebabd662b9e4dc,
-      type: 2}
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: e0be089d44b97214485d635fe5f63445, type: 2}
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: fd0b8587f11fe5d42954a6b40d5f1ae9, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 18c8e69a875f92e469ebabd662b9e4dc, type: 2}

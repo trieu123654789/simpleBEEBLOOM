@@ -16,7 +16,7 @@ public class Thuan_23127_HoverHealthXR : MonoBehaviour
     public Thuan_23127_JsonReader jsonReader; 
 
     private Thuan_23127_PlantGrowth _growth;
-    private XRSimpleInteractable _xr;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable _xr;
     private bool _shown;
     private CanvasGroup _cg;
 
@@ -98,14 +98,14 @@ public class Thuan_23127_HoverHealthXR : MonoBehaviour
     private void Awake()
     {
         _growth = GetComponent<Thuan_23127_PlantGrowth>();
-        _xr = GetComponent<XRSimpleInteractable>();
+        _xr = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
         
         if (_xr == null)
-            _xr = GetComponentInChildren<XRSimpleInteractable>();
+            _xr = GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
         
         // Nếu vẫn chưa có, tìm trong parent
         if (_xr == null)
-            _xr = GetComponentInParent<XRSimpleInteractable>();
+            _xr = GetComponentInParent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
 
         FindPanelAndTexts();
 
@@ -134,11 +134,11 @@ public class Thuan_23127_HoverHealthXR : MonoBehaviour
         // Đảm bảo lấy lại _xr nếu bị null (sau restart hoặc disable/enable)
         if (_xr == null)
         {
-            _xr = GetComponent<XRSimpleInteractable>();
+            _xr = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
             if (_xr == null)
-                _xr = GetComponentInChildren<XRSimpleInteractable>();
+                _xr = GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
             if (_xr == null)
-                _xr = GetComponentInParent<XRSimpleInteractable>();
+                _xr = GetComponentInParent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
         }
 
         // Đảm bảo _growth được tìm lại

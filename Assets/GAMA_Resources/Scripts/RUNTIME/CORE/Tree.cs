@@ -92,7 +92,7 @@ public class Tree : MonoBehaviour, IDamageable
             
             Dictionary<string, string> args = new Dictionary<string, string> {
                 {"idP", ConnectionManager.Instance.GetConnectionId()},
-                {"idT", gameObject.GetInstanceID()+"" }};
+                {"idT", gameObject.GetHashCode()+"" }};
 
                 ConnectionManager.Instance.SendExecutableAsk("delete_tree", args);
 

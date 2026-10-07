@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+
 
 // =============================================================================
 // David_DurianTree - Durian tree with auto-dropping ripe fruits.
@@ -297,7 +297,7 @@ public class David_DurianTree : MonoBehaviour
         if (rb != null)
         {
             // Reset any existing velocity first
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             
             rb.isKinematic = false;
@@ -312,7 +312,7 @@ public class David_DurianTree : MonoBehaviour
         durian.transform.SetParent(null);
         
         // Enable XR Grab Interactable so player can pick up
-        var grabInteractable = durian.GetComponent<XRGrabInteractable>();
+        var grabInteractable = durian.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grabInteractable != null)
         {
             grabInteractable.enabled = true;
@@ -364,7 +364,7 @@ public class David_DurianTree : MonoBehaviour
                 {
                     rb.isKinematic = true;
                     rb.useGravity = false;
-                    rb.velocity = Vector3.zero;
+                    rb.linearVelocity = Vector3.zero;
                 }
 
                 _duriansOnTree.Add(durian);

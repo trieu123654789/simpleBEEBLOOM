@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -116,7 +116,7 @@ public class ReplaceSelected : EditorWindow
         sourceObject = (Object)EditorGUILayout.ObjectField(sourceObject, typeof(GameObject), true);
         if (EditorGUI.EndChangeCheck())
         {
-            LastTargetGUID = sourceObject ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(sourceObject.GetInstanceID())) : string.Empty;
+            LastTargetGUID = sourceObject ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(sourceObject)) : string.Empty;
         }
         EditorGUILayout.Space();
 

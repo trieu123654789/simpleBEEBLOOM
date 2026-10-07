@@ -246,7 +246,7 @@ public class David_Fruit : MonoBehaviour
     {
         Debug.Log($"[David_Fruit] {gameObject.name}: SetupAfterDrop called");
         
-        var grabInteractable = GetComponent<XRGrabInteractable>();
+        var grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grabInteractable != null)
         {
             // Force re-registration with XRInteractionManager
@@ -279,7 +279,7 @@ public class David_Fruit : MonoBehaviour
     
     private void SetupInstantGrab()
     {
-        var grabInteractable = GetComponent<XRGrabInteractable>();
+        var grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         
         if (grabInteractable == null)
         {
@@ -349,7 +349,7 @@ public class David_Fruit : MonoBehaviour
         Debug.Log($"[David_Fruit] {gameObject.name}: Registered {colliders.Length} colliders. All non-trigger.");
         
         // INSTANT SNAP TO HAND - Not to ray hit point!
-        grabInteractable.movementType = XRBaseInteractable.MovementType.Instantaneous;
+        grabInteractable.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
         grabInteractable.attachEaseInTime = 0f;
         
         // IMPORTANT: Disable dynamic attach so object snaps to HAND, not ray hit point
@@ -377,7 +377,7 @@ public class David_Fruit : MonoBehaviour
     
     private void OnDestroy()
     {
-        var grabInteractable = GetComponent<XRGrabInteractable>();
+        var grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         if (grabInteractable != null)
         {
             grabInteractable.selectEntered.RemoveListener(OnGrabbed);
@@ -392,7 +392,7 @@ public class David_Fruit : MonoBehaviour
     
     // Track grab state for LateUpdate
     private Transform _currentGrabTarget;
-    private XRGrabInteractable _currentGrabInteractable;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _currentGrabInteractable;
 
     // =========================================================================
     // DURIAN HAPTIC HARVEST — controller vibration for 1.5s before collect.
@@ -428,17 +428,17 @@ public class David_Fruit : MonoBehaviour
             transform.SetParent(null);
         }
         
-        if (args.interactorObject is XRBaseInteractor interactor)
+        if (args.interactorObject is UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor)
         {
             _currentGrabTarget = interactor.transform;
-            _currentGrabInteractable = GetComponent<XRGrabInteractable>();
+            _currentGrabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
             
             // Make rigidbody kinematic so XR doesn't fight us
             var rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
                 rb.isKinematic = true;
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
             
@@ -567,7 +567,7 @@ public class David_Fruit : MonoBehaviour
         var rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.isKinematic = false;
             rb.useGravity = true;
@@ -676,7 +676,7 @@ public class David_Fruit : MonoBehaviour
             if (interactionManager != null)
             {
                 // Cancel selection (force drop)
-                interactionManager.CancelInteractableSelection((IXRSelectInteractable)_currentGrabInteractable);
+                interactionManager.CancelInteractableSelection((UnityEngine.XR.Interaction.Toolkit.Interactables.IXRSelectInteractable)_currentGrabInteractable);
             }
         }
         
@@ -860,7 +860,7 @@ public class David_Fruit : MonoBehaviour
         var rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.isKinematic = true;
             rb.useGravity = false;
