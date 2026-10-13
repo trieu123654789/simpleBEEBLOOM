@@ -27,6 +27,7 @@
 // =============================================================================
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 [DisallowMultipleComponent]
 public class BeeCameraRig : MonoBehaviour
@@ -48,9 +49,12 @@ public class BeeCameraRig : MonoBehaviour
     [Tooltip("FirstPersonBee = mat trong than ong (nhu anh mau).")]
     public ViewMode viewMode = ViewMode.FirstPersonBee;
 
-    [Tooltip("FOV cua camera khi choi. Rong (~82) cho cam giac nho be nhu ong.")]
-    [Range(50f, 110f)]
-    public float targetFov = 82f;
+    [Tooltip("FOV cua camera khi choi. Mo rong ra het (100-110 do) cho goc nhin toan canh thoang dang.")]
+    [Range(60f, 120f)]
+    public float targetFov = 105f;
+
+    [Tooltip("Mo rong toi da goc nhin VR theo thau kinh cua kinh (Quest 3 ~110 do), khong bi bop hep hay go bo FOV.")]
+    public bool unlockWideFov = true;
 
 
     // =========================================================================
@@ -78,8 +82,8 @@ public class BeeCameraRig : MonoBehaviour
     [Range(0f, 1f)]
     public float pitchInfluence = 0.4f;
 
-    [Tooltip("Ap bank (nghieng khi re) len XR Origin. Rat nang cao cam giac re.")]
-    public bool applyBankToRig = true;
+    [Tooltip("Ap bank (nghieng khi re) len XR Origin. Tat de chan troi luon bang phang, goc nhin tu do 100% khong bi nghieng lac.")]
+    public bool applyBankToRig = false;
 
     [Range(0f, 1f)]
     public float bankInfluence = 0.55f;
@@ -98,20 +102,58 @@ public class BeeCameraRig : MonoBehaviour
     public float rigSmoothSpeed = 40f;
 
     // =========================================================================
-    // BODY BOB / LAC NHE THEO NHIP CANH
+    // VR-SAFE HEAD & BODY VIBRATION / RUNG AN TOÀN TRONG VR (0% CHÓNG MẶT)
     // =========================================================================
-    [Header("Body Bob / Lac nhe theo nhip canh")]
-    [Tooltip("Bien do rung nhe khi dap canh (m). Rat nho la du tao cam giac.")]
-    [Range(0f, 0.05f)]
-    public float bobAmplitude = 0.008f;
+    [Header("VR-Safe Head Vibration / Rung vi mo goc nhin (0% chong mat)")]
+    [Tooltip("Bat dao dong vi mo cuc nhe cua camera theo nhip canh ong. Chi dao dong theo truc UP 2-3mm, KHONG lac ngang, KHONG nghieng chan troi.")]
+    public bool enableHeadBob = true;
 
-    [Tooltip("Tan so rung (Hz) khi bay het toc.")]
+    [Tooltip("Bien do rung cua camera (m). 0.0028 = 2.8mm: nguoi choi cam nhan ro nhung hoan toan khong say.")]
+    [Range(0f, 0.008f)]
+    public float headBobAmplitude = 0.0028f;
+
+    [Tooltip("Bien do rung visualRoot (than/canh ong) theo nhip canh (m). Chi hien o ria man hinh.")]
+    [Range(0f, 0.04f)]
+    public float bobAmplitude = 0.006f;
+
+    [Tooltip("Tan so rung (Hz) khi bay het toc. Khop voi nhip canh cua BeeFlapping.")]
     [Range(1f, 30f)]
-    public float bobFrequency = 12f;
+    public float bobFrequency = 14f;
 
-    [Tooltip("Them chut xoay lac theo canh de ong co cam giac 'thi giac'.")]
-    [Range(0f, 5f)]
-    public float bobRollAmplitude = 0.8f;
+    [Tooltip("Bien do xoay nhe (do) theo nhip canh cua visualRoot.")]
+    [Range(0f, 3f)]
+    public float bobRollAmplitude = 0.6f;
+
+    [Tooltip("Micro-pulse FOV theo nhip canh (do). Tao cam giac gio luot ma khong chong mat.")]
+    [Range(0f, 2f)]
+    public float bobFovPulse = 0.45f;
+
+    [Tooltip("Bien do rung ngang nhe cua visualRoot (m).")]
+    [Range(0f, 0.01f)]
+    public float bobLateralAmplitude = 0.001f;
+
+    [Tooltip("Tan so rung ngang cao (Hz).")]
+    [Range(10f, 40f)]
+    public float bobLateralFrequency = 24f;
+
+    // =========================================================================
+    // VR CONTROLLER HAPTICS / DO RUNG TAY CAM VR (AN TOAN & CAM GIAC THUC NHAT)
+    // =========================================================================
+    [Header("VR Controller Haptics / Do rung tay cam VR")]
+    [Tooltip("Bat rung tay cam khi bay (0% gay say, cam giac vo ve rat ro net tren hai tay).")]
+    public bool enableControllerHaptics = true;
+
+    [Tooltip("Do rung nhe khi bay lo lung / bay cham (0-0.3).")]
+    [Range(0f, 0.3f)]
+    public float hoverHapticAmplitude = 0.05f;
+
+    [Tooltip("Do rung khi bay het toc (0-0.8).")]
+    [Range(0f, 0.8f)]
+    public float maxSpeedHapticAmplitude = 0.22f;
+
+    [Tooltip("Do rung them khi dang dap canh.")]
+    [Range(0f, 0.5f)]
+    public float flapHapticBoost = 0.16f;
 
     // =========================================================================
     // FIRST PERSON VISUALS / HINH ANH GOC NHIN THU NHAT
@@ -120,8 +162,8 @@ public class BeeCameraRig : MonoBehaviour
     [Tooltip("An than ong (chi hien canh o ria man hinh) nhu anh mau.")]
     public bool hideBodyInFirstPerson = true;
 
-    [Tooltip("Giu canh hien o goc nhin. / Keep wings visible at screen edges.")]
-    public bool showWingsInFirstPerson = true;
+    [Tooltip("Giu canh hien o goc nhin (tat di de khong bi 2 canh placeholder noi lung lo duoi thanh quet).")]
+    public bool showWingsInFirstPerson = false;
 
     [Tooltip("Offset vi tri than/canh so voi camera (local).")]
     public Vector3 visualOffset = new Vector3(0f, -0.13f, 0.30f);
@@ -174,8 +216,12 @@ public class BeeCameraRig : MonoBehaviour
     private Renderer[] _bodyRenderers;
     private Renderer[] _wingRenderers;
     private float _bobPhase;
-    private Vector3 _bobOffset;
-    private float _bobRollOffset;
+    private float _bobLateralPhase;
+    private Vector3 _bobVisualOffset;
+    private float _bobVisualRoll;
+    private float _bobFovOffset;
+    private float _bobHeadOffset;
+    private float _hapticTimer;
     private float _currentFov;
     private Vector3 _rigVelocity;
     private bool _resolved;
@@ -184,6 +230,10 @@ public class BeeCameraRig : MonoBehaviour
     {
         ResolveReferences();
         _currentFov = trackedCamera != null ? trackedCamera.fieldOfView : targetFov;
+        if (unlockWideFov && targetFov < 105f)
+        {
+            targetFov = 105f;
+        }
     }
 
     private void OnEnable()
@@ -204,10 +254,8 @@ public class BeeCameraRig : MonoBehaviour
         ResolveReferences();
         if (trackedCamera == null || playerRig == null) return;
 
-        // Dùng offset đã chot ở ResolveReferences để camera về đúng "mắt" ong
-        // mà vẫn giữ nguyên khoảng cách head-tracking mà người chơi đang có.
-        playerRig.position = GetEyeWorldPosition() - playerRig.rotation * _cameraLocalOffset;
-        trackedCamera.transform.rotation = playerRig.rotation * _cameraLocalRotation;
+        Vector3 camLocalInRig = playerRig.InverseTransformPoint(trackedCamera.transform.position);
+        playerRig.position = GetEyeWorldPosition() - playerRig.rotation * camLocalInRig;
     }
 
     /// <summary>Chuyen doi nhanh giua first-person va third-person.</summary>
@@ -350,16 +398,18 @@ public class BeeCameraRig : MonoBehaviour
         UpdateRigPose();
         UpdateFov();
         UpdateFirstPersonVisual();
+        UpdateControllerHaptics();
     }
 
     // =========================================================================
     // UpdateRigPose - Dua XR Origin sao cho CAMERA (khong phai transform cua
     // camera) den dung diem "mat" cua con ong.
     //
-    //   rig.position = eyeWorld - rig.rotation * cameraLocalOffset
+    //   rig.position = eyeWorld - rig.rotation * camLocalInRig
     //
-    // Nho giu nguyen cameraLocalOffset da chot o ResolveReferences nen viec
-    // nguoi choi nheo nguoi trong phong van duoc giu nguyen (room-scale).
+    // Tự động thích ứng theo độ cao thực của kính VR (khi người chơi đứng dậy,
+    // ngồi xuống, đeo kính vào hoặc bấm nút recenter trên Quest), không bao giờ
+    // bị tụt xuống đất (độn thổ) hoặc lệch khỏi thân ong.
     // =============================================================================
     private void UpdateRigPose()
     {
@@ -369,7 +419,9 @@ public class BeeCameraRig : MonoBehaviour
         Quaternion targetRotation = GetTargetRigRotation();
         playerRig.rotation = targetRotation;
 
-        Vector3 targetPosition = GetEyeWorldPosition() - targetRotation * _cameraLocalOffset;
+        // Đọc vị trí local thực tế của camera trong playerRig tại frame hiện tại
+        Vector3 camLocalInRig = playerRig.InverseTransformPoint(trackedCamera.transform.position);
+        Vector3 targetPosition = GetEyeWorldPosition() - targetRotation * camLocalInRig;
 
         if (smoothRigPosition)
         {
@@ -378,85 +430,165 @@ public class BeeCameraRig : MonoBehaviour
         }
 
         // _rigVelocity giu lai de tien cho hieu ung rut lien tuong lai
-        // (tuy chon cho sau; hien tai chi de debug).
         _rigVelocity = (targetPosition - playerRig.position) / Mathf.Max(Time.deltaTime, 0.0001f);
         playerRig.position = targetPosition;
     }
 
-    /// <summary>Goc quay cua XR Origin: yaw cua ong + pitch/bank tuy chon.</summary>
+    /// <summary>Goc quay cua XR Origin: chi ap yaw ngang cua ong de giu the gioi va tay cam thang dung, khong bi nghieng lech.</summary>
     private Quaternion GetTargetRigRotation()
     {
         float yaw = bee != null ? bee.Yaw : transform.eulerAngles.y;
-        float pitch = bee != null ? bee.Pitch : 0f;
-        float bank = bee != null ? bee.Bank : 0f;
-
         if (!applyYawToRig) yaw = transform.eulerAngles.y;
-        if (!applyPitchToRig) pitch = 0f;
-        if (!applyBankToRig) bank = 0f;
 
-        // DAU CUA PITCH / PITCH SIGN
-        //   BeeController.Pitch duong = BAY LEN, nhung Quaternion.Euler(x duong)
-        //   trong Unity lai la CUI XUONG. Vi vay phai dao dau truoc khi ap len rig,
-        //   neu khong nguoi choi se thay the gioi nghieng nguoc huong bay.
-        pitch = -pitch * pitchInfluence;
-
-        // Cui them khi bay nhanh (huong duong = cui xuong) -> cam giac luot
-        // sat mat nuoc / lao xuong nhu anh mau.
-        if (applySpeedPitchDown && bee != null)
+        // XR Origin luon giu thang dung theo truc Y de 2 tay cam va camera khong bi lech khoi trong luc thuc.
+        // Hieu ung nghieng khi re (bank) va cui khi bay nhanh (pitch) duoc the hien qua visualRoot (than/canh ong).
+        if (!applyPitchToRig && !applyBankToRig)
         {
-            pitch += bee.SpeedNormalized * speedPitchDown;
+            return Quaternion.Euler(0f, yaw, 0f);
         }
 
-        bank *= bankInfluence;
-        bank += _bobRollOffset;
+        float pitch = 0f;
+        float bank = 0f;
+
+        if (applyPitchToRig && bee != null)
+        {
+            pitch = -bee.Pitch * pitchInfluence;
+            if (applySpeedPitchDown) pitch += bee.SpeedNormalized * speedPitchDown;
+        }
+
+        if (applyBankToRig && bee != null)
+        {
+            bank = bee.Bank * bankInfluence;
+            // Bob roll KHONG ap len XR Origin nua (gay chong mat).
+            // Chi ap len visualRoot trong UpdateFirstPersonVisual.
+        }
 
         return Quaternion.Euler(0f, yaw, 0f) * Quaternion.Euler(pitch, 0f, bank);
     }
 
     // =========================================================================
     // GetEyeWorldPosition - Diem "mat" cua con ong trong world space.
-    //   Gom ca rung nhe theo nhip canh (_bobOffset) de tao cam giac "thinh giac".
+    //   Ap dung rung vi mo doc (up) 2-3mm cua camera de tai hien do rung con trung
+    //   ma khong gay say xe (khong lam lech mat phang chan troi).
     // =============================================================================
     private Vector3 GetEyeWorldPosition()
     {
         Vector3 eye = transform.TransformPoint(eyeOffset);
-        eye += _bobOffset;
+        if (enableHeadBob && trackedCamera != null)
+        {
+            eye += trackedCamera.transform.up * _bobHeadOffset;
+        }
         return eye;
     }
 
     // =========================================================================
-    // UpdateBob - Rung nhe theo nhip canh (doc theo pha cua BeeFlapping).
-    //   Bien do cực nho (<= 2cm) nen khong gay say nhung lai "nhip thoi".
+    // UpdateBob - Tinh pha rung theo nhip canh.
+    //   1. Micro-bob nhe tren camera: chi 2-3mm theo truc UP, khong bao gio quay nghieng.
+    //   2. Visual-bob tren visualRoot (than/canh ong o ngoai vi).
+    //   3. Micro-pulse tren FOV tao cam giac gio thoi theo nhip canh.
     // =============================================================================
     private void UpdateBob()
     {
         bool flapping = bee != null && bee.IsFlapping;
         float speedNorm = bee != null ? bee.SpeedNormalized : 0f;
 
-        // Dung tan so goc voi BeeFlapping de hai hieu ung khop pha.
-        float frequency = bobFrequency * Mathf.Lerp(0.55f, 1f, speedNorm);
-        if (flapping)
+        // Tần số chính khớp với BeeFlapping
+        float frequency = bobFrequency * Mathf.Lerp(0.6f, 1f, speedNorm);
+        float dt = Time.deltaTime;
+
+        if (flapping || speedNorm > 0.04f)
         {
-            _bobPhase += frequency * Time.deltaTime * Mathf.PI * 2f;
+            _bobPhase += frequency * dt * Mathf.PI * 2f;
             if (_bobPhase > Mathf.PI * 2f) _bobPhase -= Mathf.PI * 2f;
         }
+        else
+        {
+            // Khi dung yen: giam dan ve 0 thay vi dung ngot
+            _bobPhase = Mathf.Lerp(_bobPhase, 0f, dt * 3f);
+        }
 
-        float amplitude = flapping ? bobAmplitude : bobAmplitude * 0.25f;
+        // Lateral buzz: tan so cao hon, mo phong rung canh con trung
+        _bobLateralPhase += bobLateralFrequency * dt * Mathf.PI * 2f;
+        if (_bobLateralPhase > Mathf.PI * 2f) _bobLateralPhase -= Mathf.PI * 2f;
+
+        float intensity = flapping ? 1f : Mathf.Clamp01(speedNorm * 2f);
         float wave = Mathf.Sin(_bobPhase);
+        float lateralWave = Mathf.Sin(_bobLateralPhase);
 
-        // Trục lên/down lấy theo hướng nhìn để lắc đúng chiều khi nghiêng đầu.
-        Vector3 up = trackedCamera.transform.up;
-        _bobOffset = up * (wave * amplitude);
-        _bobRollOffset = wave * bobRollAmplitude;
+        // === 1. VR-SAFE HEAD MICRO-BOB (dao dong phuong dung sieu nho 2.5mm, 0% chong mat) ===
+        _bobHeadOffset = wave * headBobAmplitude * intensity;
+
+        // === 2. VISUAL ROOT OFFSET (chi hien o ria man hinh, than/canh ong) ===
+        float verticalBob = wave * bobAmplitude * intensity;
+        float lateralBob = lateralWave * bobLateralAmplitude * intensity;
+        _bobVisualOffset = new Vector3(lateralBob, verticalBob, 0f);
+        _bobVisualRoll = wave * bobRollAmplitude * intensity;
+
+        // === 3. FOV MICRO-PULSE (rat nhe, cam nhan o ngoai vi tao cam giac gio) ===
+        _bobFovOffset = wave * bobFovPulse * intensity;
     }
+
+    // =========================================================================
+    // UpdateControllerHaptics - Rung tay cam VR theo nhip canh va toc do bay.
+    //   Tay cam rung la cach CHONG SAY XE tot nhat trong VR: nao nhan duoc
+    //   phan hoi xuc giac chan thuc ma he thong tien dinh tai trong khong bi anh huong.
+    // =============================================================================
+    private void UpdateControllerHaptics()
+    {
+        if (!enableControllerHaptics) return;
+
+        _hapticTimer -= Time.deltaTime;
+        if (_hapticTimer > 0f) return;
+        _hapticTimer = 0.05f; // ~20 Hz nhip rung phu hop voi OpenXR
+
+        float speedNorm = bee != null ? bee.SpeedNormalized : 0f;
+        bool flapping = bee != null && bee.IsFlapping;
+
+        if (speedNorm < 0.02f && !flapping) return;
+
+        float amp = Mathf.Lerp(hoverHapticAmplitude, maxSpeedHapticAmplitude, speedNorm);
+        if (flapping) amp = Mathf.Min(1f, amp + flapHapticBoost);
+
+        if (amp > 0.01f)
+        {
+            SendHaptic(XRNode.LeftHand, amp, 0.045f);
+            SendHaptic(XRNode.RightHand, amp, 0.045f);
+        }
+    }
+
+    /// <summary>Gui xung rung haptic toi tay cam VR.</summary>
+    public static void SendHaptic(XRNode node, float amplitude, float duration)
+    {
+        InputDevice dev = InputDevices.GetDeviceAtXRNode(node);
+        if (dev.isValid)
+        {
+            dev.SendHapticImpulse(0u, Mathf.Clamp01(amplitude), duration);
+        }
+    }
+
 
     // =========================================================================
     // UpdateFov - FOV rong hon khi bay nhanh, tạo cảm giác tốc độ.
     // =============================================================================
     private void UpdateFov()
     {
+        if (trackedCamera == null) return;
+
+        // Khi mở rộng góc nhìn VR tự do:
+        // Kính thực tế ảo (Quest 3) có trường nhìn vật lý ~110 độ do thấu kính quyết định qua OpenXR.
+        // Nếu thiết bị VR đang hoạt động, không ép ghi đè camera.fieldOfView để góc nhìn được mở rộng tối đa tự nhiên 100%.
+        bool isVrActive = XRSettings.isDeviceActive ||
+            (XRSettings.enabled && !string.IsNullOrEmpty(XRSettings.loadedDeviceName) &&
+             !XRSettings.loadedDeviceName.ToLowerInvariant().Contains("mock"));
+
+        if (unlockWideFov && isVrActive)
+        {
+            return;
+        }
+
         float speedNorm = bee != null ? bee.SpeedNormalized : 0f;
-        float desired = targetFov + speedNorm * fovSpeedBoost;
+        float baseFov = unlockWideFov ? Mathf.Max(targetFov, 105f) : targetFov;
+        float desired = baseFov + speedNorm * fovSpeedBoost + _bobFovOffset;
 
         _currentFov = Mathf.Lerp(_currentFov, desired,
             1f - Mathf.Exp(-fovSmoothSpeed * Time.deltaTime));
@@ -487,6 +619,10 @@ public class BeeCameraRig : MonoBehaviour
         // nằm đúng chỗ trên màn hình dù người chơi có nghiêng đầu.
         Vector3 targetPosition = trackedCamera.transform.TransformPoint(visualOffset);
 
+        // === Cong bob offset vao visualRoot (KHONG vao XR Origin) ===
+        // Bob chi hien o ngoai vi (than/canh ong), camera hoan toan dung yen.
+        targetPosition += trackedCamera.transform.TransformDirection(_bobVisualOffset);
+
         if (visualInstantFollow)
         {
             visualRoot.position = targetPosition;
@@ -501,8 +637,10 @@ public class BeeCameraRig : MonoBehaviour
         }
 
         // Goc: tron giua huong bay cua ong va huong camera de canh khong "dinh".
+        // Cong bob roll vao day (chi xoay visual, khong xoay XR Origin).
         Quaternion cameraRotation = trackedCamera.transform.rotation * Quaternion.Euler(visualEulerOffset);
-        visualRoot.rotation = Quaternion.Slerp(transform.rotation, cameraRotation, 0.5f);
+        Quaternion baseRot = Quaternion.Slerp(transform.rotation, cameraRotation, 0.5f);
+        visualRoot.rotation = baseRot * Quaternion.Euler(0f, 0f, _bobVisualRoll);
     }
 
     // =========================================================================
@@ -541,9 +679,10 @@ public class BeeCameraRig : MonoBehaviour
             if (behaviour is BeeController || behaviour is BeeFlapping) continue;
 
             string typeName = behaviour.GetType().Name;
+            // Chỉ tắt di chuyển và dịch chuyển (tránh kéo người chơi ngược hướng bay).
+            // KHÔNG tắt TurnProvider để người chơi luôn có quyền xoay góc nhìn tự do bằng tay cầm.
             bool isLocomotion =
                 typeName.Contains("MoveProvider") ||
-                typeName.Contains("TurnProvider") ||
                 typeName.Contains("TeleportationProvider") ||
                 typeName.Contains("NavigationProvider") ||
                 typeName.Contains("CharacterControllerDriver");
@@ -572,29 +711,40 @@ public class BeeCameraRig : MonoBehaviour
         // --- Che do nhin: chinh nguoi choi la con ong ---
         viewMode = ViewMode.FirstPersonBee;
 
-        // --- Khung nhin: rong de thay ca mat nuoc + hoa sen hai ben nhu anh ---
-        targetFov = 82f;
+        // --- Khung nhin: mo rong toi da cho goc nhin toan canh thoang dang ---
+        targetFov = 105f;
+        unlockWideFov = true;
         fovSpeedBoost = 6f;
         fovSmoothSpeed = 6f;
 
-        // --- Rig theo ong: uu tien chong say ---
+        // --- Rig theo ong: uu tien chong say, chan troi luon phang va tu do ---
         applyYawToRig = true;
         applyPitchToRig = false;   // chi nhin bang dau -> an toan nhat trong VR
         pitchInfluence = 0.35f;
-        applyBankToRig = true;
+        applyBankToRig = false;    // Tat nghieng rig de goc nhin tu do 100% khong bi nghieng lac
         bankInfluence = 0.5f;
-        applySpeedPitchDown = true;
-        speedPitchDown = 10f;
+        applySpeedPitchDown = false;
+        speedPitchDown = 0f;
         smoothRigPosition = false;
 
-        // --- Rung nhe khi dap canh (nho la du tao cam giac "nhip thoi") ---
-        bobAmplitude = 0.008f;
-        bobFrequency = 12f;
-        bobRollAmplitude = 0.8f;
+        // --- Rung vi mo an toan trong VR (Head Bob + Controller Haptics) ---
+        enableHeadBob = true;
+        headBobAmplitude = 0.0028f;
+        enableControllerHaptics = true;
+        hoverHapticAmplitude = 0.05f;
+        maxSpeedHapticAmplitude = 0.22f;
+        flapHapticBoost = 0.16f;
+
+        bobAmplitude = 0.006f;
+        bobFrequency = 14f;
+        bobRollAmplitude = 0.6f;
+        bobFovPulse = 0.45f;
+        bobLateralAmplitude = 0.001f;
+        bobLateralFrequency = 24f;
 
         // --- An than, giu 2 canh o day khung nhin nhu anh mau ---
         hideBodyInFirstPerson = true;
-        showWingsInFirstPerson = true;
+        showWingsInFirstPerson = false;
         visualOffset = new Vector3(0f, -0.12f, 0.34f);
         visualEulerOffset = new Vector3(8f, 0f, 0f);
         visualFollowLag = 0.05f;

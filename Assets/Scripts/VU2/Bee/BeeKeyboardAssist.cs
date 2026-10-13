@@ -109,7 +109,7 @@ public class BeeKeyboardAssist : MonoBehaviour
     private float _debugTimer;
 
     [Tooltip("Tu tat BeeAltitudeHold (script ghim ong o cao 1.5m) - bat buoc de bay len duoc.")]
-    public bool disableAltitudeHold = true;
+    public bool disableAltitudeHold = false;
 
     private readonly List<Behaviour> _disabledBehaviours = new List<Behaviour>();
 
@@ -413,7 +413,7 @@ public class BeeKeyboardAssist : MonoBehaviour
         if (controlScheme == ControlScheme.VRController)
         {
             GUI.Label(new Rect(10, 46, 760, 20),
-                "VR: Trigger (tay cam) = voc canh de bay | Thumbstick = lai huong. " +
+                "VR: Quet ray qua thanh ngang = voc canh | Trigger = giu de bay | Thumbstick = lai huong. " +
                 (HasXrController() ? "" : "(Khong thay tay cam XR -> dang dung WASD/Space)"));
         }
         else

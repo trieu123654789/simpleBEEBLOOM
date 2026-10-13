@@ -173,18 +173,24 @@ public class BeeFlapping : MonoBehaviour
         if (flapAudioSource == null)
         {
             flapAudioSource = GetComponent<AudioSource>();
+            if (flapAudioSource == null)
+            {
+                flapAudioSource = gameObject.AddComponent<AudioSource>();
+            }
         }
 
-        if (flapAudioSource == null) return;
-
-        if (flapClip != null)
+        if (flapClip == null)
         {
-            flapAudioSource.clip = flapClip;
+            flapClip = GenerateProceduralBeeBuzzClip();
         }
+
+        flapAudioSource.clip = flapClip;
         flapAudioSource.loop = true;
         flapAudioSource.playOnAwake = false;
-        flapAudioSource.volume = flapVolume;
+        flapAudioSource.spatialBlend = 0.5f; // dung hoa 3D de ro tieng vo ve trong kinh VR
+        flapAudioSource.volume = flapVolume * 0.4f;
     }
+
 
     private void Update()
     {
@@ -310,14 +316,57 @@ public class BeeFlapping : MonoBehaviour
         if (flapAudioSource == null) return;
 
         float speedNorm = _bee != null ? _bee.SpeedNormalized : 0f;
+        bool flapping = _bee != null && _bee.IsFlapping;
 
-        // Chỉ phát khi đang bay hoặc vừa dừng (tránh tiếng ù ù khi đứng yên).
+        if (!flapAudioSource.isPlaying && (speedNorm > 0.02f || flapping))
+        {
+            flapAudioSource.Play();
+        }
+
         if (flapAudioSource.isPlaying)
         {
-            flapAudioSource.pitch = Mathf.Lerp(minPitch, maxPitch, speedNorm);
-            flapAudioSource.volume = flapVolume * Mathf.Lerp(0.5f, 1f, speedNorm);
+            float targetPitch = Mathf.Lerp(minPitch, maxPitch, speedNorm);
+            if (flapping) targetPitch += 0.15f;
+            flapAudioSource.pitch = Mathf.Lerp(flapAudioSource.pitch, targetPitch, 8f * Time.deltaTime);
+
+            float targetVol = flapping
+                ? flapVolume
+                : Mathf.Lerp(flapVolume * 0.35f, flapVolume, speedNorm);
+
+            flapAudioSource.volume = Mathf.MoveTowards(flapAudioSource.volume, targetVol, 1.5f * Time.deltaTime);
         }
     }
+
+    /// <summary>Tổng hợp âm thanh vo ve cánh ong (bzzz) theo sóng hài tự nhiên của ong thật.</summary>
+    private static AudioClip GenerateProceduralBeeBuzzClip()
+    {
+        int sampleRate = 22050;
+        float duration = 1.0f;
+        int samples = (int)(sampleRate * duration);
+        float[] data = new float[samples];
+        float fundamental = 195f; // Tần số vỗ cánh cơ bản 195 Hz của ong mật
+
+        for (int i = 0; i < samples; i++)
+        {
+            float t = (float)i / sampleRate;
+            float phase = t * fundamental * 2f * Mathf.PI;
+            // Sóng hài tự nhiên của cánh ong vỗ
+            float s = 0f;
+            s += Mathf.Sin(phase) * 0.42f;
+            s += Mathf.Sin(phase * 2f) * 0.28f;
+            s += Mathf.Sin(phase * 3f) * 0.16f;
+            s += Mathf.Sin(phase * 4f) * 0.08f;
+            s += Mathf.Sin(phase * 5f) * 0.04f;
+            // Thêm chút nhám vo ve đặc trưng của côn trùng
+            s += (Mathf.PingPong(phase * 0.5f, 1f) - 0.5f) * 0.12f;
+            data[i] = s * 0.32f;
+        }
+
+        AudioClip clip = AudioClip.Create("ProceduralBeeBuzz", samples, 1, sampleRate, false);
+        clip.SetData(data, 0);
+        return clip;
+    }
+
 
     // =========================================================================
     // PUBLIC API / HÀM CÔNG KHAI

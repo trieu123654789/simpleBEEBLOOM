@@ -37,6 +37,12 @@ public class BeeController : MonoBehaviour
     [Tooltip("Tự động đọc trực tiếp phần cứng VR Controller (Thumbstick, Trigger, Buttons) kể cả khi Action chưa bind.")]
     public bool enableDirectXrInput = true;
 
+    [Tooltip("Cho phép đọc Joystick di chuyển (Thumbstick) từ VR Controller (luôn bật).")]
+    public bool enableDirectXrMovement = true;
+
+    [Tooltip("Cho phép Trigger/Grip bay trực tiếp (tắt khi dùng quẹt thanh ngang SwipeFlap).")]
+    public bool enableDirectXrFlap = true;
+
     [Tooltip("Cho phép lắc/vung tay cầm để đập cánh bay (VR Shake Flap).")]
     public bool enableShakeToFlap = true;
 
@@ -69,6 +75,26 @@ public class BeeController : MonoBehaviour
     [Tooltip("Độ cao trần tối đa cho phép bay (m). 0 = không giới hạn.")]
     public float maxFlightAltitude = 20f;
 
+    [Header("Bee Buoyancy & Hover / Độ nổi & Lơ lửng của ong")]
+    [Tooltip("Bật cơ chế lơ lửng tự nhiên của loài ong (không rơi tụt xuống đất khi buông tay, ong tự cân bằng bồng bềnh).")]
+    public bool enableBeeHover = true;
+
+    [Tooltip("Tốc độ hạ độ cao nhẹ khi thả nút bay (m/s). 0.15 - 0.35m/s = lướt êm tự nhiên như côn trùng.")]
+    [Range(0f, 2f)]
+    public float hoverDescentRate = 0.22f;
+
+    [Tooltip("Biên độ dao động thở bồng bềnh khi ong lơ lửng tại chỗ (m).")]
+    [Range(0f, 0.05f)]
+    public float hoverBobAmplitude = 0.015f;
+
+    [Tooltip("Tần số dao động bồng bềnh khi lơ lửng (Hz).")]
+    [Range(0.5f, 3f)]
+    public float hoverBobFrequency = 1.5f;
+
+    [Tooltip("Độ rập rình vi mô tự nhiên của loài ong (Micro-wander) tránh cảm giác đứng hình cơ học.")]
+    [Range(0f, 0.01f)]
+    public float organicJitterScale = 0.0025f;
+
     [Header("Horizontal Movement / Di chuyển tới - lui bằng Joystick")]
     [Tooltip("Tốc độ tiến tối đa khi đẩy joystick về phía trước (m/s).")]
     public float moveSpeed = 6f;
@@ -89,8 +115,8 @@ public class BeeController : MonoBehaviour
     [Tooltip("Gia tốc tăng tốc khi gạt joystick / bấm phím (m/s^2).")]
     public float moveAcceleration = 12f;
 
-    [Tooltip("Độ hãm phanh khi thả joystick / nhả phím (m/s^2).")]
-    public float moveDeceleration = 9f;
+    [Tooltip("Độ hãm phanh khi thả joystick / nhả phím (m/s^2). Càng lớn ong dừng càng dứt khoát như côn trùng thật.")]
+    public float moveDeceleration = 14f;
 
     [Tooltip("Hệ số giảm tốc khi không di chuyển.")]
     [Range(0.1f, 5f)]
@@ -204,7 +230,7 @@ public class BeeController : MonoBehaviour
                 return true;
 
             // 2. Đọc trực tiếp phần cứng VR Controller (Trigger / Grip / Nút A, B, X, Y)
-            if (enableDirectXrInput)
+            if (enableDirectXrInput && enableDirectXrFlap)
             {
                 UpdateXrDevices();
                 if (CheckXrFlapInput(_rightHand) || CheckXrFlapInput(_leftHand))
@@ -229,6 +255,23 @@ public class BeeController : MonoBehaviour
 
     /// <summary>Đẩy thẳng lên/xuống theo trục Y (m/s²).</summary>
     public float ExternalVerticalThrust { get; set; }
+
+    /// <summary>Hệ số điều chỉnh trọng lực từ bên ngoài (cho trợ lực bay / lướt êm).</summary>
+    public float ExternalGravityScale { get; set; } = 1.0f;
+
+    /// <summary>Bật hãm phanh mềm khi dừng vỗ cánh (tránh rơi đột ngột).</summary>
+    public bool SoftUpwardDamping { get; set; } = true;
+
+    /// <summary>Thêm xung lực bay lên tức thời theo trục Y (dành cho vỗ cánh dạng nhịp / swipe flap trợ lực vừa phải).</summary>
+    public void AddVerticalImpulse(float impulse)
+    {
+        if (impulse <= 0f) return;
+        // Triệt tiêu đà rơi vừa phải, tạo lực nhấc tự nhiên theo từng nhịp đập cánh
+        if (_verticalVelocity < 0f)
+            _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, 0.4f, impulse * 1.6f);
+        else
+            _verticalVelocity = Mathf.Min(maxAscendSpeed * 0.7f, _verticalVelocity + impulse * 0.7f);
+    }
 
     /// <summary>Nâng/cúi mũi ong thêm góc (độ).</summary>
     public void AddPitch(float degrees)
@@ -379,19 +422,56 @@ public class BeeController : MonoBehaviour
     /// - Cần xoay phụ (turnAction hoặc Right Thumbstick)
     /// - Bàn phím máy tính (phím W, A, S, D hoặc Mũi tên)
     /// Y = đi tới / đi lui, X = rẽ trái / rẽ phải / lách ngang.
+    /// <summary>
+    /// Đọc input điều hướng di chuyển 2D (Left Stick hoặc WASD).
+    /// Y = đi tới / đi lui, X = lách ngang (Strafe) / bẻ lái phụ.
     /// </summary>
     public Vector2 ReadCombinedMovementInput()
     {
         Vector2 input = Vector2.zero;
 
-        // 1. Đọc từ tay cầm VR (steerAction)
-        if (steerAction.action != null && steerAction.action.enabled)
+        // 1. Đọc từ tay cầm VR (steerAction nếu đã bind)
+        if (steerAction.action != null)
         {
-            input = steerAction.action.ReadValue<Vector2>();
+            if (!steerAction.action.enabled)
+            {
+                try { steerAction.action.Enable(); } catch { }
+            }
+            if (steerAction.action.enabled)
+            {
+                input = steerAction.action.ReadValue<Vector2>();
+            }
         }
 
-        // 1b. Fallback trực tiếp từ phần cứng VR Controller (Left Thumbstick)
-        if (enableDirectXrInput && input.sqrMagnitude < 0.01f)
+        // 1b. Fallback: Đọc trực tiếp từ Input System thiết bị XRController (OpenXR, Simulator, Quest)
+        if (input.sqrMagnitude < 0.01f)
+        {
+            var leftStick = InputSystem.FindControl("<XRController>{LeftHand}/thumbstick") as UnityEngine.InputSystem.Controls.Vector2Control;
+            if (leftStick != null)
+            {
+                Vector2 val = leftStick.ReadValue();
+                if (val.sqrMagnitude > 0.01f) input = val;
+            }
+
+            if (input.sqrMagnitude < 0.01f)
+            {
+                var anyStick = InputSystem.FindControl("<XRController>/thumbstick") as UnityEngine.InputSystem.Controls.Vector2Control;
+                if (anyStick != null)
+                {
+                    Vector2 val = anyStick.ReadValue();
+                    if (val.sqrMagnitude > 0.01f) input = val;
+                }
+            }
+
+            if (input.sqrMagnitude < 0.01f && Gamepad.current != null)
+            {
+                Vector2 gpStick = Gamepad.current.leftStick.ReadValue();
+                if (gpStick.sqrMagnitude > 0.01f) input = gpStick;
+            }
+        }
+
+        // 1c. Fallback trực tiếp từ phần cứng VR Controller (Legacy XR subsystem)
+        if ((enableDirectXrMovement || enableDirectXrInput) && input.sqrMagnitude < 0.01f)
         {
             UpdateXrDevices();
             if (_leftHand.isValid && _leftHand.TryGetFeatureValue(XRCommonUsages.primary2DAxis, out Vector2 stick))
@@ -400,37 +480,17 @@ public class BeeController : MonoBehaviour
             }
         }
 
-        // 2. Đọc bổ sung từ cần xoay tay cầm VR phải nếu có
-        if (turnAction.action != null && turnAction.action.enabled)
-        {
-            Vector2 turn = turnAction.action.ReadValue<Vector2>();
-            if (Mathf.Abs(turn.x) > 0.1f)
-            {
-                input.x = turn.x;
-            }
-        }
-        else if (enableDirectXrInput && _rightHand.isValid)
-        {
-            if (_rightHand.TryGetFeatureValue(XRCommonUsages.primary2DAxis, out Vector2 rightStick))
-            {
-                if (Mathf.Abs(rightStick.x) > 0.1f)
-                {
-                    input.x = rightStick.x;
-                }
-            }
-        }
-
-        // 3. Fallback / Test trực tiếp bằng bàn phím (W, A, S, D):
+        // 2. Fallback / Test trực tiếp bằng bàn phím (W, A, S, D):
         if (enableKeyboardInput && Keyboard.current != null)
         {
             var k = Keyboard.current;
             float kX = 0f;
             float kY = 0f;
 
-            if (k.wKey.isPressed || k.upArrowKey.isPressed) kY += 1f;
-            if (k.sKey.isPressed || k.downArrowKey.isPressed) kY -= 1f;
-            if (k.aKey.isPressed || k.leftArrowKey.isPressed) kX -= 1f;
-            if (k.dKey.isPressed || k.rightArrowKey.isPressed) kX += 1f;
+            if (k.wKey.isPressed) kY += 1f;
+            if (k.sKey.isPressed) kY -= 1f;
+            if (k.aKey.isPressed) kX -= 1f;
+            if (k.dKey.isPressed) kX += 1f;
 
             if (Mathf.Abs(kX) > 0.01f || Mathf.Abs(kY) > 0.01f)
             {
@@ -440,6 +500,78 @@ public class BeeController : MonoBehaviour
         }
 
         return ApplyDeadzoneAndResponse(input);
+    }
+
+    /// <summary>
+    /// Đọc input xoay góc nhìn tự do 360 độ (Yaw) từ:
+    /// - Tay cầm VR phải (turnAction hoặc Right Thumbstick phần cứng)
+    /// - Gamepad (Right Stick X)
+    /// - Bàn phím (Phím Q/E hoặc Mũi tên Trái/Phải)
+    /// </summary>
+    public float ReadCombinedTurnInput()
+    {
+        float turn = 0f;
+
+        // 1. Đọc từ turnAction (nếu đã bind vào XRI RightHand Turn / SnapTurn)
+        if (turnAction.action != null)
+        {
+            if (!turnAction.action.enabled)
+            {
+                try { turnAction.action.Enable(); } catch { }
+            }
+            if (turnAction.action.enabled)
+            {
+                Vector2 val = turnAction.action.ReadValue<Vector2>();
+                if (Mathf.Abs(val.x) > 0.05f) turn = val.x;
+            }
+        }
+
+        // 2. Fallback trực tiếp Input System thiết bị XRController tay phải
+        if (Mathf.Abs(turn) < 0.05f)
+        {
+            var rightStick = InputSystem.FindControl("<XRController>{RightHand}/thumbstick") as UnityEngine.InputSystem.Controls.Vector2Control;
+            if (rightStick != null)
+            {
+                Vector2 val = rightStick.ReadValue();
+                if (Mathf.Abs(val.x) > 0.05f) turn = val.x;
+            }
+        }
+
+        // 3. Fallback Legacy XR InputDevice tay phải
+        if (Mathf.Abs(turn) < 0.05f && (enableDirectXrMovement || enableDirectXrInput))
+        {
+            UpdateXrDevices();
+            if (_rightHand.isValid && _rightHand.TryGetFeatureValue(XRCommonUsages.primary2DAxis, out Vector2 rStick))
+            {
+                if (Mathf.Abs(rStick.x) > 0.05f) turn = rStick.x;
+            }
+        }
+
+        // 4. Fallback Gamepad rightStick
+        if (Mathf.Abs(turn) < 0.05f && Gamepad.current != null)
+        {
+            float gpTurn = Gamepad.current.rightStick.x.ReadValue();
+            if (Mathf.Abs(gpTurn) > 0.05f) turn = gpTurn;
+        }
+
+        // 5. Fallback Bàn phím: Q (quay trái), E (quay phải) hoặc phím Mũi tên Trái / Phải
+        if (enableKeyboardInput && Keyboard.current != null)
+        {
+            var k = Keyboard.current;
+            float kTurn = 0f;
+            if (k.qKey.isPressed || k.leftArrowKey.isPressed) kTurn -= 1f;
+            if (k.eKey.isPressed || k.rightArrowKey.isPressed) kTurn += 1f;
+
+            if (Mathf.Abs(kTurn) > 0.05f) turn = kTurn;
+        }
+
+        // Áp dụng deadzone
+        if (Mathf.Abs(turn) < 0.12f) return 0f;
+
+        // Curve response
+        float sign = Mathf.Sign(turn);
+        float scaled = (Mathf.Abs(turn) - 0.12f) / (1f - 0.12f);
+        return sign * Mathf.Pow(Mathf.Clamp01(scaled), 1f / stickResponse);
     }
 
     /// <summary>
@@ -468,6 +600,13 @@ public class BeeController : MonoBehaviour
 
     private void Awake()
     {
+        // Chống độn thổ: nếu vị trí ban đầu bị lưu lệch xuống lòng đất hoặc lọt vào tường ngoài
+        if (transform.position.y < 0.5f || transform.position.z < -2f)
+        {
+            transform.position = new Vector3(3.84f, 1.60f, 3.46f);
+            transform.rotation = Quaternion.identity;
+        }
+
         _stamina = maxStamina;
         _yaw = transform.eulerAngles.y;
         _pitch = 0f;
@@ -502,24 +641,29 @@ public class BeeController : MonoBehaviour
     }
 
     // =========================================================================
-    // UpdateSteering - Joystick X hoặc Phím A/D xoay hướng YAW & nghiêng thân BANK
+    // UpdateSteering - Cần xoay phải / Phím Q-E xoay góc nhìn 360 độ tự do
     // =========================================================================
     private void UpdateSteering()
     {
         if (ExternalSteeringLocked) return;
 
-        Vector2 stick = ReadCombinedMovementInput();
+        float turnVal = ReadCombinedTurnInput();
+        Vector2 moveStick = ReadCombinedMovementInput();
+
+        // Ưu tiên cần xoay tay phải / phím Q-E để quay góc nhìn 360 độ tự do
+        // Nếu không xoay cần phải, cần trái gạt ngang vẫn hỗ trợ rẽ hướng tự nhiên
+        float effectiveTurn = Mathf.Abs(turnVal) > 0.05f ? turnVal : moveStick.x;
 
         // Giảm nhẹ tốc độ quay khi đang bay nhanh
         float speedRatio = Mathf.Clamp01(Speed / Mathf.Max(0.1f, moveSpeed));
         float turnPenalty = Mathf.Lerp(1f, 1f - speedTurnPenalty, speedRatio);
 
-        // Xoay hướng nhìn ngang (Yaw) khi gạt cần trái/phải hoặc bấm A/D
-        float yawDelta = stick.x * yawSpeed * turnPenalty * Time.deltaTime;
+        // Xoay hướng nhìn ngang (Yaw)
+        float yawDelta = effectiveTurn * yawSpeed * turnPenalty * Time.deltaTime;
         _yaw = Mathf.Repeat(_yaw + yawDelta, 360f);
 
         // Nghiêng thân ong (Bank) theo độ rẽ
-        float targetBank = -stick.x * maxBankAngle;
+        float targetBank = -effectiveTurn * maxBankAngle;
         _bank = Mathf.Lerp(_bank, targetBank, 1f - Mathf.Exp(-bankSmoothSpeed * Time.deltaTime));
     }
 
@@ -594,17 +738,30 @@ public class BeeController : MonoBehaviour
         Speed = horizontalVelocity.magnitude;
 
         // ---------------------------------------------------------------------
-        // 2. DI CHUYỂN DỌC TRỤC Y (Nhấn nút bay / Space = bay lên; Thả = rơi nhẹ / lơ lửng)
+        // 2. DI CHUYỂN DỌC TRỤC Y (Nhấn nút bay = bay lên; Thả = lơ lửng bồng bềnh như ong thật)
         // ---------------------------------------------------------------------
         if (IsFlapping)
         {
             float liftAcc = flapLift * ExternalFlapThrustScale;
             _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, maxAscendSpeed, liftAcc * Time.deltaTime);
         }
+        else if (enableBeeHover)
+        {
+            // Ong thật có độ nổi tự nhiên cực lớn: khi không vỗ cánh mạnh, ong lướt êm hoặc lơ lửng
+            // Chỉ hạ độ cao nhanh khi cố ý chúi mũi xuống
+            float intentionalDive = (_pitch > 12f) ? Mathf.Clamp01((_pitch - 12f) / 30f) : 0f;
+            float targetSink = Mathf.Lerp(-hoverDescentRate, -maxFallSpeed * 0.7f, intentionalDive);
+
+            float effectiveGravity = gravity * Mathf.Max(0f, ExternalGravityScale);
+            float damping = (_verticalVelocity > 0f) ? (effectiveGravity * (SoftUpwardDamping ? 1.4f : 3.0f)) : (effectiveGravity * 0.8f);
+            _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, targetSink, damping * Time.deltaTime);
+        }
         else
         {
-            // Thả nút bay: triệt tiêu nhanh đà bay lên (hãm phanh), sau đó rơi từ từ theo trọng lực
-            float damping = (_verticalVelocity > 0f) ? (gravity * 3f) : gravity;
+            // Chế độ rơi tự do thông thường
+            float effectiveGravity = gravity * Mathf.Max(0f, ExternalGravityScale);
+            float dampingScale = SoftUpwardDamping ? 1.0f : 3.0f;
+            float damping = (_verticalVelocity > 0f) ? (effectiveGravity * dampingScale) : effectiveGravity;
             _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, -maxFallSpeed, damping * Time.deltaTime);
         }
 
@@ -624,10 +781,26 @@ public class BeeController : MonoBehaviour
         }
 
         // ---------------------------------------------------------------------
-        // 3. TỔNG HỢP VẬN TỐC & KIỂM TRA VA CHẠM MẶT ĐẤT
+        // 3. TỔNG HỢP VẬN TỐC, RẬP RÌNH TỰ NHIÊN & KIỂM TRA VA CHẠM MẶT ĐẤT
         // ---------------------------------------------------------------------
         Vector3 velocity = horizontalVelocity + Vector3.up * _verticalVelocity;
+
+        // Thở bồng bềnh khi ong lơ lửng tại chỗ
+        if (enableBeeHover && Speed < 0.6f && Mathf.Abs(_verticalVelocity) < 0.4f)
+        {
+            float hoverFloat = Mathf.Sin(Time.time * hoverBobFrequency * Mathf.PI * 2f) * (hoverBobAmplitude * 0.6f);
+            velocity += Vector3.up * hoverFloat;
+        }
+
         Vector3 next = transform.position + velocity * Time.deltaTime;
+
+        // Rập rình vi mô tự nhiên của côn trùng (organic micro-wander)
+        if (organicJitterScale > 0.0001f)
+        {
+            float jX = (Mathf.PerlinNoise(Time.time * 3f, 0.1f) - 0.5f) * organicJitterScale;
+            float jY = (Mathf.PerlinNoise(0.1f, Time.time * 3f) - 0.5f) * organicJitterScale;
+            next += yawRotation * new Vector3(jX, jY, 0f);
+        }
 
         if (groundCollision)
         {
@@ -640,6 +813,7 @@ public class BeeController : MonoBehaviour
         }
 
         transform.position = next;
+
 
         // ---------------------------------------------------------------------
         // 4. DYNAMIC PITCH (Mũi ong tự động hơi chúi khi tiến, ngước khi bay lên)

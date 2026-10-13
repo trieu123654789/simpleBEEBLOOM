@@ -74,6 +74,10 @@ public class BeeHud : MonoBehaviour
     [Tooltip("Font chu HUD. De trong se dung font mac dinh cua TextMeshPro.")]
     public TMP_FontAsset font;
 
+    [Header("Swipe Hint / Chu goi y vo canh")]
+    [Tooltip("Chu tren goi y goc duoi - co che vo canh moi: quet ray qua thanh (BeeSwipeFlap).")]
+    public string flapHintMain = "Quẹt để bay";
+
     // =========================================================================
     // DATA / DU LIEU
     // =========================================================================
@@ -649,7 +653,7 @@ public class BeeHud : MonoBehaviour
 
         // Chu huong dan.
         NewText(root, "Label", corner, corner, new Vector2(0f, 34f), new Vector2(212f, 30f),
-            "Vỗ cánh để bay", 22f, textDimColor, TextAlignmentOptions.Center);
+            flapHintMain, 22f, textDimColor, TextAlignmentOptions.Center);
         NewText(root, "Side", corner, corner, new Vector2(0f, 6f), new Vector2(212f, 28f),
             isLeft ? "(trái)" : "(phải)", 22f, textDimColor, TextAlignmentOptions.Center);
     }

@@ -27,3 +27,8 @@ Thumbs.db
 *.lnk
 UpgradeLog.htm
 *_BurstDebugInformation_DoNotShip/
+DocScreenshots/
+Screenshots/
+node_modules/
+.codegraph/
+.omo/

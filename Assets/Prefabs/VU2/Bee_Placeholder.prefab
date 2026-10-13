@@ -80,6 +80,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -101,9 +106,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1134503733959356840
 GameObject:
@@ -163,6 +170,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -184,9 +196,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3240357924805421725
 GameObject:
@@ -246,6 +260,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,9 +286,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3328753508023534985
 GameObject:
@@ -324,6 +345,15 @@ MonoBehaviour:
   flapFrequency: 12
   flapAngle: 55
   restAngle: 12
+  autoFlapWhileFlying: 1
+  autoFlapSpeedThreshold: 0.06
+  idleFlap: 1
+  idleFlapFrequency: 2.2
+  idleFlapAngle: 24
+  bodyBobAmplitude: 0.012
+  glideFoldAngle: 26
+  ExternalSpeedRatio: -1
+  ExternalFlapBoost: -1
   flapSmoothing: 20
   fullSpeedPitchDown: 25
   body: {fileID: 3061526204104178827}
@@ -345,17 +375,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   steerAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
-      m_Name: Steer
+      m_Name: Left Hand Move
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 0abc3fb4-65da-4576-941e-222ffdec1a6f
+      m_Id: fa65baa9-ca16-4d92-8425-3195462c2aea
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+      m_Priority: 0
+    m_Reference: {fileID: 6972639530819350904, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  turnAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Right Hand Move
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 7c956f1d-8187-437c-8dc4-afdbf8424b34
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+      m_Priority: 0
+    m_Reference: {fileID: -8198699208435500284, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   flapAction:
     m_UseReference: 0
     m_Action:
@@ -367,19 +411,41 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
+      m_Priority: 0
     m_Reference: {fileID: 0}
-  flapThrust: 18
-  maxSpeed: 6
+  enableKeyboardInput: 1
+  enableDirectXrInput: 1
+  enableDirectXrMovement: 1
+  enableDirectXrFlap: 0
+  enableShakeToFlap: 0
+  shakeThreshold: 3
+  flapLift: 14
+  maxAscendSpeed: 4.5
+  gravity: 6
+  maxFallSpeed: 4
+  maxFlightAltitude: 20
+  moveSpeed: 6
+  reverseSpeed: 3.5
+  strafeSpeed: 3
+  moveAcceleration: 12
+  moveDeceleration: 9
+  glideDrag: 1.6
   yawSpeed: 180
   pitchSpeed: 90
   maxPitchUp: 40
   maxPitchDown: 60
-  glideDrag: 1.6
-  gravity: 6
-  stickResponse: 1.2
-  speedTurnPenalty: 0.5
+  dynamicPitch: 1
   maxBankAngle: 35
   bankSmoothSpeed: 6
+  stickResponse: 1.2
+  speedTurnPenalty: 0.5
+  groundCollision: 1
+  groundClearance: 0.35
+  bodyRadius: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  groundFriction: 5
   maxStamina: 100
   staminaDrainPerSecond: 22
   staminaRegenPerSecond: 14
@@ -398,13 +464,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewMode: 0
-  targetFov: 82
+  targetFov: 105
   eyeOffset: {x: 0, y: 0.08, z: 0.16}
   eyeEulerOffset: {x: 0, y: 0, z: 0}
   applyYawToRig: 1
   applyPitchToRig: 0
   pitchInfluence: 0.4
-  applyBankToRig: 1
+  applyBankToRig: 0
   bankInfluence: 0.55
   applySpeedPitchDown: 1
   speedPitchDown: 10
@@ -414,7 +480,7 @@ MonoBehaviour:
   bobFrequency: 12
   bobRollAmplitude: 0.8
   hideBodyInFirstPerson: 1
-  showWingsInFirstPerson: 1
+  showWingsInFirstPerson: 0
   visualOffset: {x: 0, y: -0.13, z: 0.3}
   visualEulerOffset: {x: 6, y: 0, z: 0}
   visualFollowLag: 0.05
@@ -424,8 +490,8 @@ MonoBehaviour:
   fovSpeedBoost: 6
   playerRig: {fileID: 0}
   trackedCamera: {fileID: 0}
-  bee: {fileID: 0}
-  visualRoot: {fileID: 0}
+  bee: {fileID: 7681252487176283209}
+  visualRoot: {fileID: 522163445992678562}
 --- !u!1 &7071906584631632733
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,6 +671,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -626,7 +697,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
