@@ -52,28 +52,44 @@ public class BeeSwipeFlap : MonoBehaviour
     [Tooltip("Kích thước tay proxy nếu bật (m).")]
     public Vector3 handProxyScale = new Vector3(0.05f, 0.035f, 0.075f);
 
+    [Header("Bee Hand Visual Materials / Vật liệu tay cầm & tia")]
+    [Tooltip("Vật liệu thân tay cầm sọc vàng đen (M_BeeHand_Body).")]
+    public Material beeHandBodyMaterial;
+
+    [Tooltip("Vật liệu nút bấm & cò (M_BeeHand_Button).")]
+    public Material beeHandButtonMaterial;
+
+    [Tooltip("Vật liệu cần xoay joystick (M_BeeHand_Accent).")]
+    public Material beeHandAccentMaterial;
+
+    [Tooltip("Vật liệu laser vàng kim neon (M_GoldenLaser).")]
+    public Material goldenLaserMaterial;
+
+    [Tooltip("Vật liệu vòng tròn mục tiêu (M_GoldenRing_Reticle).")]
+    public Material goldenReticleMaterial;
+
     // =========================================================================
     // CONTROLLER & RAY MANUAL TUNING / TINH CHỈNH TAY CẦM & TIA BẰNG TAY
     // =========================================================================
     [Header("Controller & Ray Tuning / Tinh chỉnh tay cầm & tia ray")]
-    [Tooltip("Tự động kéo tay cầm xuống tầm mắt nếu phát hiện bị bay lên trần nhà / trên đầu (do lệch Floor/Device mode của kính VR).")]
-    public bool autoFixCeilingControllers = true;
-
-    [Tooltip("Bù độ cao tay cầm (m). Kéo số ÂM (ví dụ -0.3, -0.6, -1.0) để hạ tay cầm & tia xuống thấp; số DƯƠNG để nâng cao lên.")]
+    [Tooltip("Bù độ cao tia ray (m). Số ÂM để hạ tia xuống thấp; số DƯƠNG để nâng cao lên.")]
     [Range(-2f, 2f)]
     public float controllerHeightOffset = 0f;
 
-    [Tooltip("Bù khoảng cách trước/sau (m). Số DƯƠNG = đẩy tay cầm ra xa trước mặt; số ÂM = kéo gần lại.")]
+    [Tooltip("Bù khoảng cách trước/sau tia ray (m). Số DƯƠNG = đẩy tia ra xa; số ÂM = kéo gần lại.")]
     [Range(-1f, 1f)]
     public float controllerForwardOffset = 0f;
 
-    [Tooltip("Bù khoảng cách ngang sang 2 bên (m). Tăng để 2 tay cầm mở rộng sang 2 bên sườn; giảm để thu vào giữa.")]
+    [Tooltip("Bù khoảng cách ngang sang 2 bên (m). Tăng để 2 tia mở rộng sang 2 bên sườn; giảm để thu vào giữa.")]
     [Range(-0.5f, 0.5f)]
     public float controllerSideOffset = 0f;
 
     [Tooltip("Bù góc nghiêng của tia raycast (độ). Dương = chúc tia xuống; Âm = ngửa tia lên trên.")]
     [Range(-90f, 90f)]
     public float rayPitchOffset = 0f;
+
+    [Tooltip("(Tùy chọn) Bật kiểm tra trần nhà nếu gặp kính VR bị lệch sàn. Mặc định tắt để giữ nguyên vị trí tay cầm thật 100%.")]
+    public bool autoFixCeilingControllers = false;
 
     // =========================================================================
     // BAR PLACEMENT / VỊ TRÍ THANH
@@ -395,26 +411,6 @@ public class BeeSwipeFlap : MonoBehaviour
             // Tắt các LineRenderer / XRInteractorLineVisual trùng lặp trên tay cầm gốc
             DisableConflictingLineVisuals(anchor);
 
-            // Tự động kiểm tra và xử lý độ cao tay cầm nếu bị bay lên trần nhà / trên đầu
-            if (trackedCamera != null)
-            {
-                Vector3 camLocalAnchor = trackedCamera.transform.InverseTransformPoint(anchor.position);
-
-                // Nếu tay cầm bị lệch OpenXR (Floor vs Device) bay lên cao hơn mắt
-                if (autoFixCeilingControllers && camLocalAnchor.y > 0.05f)
-                {
-                    // Trừ đi khoảng lệch sàn 1.15m để đưa tay cầm về độ cao tự nhiên
-                    camLocalAnchor.y -= 1.15f;
-                }
-
-                // Áp dụng các offset điều chỉnh thủ công từ Inspector
-                camLocalAnchor.y += controllerHeightOffset;
-                camLocalAnchor.z += controllerForwardOffset;
-                camLocalAnchor.x += (isLeft ? -controllerSideOffset : controllerSideOffset);
-
-                anchor.position = trackedCamera.transform.TransformPoint(camLocalAnchor);
-            }
-
             // Điểm xuất phát của ray: mũi tay cầm (phần đầu phát laser trên controller)
             Transform rayTip = anchor.Find("RayTip");
             if (rayTip != null)
@@ -426,6 +422,15 @@ public class BeeSwipeFlap : MonoBehaviour
             {
                 worldPos = anchor.TransformPoint(new Vector3(0f, 0.01f, 0.04f));
                 worldRot = anchor.rotation;
+            }
+
+            // Áp dụng offset tinh chỉnh điểm phát tia ray (nếu người dùng cấu hình trong Inspector)
+            if (trackedCamera != null && (!Mathf.Approximately(controllerHeightOffset, 0f) || !Mathf.Approximately(controllerForwardOffset, 0f) || !Mathf.Approximately(controllerSideOffset, 0f)))
+            {
+                Vector3 rayOffset = trackedCamera.transform.up * controllerHeightOffset +
+                                   trackedCamera.transform.forward * controllerForwardOffset +
+                                   trackedCamera.transform.right * (isLeft ? -controllerSideOffset : controllerSideOffset);
+                worldPos += rayOffset;
             }
 
             if (!Mathf.Approximately(rayPitchOffset, 0f))
@@ -463,20 +468,16 @@ public class BeeSwipeFlap : MonoBehaviour
             return;
         }
 
-        // Nếu tư thế lấy từ fallback device (không qua anchor), áp dụng bù độ cao vào worldPos
+        // Nếu tư thế lấy từ fallback device (không qua anchor), áp dụng bù khoảng cách vào worldPos
         if (anchor == null || !anchor.gameObject.activeInHierarchy)
         {
             if (trackedCamera != null)
             {
-                Vector3 camLocal = trackedCamera.transform.InverseTransformPoint(worldPos);
-                if (autoFixCeilingControllers && camLocal.y > 0.05f)
-                {
-                    camLocal.y -= 1.15f;
-                }
-                camLocal.y += controllerHeightOffset;
-                camLocal.z += controllerForwardOffset;
-                camLocal.x += (isLeft ? -controllerSideOffset : controllerSideOffset);
-                worldPos = trackedCamera.transform.TransformPoint(camLocal);
+                Vector3 rayOffset = trackedCamera.transform.up * controllerHeightOffset +
+                                   trackedCamera.transform.forward * controllerForwardOffset +
+                                   trackedCamera.transform.right * (isLeft ? -controllerSideOffset : controllerSideOffset);
+                worldPos += rayOffset;
+
                 if (!Mathf.Approximately(rayPitchOffset, 0f))
                 {
                     worldRot = worldRot * Quaternion.Euler(rayPitchOffset, 0f, 0f);
@@ -855,9 +856,10 @@ public class BeeSwipeFlap : MonoBehaviour
         if (col != null) SafeDestroy(col);
 
         var mr = go.GetComponent<MeshRenderer>();
-        Material mat = null;
+        Material mat = goldenReticleMaterial;
+        if (mat == null) mat = Resources.Load<Material>("Art/Bee/Materials/M_GoldenRing_Reticle");
 #if UNITY_EDITOR
-        mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_GoldenRing_Reticle.mat");
+        if (mat == null) mat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_GoldenRing_Reticle.mat");
 #endif
         if (mat == null)
         {
@@ -877,6 +879,12 @@ public class BeeSwipeFlap : MonoBehaviour
 
     private Material CreateRayMaterial()
     {
+        if (goldenLaserMaterial != null)
+        {
+            _ownsRayMaterial = false;
+            return goldenLaserMaterial;
+        }
+
         Material mat = Resources.Load<Material>("Art/Bee/Materials/M_GoldenLaser");
 #if UNITY_EDITOR
         if (mat == null)
@@ -940,29 +948,23 @@ public class BeeSwipeFlap : MonoBehaviour
     {
         if (anchor == null) return;
 
-        Material matBody = Resources.Load<Material>("Art/Bee/Materials/M_BeeHand_Body");
-        if (matBody == null)
-        {
+        Material matBody = beeHandBodyMaterial;
+        if (matBody == null) matBody = Resources.Load<Material>("Art/Bee/Materials/M_BeeHand_Body");
 #if UNITY_EDITOR
-            matBody = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_BeeHand_Body.mat");
+        if (matBody == null) matBody = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_BeeHand_Body.mat");
 #endif
-        }
 
-        Material matBtn = Resources.Load<Material>("Art/Bee/Materials/M_BeeHand_Button");
-        if (matBtn == null)
-        {
+        Material matBtn = beeHandButtonMaterial;
+        if (matBtn == null) matBtn = Resources.Load<Material>("Art/Bee/Materials/M_BeeHand_Button");
 #if UNITY_EDITOR
-            matBtn = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_BeeHand_Button.mat");
+        if (matBtn == null) matBtn = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_BeeHand_Button.mat");
 #endif
-        }
 
-        Material matAccent = Resources.Load<Material>("Art/Bee/Materials/M_BeeHand_Accent");
-        if (matAccent == null)
-        {
+        Material matAccent = beeHandAccentMaterial;
+        if (matAccent == null) matAccent = Resources.Load<Material>("Art/Bee/Materials/M_BeeHand_Accent");
 #if UNITY_EDITOR
-            matAccent = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_BeeHand_Accent.mat");
+        if (matAccent == null) matAccent = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/Bee/Materials/M_BeeHand_Accent.mat");
 #endif
-        }
 
         if (matBody == null) return;
 
@@ -1065,11 +1067,22 @@ public class BeeSwipeFlap : MonoBehaviour
         Transform root = xrOrigin != null ? xrOrigin.transform : null;
         if (root == null) return;
 
+        // Ưu tiên GameObject có ActionBasedController hoặc XRBaseController trực tiếp
+        var controllers = root.GetComponentsInChildren<UnityEngine.XR.Interaction.Toolkit.XRBaseController>(true);
+        foreach (var c in controllers)
+        {
+            string n = c.name.ToLowerInvariant();
+            if (n.Contains("left") && leftControllerAnchor == null) leftControllerAnchor = c.transform;
+            else if (n.Contains("right") && rightControllerAnchor == null) rightControllerAnchor = c.transform;
+        }
+
+        if (leftControllerAnchor != null && rightControllerAnchor != null) return;
+
         foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
         {
             string n = t.name.ToLowerInvariant();
-            bool isLeft = n.Contains("left") && (n.Contains("controller") || n.Contains("hand"));
-            bool isRight = n.Contains("right") && (n.Contains("controller") || n.Contains("hand"));
+            bool isLeft = (n == "left controller" || n == "leftcontroller" || (n.Contains("left") && n.Contains("controller")));
+            bool isRight = (n == "right controller" || n == "rightcontroller" || (n.Contains("right") && n.Contains("controller")));
             if (isLeft && leftControllerAnchor == null) leftControllerAnchor = t;
             else if (isRight && rightControllerAnchor == null) rightControllerAnchor = t;
         }

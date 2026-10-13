@@ -236,6 +236,11 @@ public class BeeCameraRig : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        SnapToBee();
+    }
+
     private void OnEnable()
     {
         if (playerRig != null && playerRig != transform)
@@ -254,8 +259,11 @@ public class BeeCameraRig : MonoBehaviour
         ResolveReferences();
         if (trackedCamera == null || playerRig == null) return;
 
+        Quaternion targetRotation = GetTargetRigRotation();
+        playerRig.rotation = targetRotation;
+
         Vector3 camLocalInRig = playerRig.InverseTransformPoint(trackedCamera.transform.position);
-        playerRig.position = GetEyeWorldPosition() - playerRig.rotation * camLocalInRig;
+        playerRig.position = GetEyeWorldPosition() - targetRotation * camLocalInRig;
     }
 
     /// <summary>Chuyen doi nhanh giua first-person va third-person.</summary>

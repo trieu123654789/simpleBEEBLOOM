@@ -122195,11 +122195,16 @@ MonoBehaviour:
   autoSkinControllers: 1
   showHandProxies: 0
   handProxyScale: {x: 0.07, y: 0.05, z: 0.1}
-  autoFixCeilingControllers: 1
+  beeHandBodyMaterial: {fileID: 2100000, guid: 7c485073d1e3f7942abe5e64e3f86dfa, type: 2}
+  beeHandButtonMaterial: {fileID: 2100000, guid: 790012e1764161d4b86d2deef256fce3, type: 2}
+  beeHandAccentMaterial: {fileID: 2100000, guid: 2fc8a58829599914f9edad2c67e5aa12, type: 2}
+  goldenLaserMaterial: {fileID: 2100000, guid: 26306efc75588aa4da485a3d5ec2c1c5, type: 2}
+  goldenReticleMaterial: {fileID: 2100000, guid: 6ca6da91876aeb849b28bb39ca5ec8cb, type: 2}
   controllerHeightOffset: 0
   controllerForwardOffset: 0
   controllerSideOffset: 0
   rayPitchOffset: 0
+  autoFixCeilingControllers: 0
   useSingleBar: 1
   barDepth: 0.55
   barWidth: 0.52

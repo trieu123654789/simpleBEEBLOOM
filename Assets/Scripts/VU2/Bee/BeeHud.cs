@@ -316,13 +316,14 @@ public class BeeHud : MonoBehaviour
         _canvas.renderMode = RenderMode.WorldSpace;
         _canvas.sortingOrder = 30000;
 
-        // Vat lieu rieng voi renderQueue cao -> HUD luon ve SAU cac vat the
-        // trong suot (mat nuoc, hoa sen) nen khong bi che khuat.
+        // Vat lieu rieng voi renderQueue 3100 + ZTest LessEqual -> HUD ve tren canh vat
+        // nhung khong che khuat tay cam VR o cu ly gan (0.3 - 0.6m).
         _hudMaterial = new Material(Canvas.GetDefaultCanvasMaterial())
         {
             hideFlags = HideFlags.DontSave
         };
-        _hudMaterial.renderQueue = 4000;
+        _hudMaterial.renderQueue = 3100;
+        _hudMaterial.SetInt("unity_GUIZTestMode", (int)UnityEngine.Rendering.CompareFunction.LessEqual);
     }
 
     // =========================================================================
