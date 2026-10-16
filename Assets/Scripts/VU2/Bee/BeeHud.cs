@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeHud - HUD goc nhin con ong, dung y nhu anh mau (Bee POV HUD).
 // BeeHud - HUD góc nhìn con ong, dựng y như ảnh mẫu.
 //
@@ -60,13 +60,32 @@ public class BeeHud : MonoBehaviour
     // PLACEMENT / VI TRI
     // =========================================================================
     [Header("Placement / Vị trí")]
-    [Tooltip("Khoang cach canvas toi camera (m). 0.8-1.0m de doc nhat trong VR.")]
+    [Tooltip("Khoang cach canvas toi camera (m). 1.2-1.5m de doc nhat va thoang nhat trong VR.")]
     [Range(0.4f, 2.5f)]
-    public float hudDistance = 0.9f;
+    public float hudDistance = 1.3f;
+
+    [Header("HUD Layout / Vi tri (0..1: trai-duoi den phai-tren)")]
+    public Vector2 honeyPosition = new Vector2(0.12f, 0.30f);
+    public Vector2 questPosition = new Vector2(0.12f, 0.18f);
+    public Vector2 nectarPosition = new Vector2(0.12f, 0.07f);
+    public Vector2 compassPosition = new Vector2(0.88f, 0.17f);
+    public Vector2 altitudePosition = new Vector2(0.5f, 0.07f);
+    [Range(0.5f, 1.2f)] public float panelScale = 0.85f;
+    public bool showFlapHints = false;
+    [Tooltip("Height gauge range in metres above the starting position.")]
+    [Min(1f)] public float altitudeRange = 20f;
+    [Tooltip("Optional height datum. Without this, height is relative to the bee's starting position.")]
+    public Transform altitudeReference;
+    [Tooltip("Optional real hive target. No marker is shown when unassigned.")]
+    public Transform hiveTarget;
+    private float _startingHeight;
+    private bool _heightCaptured;
+    private RectTransform _hiveMarker;
+
 
     [Tooltip("HUD chiem bao nhieu phan khung nhin (1 = sat mep nhu anh mau).")]
     [Range(0.6f, 1.05f)]
-    public float viewportFill = 1f;
+    public float viewportFill = 0.95f;
 
     [Tooltip("Do phan giai tham chieu de dung layout (khong lien quan man hinh that).")]
     public Vector2 referenceResolution = new Vector2(1920f, 1080f);
@@ -85,8 +104,8 @@ public class BeeHud : MonoBehaviour
     [Tooltip("Thanh 'Mat hoa' lay du lieu tu dau.")]
     public NectarSource nectarSource = NectarSource.Stats;
 
-    [Tooltip("Luon hien banner 'Ke thu' nhu anh mau (tat khi da co he thong ong dich).")]
-    public bool alwaysShowDangerBanner = true;
+    [Tooltip("Chi hien banner khi co ke thu that su.")]
+    public bool alwaysShowDangerBanner = false;
 
     [Tooltip("Nhay banner do khi co nguy hiem (tao cam giac canh bao).")]
     public bool blinkDangerBanner = true;
@@ -159,6 +178,7 @@ public class BeeHud : MonoBehaviour
             return;
         }
 
+        if (bee != null && !_heightCaptured) { _startingHeight = bee.transform.position.y; _heightCaptured = true; }
         BuildCanvas();
         BuildHoneyPanel();
         BuildQuestPanel();
@@ -215,6 +235,7 @@ public class BeeHud : MonoBehaviour
         if (_canvasRect == null) return;
 
         FitToCamera();
+        ApplyLayout();
         UpdateValues();
     }
 
@@ -226,8 +247,28 @@ public class BeeHud : MonoBehaviour
     {
         if (targetCamera == null) return;
 
-        float worldHeight = 2f * hudDistance * Mathf.Tan(targetCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-        float worldWidth = worldHeight * Mathf.Max(targetCamera.aspect, 0.1f);
+        // Use a comfortable central angular area, never the desktop mirror aspect.
+        float distance = Mathf.Max(hudDistance, targetCamera.nearClipPlane + 0.2f);
+        float halfWidth = distance * Mathf.Tan(30f * Mathf.Deg2Rad);
+        float halfHeight = distance * Mathf.Tan(20f * Mathf.Deg2Rad);
+        var corners = new Vector3[4];
+        int eyeCount = targetCamera.stereoEnabled ? 2 : 1;
+        for (int eye = 0; eye < eyeCount; eye++)
+        {
+            var eyeType = targetCamera.stereoEnabled
+                ? (eye == 0 ? Camera.MonoOrStereoscopicEye.Left : Camera.MonoOrStereoscopicEye.Right)
+                : Camera.MonoOrStereoscopicEye.Mono;
+            targetCamera.CalculateFrustumCorners(new Rect(0f, 0f, 1f, 1f), distance, eyeType, corners);
+            // Fit inside both eyes, including asymmetric headset projections.
+            for (int i = 0; i < corners.Length; i++)
+            {
+                halfWidth = Mathf.Min(halfWidth, Mathf.Abs(corners[i].x) * 0.8f);
+                halfHeight = Mathf.Min(halfHeight, Mathf.Abs(corners[i].y) * 0.8f);
+            }
+        }
+        _canvasRect.localPosition = new Vector3(0f, 0f, distance);
+        float worldHeight = 2f * halfHeight;
+        float worldWidth = 2f * halfWidth;
 
         float scaleX = worldWidth / Mathf.Max(referenceResolution.x, 1f);
         float scaleY = worldHeight / Mathf.Max(referenceResolution.y, 1f);
@@ -259,10 +300,25 @@ public class BeeHud : MonoBehaviour
             : (bee != null ? bee.StaminaNormalized : 0f);
         if (_nectarFill != null) _nectarFill.fillAmount = Mathf.Clamp01(nectar);
 
-        // --- La ban: hoa la ban quay nguoc huong bay (kieu HUD GPS) ---
-        if (_compassRose != null && bee != null)
+        // Compass follows horizontal headset heading; +Z is north, +X is east.
+        if (_compassRose != null && targetCamera != null)
         {
-            _compassRose.localEulerAngles = new Vector3(0f, 0f, -bee.Yaw);
+            Vector3 forward = targetCamera.transform.forward;
+            if (forward.x * forward.x + forward.z * forward.z > 0.0001f)
+            {
+                float heading = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
+                _compassRose.localEulerAngles = new Vector3(0f, 0f, heading);
+            }
+        }
+        if (_hiveMarker != null)
+        {
+            _hiveMarker.gameObject.SetActive(hiveTarget != null);
+            if (hiveTarget != null && targetCamera != null)
+            {
+                Vector3 delta = hiveTarget.position - targetCamera.transform.position;
+                float bearing = Mathf.Atan2(delta.x, delta.z);
+                _hiveMarker.anchoredPosition = new Vector2(Mathf.Sin(bearing), Mathf.Cos(bearing)) * 78f;
+            }
         }
 
         // --- Banner nguy hiem ---
@@ -281,7 +337,14 @@ public class BeeHud : MonoBehaviour
         }
 
         // --- Thuoc toc do (giua duoi) ---
-        float speedNorm = bee != null ? bee.SpeedNormalized : 0f;
+        if (bee != null && !_heightCaptured)
+        {
+            _startingHeight = bee.transform.position.y;
+            _heightCaptured = true;
+        }
+        float datum = altitudeReference != null ? altitudeReference.position.y : _startingHeight;
+        float altitude = bee != null ? bee.transform.position.y - datum : 0f;
+        float speedNorm = Mathf.Clamp01(altitude / Mathf.Max(1f, altitudeRange));
 
         if (_speedMarker != null && _speedTrackRect != null)
         {
@@ -293,20 +356,48 @@ public class BeeHud : MonoBehaviour
 
         if (_speedText != null)
         {
-            _speedText.text = Mathf.RoundToInt(Mathf.Clamp01(speedNorm) * 100f) + "%";
+            _speedText.text = "Độ cao " + altitude.ToString("0.0") + " m";
         }
     }
 
     // =========================================================================
     // BUILD CANVAS / DUNG KHUNG HUD
     // =========================================================================
+    private void ApplyLayout()
+    {
+        PositionPanel("Panel_Honey", honeyPosition);
+        PositionPanel("Panel_Quest", questPosition);
+        PositionPanel("Panel_Nectar", nectarPosition);
+        PositionPanel("Panel_Compass", compassPosition);
+        PositionPanel("Panel_Speed", altitudePosition);
+        foreach (string name in new[] { "Hint_FlapLeft", "Hint_FlapRight" })
+        {
+            Transform hint = _canvasRect.Find(name);
+            if (hint != null) hint.gameObject.SetActive(showFlapHints);
+        }
+    }
+
+    private void PositionPanel(string name, Vector2 position)
+    {
+        RectTransform panel = _canvasRect.Find(name) as RectTransform;
+        if (panel == null) return;
+        panel.anchorMin = panel.anchorMax = new Vector2(0.5f, 0.5f);
+        panel.pivot = new Vector2(0.5f, 0.5f);
+        panel.localScale = Vector3.one * panelScale;
+        Vector2 half = panel.sizeDelta * panelScale * 0.5f;
+        Vector2 size = _canvasRect.rect.size;
+        panel.anchoredPosition = new Vector2(
+            Mathf.Clamp((position.x - 0.5f) * size.x, -size.x * 0.5f + half.x, size.x * 0.5f - half.x),
+            Mathf.Clamp((position.y - 0.5f) * size.y, -size.y * 0.5f + half.y, size.y * 0.5f - half.y));
+    }
+
     private void BuildCanvas()
     {
         var canvasGo = new GameObject("BeeHUD_Canvas", typeof(RectTransform));
         canvasGo.hideFlags = HideFlags.DontSave;
 
         _canvasRect = canvasGo.GetComponent<RectTransform>();
-        _canvasRect.SetParent(transform, false);
+        _canvasRect.SetParent(targetCamera.transform, false);
         _canvasRect.sizeDelta = referenceResolution;
         _canvasRect.localPosition = new Vector3(0f, 0f, hudDistance);
         _canvasRect.localRotation = Quaternion.identity;
@@ -537,9 +628,9 @@ public class BeeHud : MonoBehaviour
 
         // Cham chi huong to ong (goc 35 do nhu anh mau).
         float bearing = 35f * Mathf.Deg2Rad;
-        NewImage(_compassRose, "HiveMarker", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+        _hiveMarker = NewImage(_compassRose, "HiveMarker", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(Mathf.Sin(bearing) * 78f, Mathf.Cos(bearing) * 78f), new Vector2(16f, 16f),
-            BeeHudSprites.Hexagon(64), new Color(1f, 0.35f, 0.45f, 0.95f));
+            BeeHudSprites.Hexagon(64), new Color(1f, 0.35f, 0.45f, 0.95f)).rectTransform;
 
         // Mui ten "huong dang bay" co dinh o dinh la ban.
         NewImage(root, "HeadingPointer", new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
@@ -605,7 +696,7 @@ public class BeeHud : MonoBehaviour
             new Vector2(0f, 20f), new Vector2(26f, 26f), BeeHudSprites.TriangleUp(64), amberColor);
 
         _speedText = NewText(root, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-            new Vector2(0f, 68f), new Vector2(160f, 30f), "0%", 22f, textDimColor,
+            new Vector2(0f, 68f), new Vector2(300f, 30f), "Độ cao 0.0 m", 22f, textDimColor,
             TextAlignmentOptions.Center);
     }
 

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeSwipeFlap - Quẹt ray qua thanh ngang cố định trong khung nhìn = vỗ cánh bay.
 // Phiên bản nâng cấp:
 //   1. Thanh vàng nối liền ngang (Single Continuous Bar) thay vì 2 thanh 2 bên.
@@ -18,6 +18,7 @@ using XRInputDevice = UnityEngine.XR.InputDevice;
 using XRCommonUsages = UnityEngine.XR.CommonUsages;
 using ISDevice = UnityEngine.InputSystem.InputDevice;
 
+[DefaultExecutionOrder(200)]
 [DisallowMultipleComponent]
 [RequireComponent(typeof(BeeController))]
 public class BeeSwipeFlap : MonoBehaviour
@@ -88,8 +89,23 @@ public class BeeSwipeFlap : MonoBehaviour
     [Range(-90f, 90f)]
     public float rayPitchOffset = 0f;
 
-    [Tooltip("(Tùy chọn) Bật kiểm tra trần nhà nếu gặp kính VR bị lệch sàn. Mặc định tắt để giữ nguyên vị trí tay cầm thật 100%.")]
-    public bool autoFixCeilingControllers = false;
+    [Tooltip("Tự động khắc phục lỗi OpenXR khi đeo kính VR khiến tay cầm bị lệch lên trần nhà (Ceiling Controllers bug). Luôn BẬT để đảm bảo tay cầm ở vị trí tự nhiên.")]
+    public bool autoFixCeilingControllers = true;
+
+    [Header("VR Ergonomic Hands / Công thái học tay cầm VR")]
+    [Tooltip("Tự động nâng nhẹ vị trí hiển thị và ngắm của tay cầm khi tay thật buông lỏng ở hông/đùi, giúp tay luôn xuất hiện tự nhiên trong tầm nhìn ngoại vi dưới của kính VR.")]
+    public bool enableErgonomicHands = true;
+
+    [Tooltip("Độ nâng công thái học tối đa theo trục dọc của mắt (m) khi tay ở vị trí thấp.")]
+    [Range(0f, 0.4f)]
+    public float ergonomicLift = 0.22f;
+
+    [Tooltip("Độ đẩy nhẹ ra phía trước theo trục nhìn của mắt (m) để tay không bị sát ngực.")]
+    [Range(0f, 0.3f)]
+    public float ergonomicForward = 0.08f;
+
+    [Tooltip("Khoảng cách Y tối thiểu so với mắt người chơi (m). Nếu tay thấp hơn mức này sẽ được bù công thái học vào tầm nhìn ngoại vi.")]
+    public float minComfortHandY = -0.28f;
 
     // =========================================================================
     // BAR PLACEMENT / VỊ TRÍ THANH
@@ -106,6 +122,9 @@ public class BeeSwipeFlap : MonoBehaviour
 
     [Tooltip("Độ dày thanh (m).")]
     public float barThickness = 0.012f;
+
+    [Tooltip("Visual thickness only; contact tolerance is unchanged.")]
+    [Range(0.2f, 1f)] public float barVisualThicknessScale = 0.55f;
 
     [Tooltip("Vị trí tâm thanh nối liền (local camera, m). X = 0 (giữa), Y âm = dưới tầm mắt.")]
     public Vector2 barCenterOffset = new Vector2(0f, -0.21f);
@@ -125,6 +144,9 @@ public class BeeSwipeFlap : MonoBehaviour
 
     [Tooltip("Vùng chống rung (m): phải đi qua ±deadband mới tính 1 nhịp. Tránh rung mép thanh.")]
     public float crossDeadband = 0.025f;
+
+    [Tooltip("Extra lift when both independent rays touch the bar together.")]
+    [Min(0f)] public float dualHandBonusImpulse = 0.85f;
 
     [Tooltip("Thời gian chờ giữa 2 nhịp của CÙNG một tay (giây).")]
     [Range(0.05f, 0.5f)] public float cooldownPerHand = 0.12f;
@@ -211,6 +233,7 @@ public class BeeSwipeFlap : MonoBehaviour
     {
         // -1: đang ở dưới thanh, +1: đang ở trên thanh, 0: ở giữa deadband / ngoài tầm
         public int side;
+        public bool touching;
         public float cooldown;
         public float flash;
         public bool hasDevice;
@@ -222,6 +245,11 @@ public class BeeSwipeFlap : MonoBehaviour
         public Material proxyMaterial;
         public GameObject reticle;
         public bool skinned;
+        public Transform modelTransform;
+        public Vector3 originalModelLocalPos;
+        public Quaternion originalModelLocalRot;
+        public bool cachedModel;
+        public Vector3 currentErgonomicShift;
     }
 
     private HandState _left = new HandState();
@@ -230,6 +258,7 @@ public class BeeSwipeFlap : MonoBehaviour
     private float _flapHoldTimer;
     private float _glideTimer;
     private float _mainBarFlashTimer;
+    private bool _bothHandsTouching;
     private bool _built;
 
     private Canvas _canvas;
@@ -259,6 +288,8 @@ public class BeeSwipeFlap : MonoBehaviour
 
     private void OnDisable()
     {
+        _bothHandsTouching = false;
+        _left.touching = _right.touching = false;
         _flapHoldTimer = 0f;
         _glideTimer = 0f;
         if (bee != null)
@@ -358,6 +389,8 @@ public class BeeSwipeFlap : MonoBehaviour
     /// </summary>
     private void UpdateHand(HandState hand, bool isLeft)
     {
+        bool wasTouching = hand.touching;
+        hand.touching = false;
         bool enabledHand = isLeft ? enableLeftHand : enableRightHand;
         hand.barOffset = useSingleBar ? barCenterOffset : (isLeft ? leftBarOffset : rightBarOffset);
 
@@ -411,8 +444,67 @@ public class BeeSwipeFlap : MonoBehaviour
             // Tắt các LineRenderer / XRInteractorLineVisual trùng lặp trên tay cầm gốc
             DisableConflictingLineVisuals(anchor);
 
-            // Điểm xuất phát của ray: mũi tay cầm (phần đầu phát laser trên controller)
             Transform rayTip = anchor.Find("RayTip");
+            Transform model = anchor.Find("Model");
+            if (model == null)
+            {
+                // Tìm model prefab do ActionBasedController instantiate (XR Controller Left/Right(Clone))
+                for (int i = 0; i < anchor.childCount; i++)
+                {
+                    Transform child = anchor.GetChild(i);
+                    if (child.name != "RayTip" && child.GetComponentInChildren<Renderer>(true) != null)
+                    {
+                        model = child;
+                        break;
+                    }
+                }
+            }
+
+            // Cache Model gốc nếu chưa lưu
+            if (model != null && !hand.cachedModel)
+            {
+                hand.modelTransform = model;
+                hand.originalModelLocalPos = model.localPosition;
+                hand.originalModelLocalRot = model.localRotation;
+                hand.cachedModel = true;
+            }
+
+            Vector3 camLocalAnchor = trackedCamera != null
+                ? trackedCamera.transform.InverseTransformPoint(anchor.position)
+                : anchor.localPosition;
+
+            bool isCeilingDisplaced = autoFixCeilingControllers && camLocalAnchor.y > 0.20f;
+
+            // 1. TRIỆT TIÊU LỖI LỆCH SÀN OPENXR (Ceiling Controllers Fix):
+            // Chỉ can thiệp khi OpenXR bị lệch sàn đẩy tay cầm lên trần nhà (cao hơn đầu > 0.20m).
+            if (isCeilingDisplaced)
+            {
+                camLocalAnchor.y -= 1.18f;
+                if (camLocalAnchor.y > 0.02f) camLocalAnchor.y = -0.18f;
+                if (camLocalAnchor.z < 0.25f) camLocalAnchor.z = 0.28f;
+
+                if (!Mathf.Approximately(controllerHeightOffset, 0f)) camLocalAnchor.y += controllerHeightOffset;
+                if (!Mathf.Approximately(controllerForwardOffset, 0f)) camLocalAnchor.z += controllerForwardOffset;
+                if (!Mathf.Approximately(controllerSideOffset, 0f)) camLocalAnchor.x += (isLeft ? -controllerSideOffset : controllerSideOffset);
+
+                if (trackedCamera != null)
+                {
+                    anchor.position = trackedCamera.transform.TransformPoint(camLocalAnchor);
+                }
+            }
+
+            // 2. Đảm bảo Model luôn hiển thị và render chuẩn xác:
+            if (model != null)
+            {
+                if (!model.gameObject.activeSelf) model.gameObject.SetActive(true);
+                var rends = model.GetComponentsInChildren<Renderer>(true);
+                for (int ri = 0; ri < rends.Length; ri++)
+                {
+                    if (rends[ri] != null && !rends[ri].enabled) rends[ri].enabled = true;
+                }
+            }
+
+            // Điểm xuất phát của ray: mũi tay cầm (phần đầu phát laser trên controller)
             if (rayTip != null)
             {
                 worldPos = rayTip.position;
@@ -422,15 +514,6 @@ public class BeeSwipeFlap : MonoBehaviour
             {
                 worldPos = anchor.TransformPoint(new Vector3(0f, 0.01f, 0.04f));
                 worldRot = anchor.rotation;
-            }
-
-            // Áp dụng offset tinh chỉnh điểm phát tia ray (nếu người dùng cấu hình trong Inspector)
-            if (trackedCamera != null && (!Mathf.Approximately(controllerHeightOffset, 0f) || !Mathf.Approximately(controllerForwardOffset, 0f) || !Mathf.Approximately(controllerSideOffset, 0f)))
-            {
-                Vector3 rayOffset = trackedCamera.transform.up * controllerHeightOffset +
-                                   trackedCamera.transform.forward * controllerForwardOffset +
-                                   trackedCamera.transform.right * (isLeft ? -controllerSideOffset : controllerSideOffset);
-                worldPos += rayOffset;
             }
 
             if (!Mathf.Approximately(rayPitchOffset, 0f))
@@ -473,10 +556,25 @@ public class BeeSwipeFlap : MonoBehaviour
         {
             if (trackedCamera != null)
             {
-                Vector3 rayOffset = trackedCamera.transform.up * controllerHeightOffset +
-                                   trackedCamera.transform.forward * controllerForwardOffset +
-                                   trackedCamera.transform.right * (isLeft ? -controllerSideOffset : controllerSideOffset);
-                worldPos += rayOffset;
+                Vector3 camLocal = trackedCamera.transform.InverseTransformPoint(worldPos);
+                if (autoFixCeilingControllers && camLocal.y > 0.05f)
+                {
+                    camLocal.y -= 1.18f;
+                    if (camLocal.y > 0.02f) camLocal.y = -0.18f;
+                }
+                if (camLocal.z < 0.25f) camLocal.z = 0.28f;
+                if (enableErgonomicHands && camLocal.y < minComfortHandY)
+                {
+                    float deficit = minComfortHandY - camLocal.y;
+                    float lift = Mathf.Min(deficit, ergonomicLift);
+                    camLocal.y += lift;
+                    camLocal.z += ergonomicForward;
+                }
+                if (!Mathf.Approximately(controllerHeightOffset, 0f)) camLocal.y += controllerHeightOffset;
+                if (!Mathf.Approximately(controllerForwardOffset, 0f)) camLocal.z += controllerForwardOffset;
+                if (!Mathf.Approximately(controllerSideOffset, 0f)) camLocal.x += (isLeft ? -controllerSideOffset : controllerSideOffset);
+
+                worldPos = trackedCamera.transform.TransformPoint(camLocal);
 
                 if (!Mathf.Approximately(rayPitchOffset, 0f))
                 {
@@ -515,33 +613,48 @@ public class BeeSwipeFlap : MonoBehaviour
         }
 
         // --- 3. Giao ray với mặt phẳng của thanh ngang để tính vị trí quẹt qua thanh ---
-        Vector3 planePoint = trackedCamera.transform.position + trackedCamera.transform.forward * barDepth;
-        Plane plane = new Plane(-trackedCamera.transform.forward, planePoint);
+        Vector3 planePoint = _canvas != null ? _canvas.transform.position : (transform.position + transform.forward * barDepth);
+        Vector3 planeNormal = _canvas != null ? -_canvas.transform.forward : -transform.forward;
+        Plane plane = new Plane(planeNormal, planePoint);
         Ray aimRay = new Ray(worldPos, forward);
 
         Vector3 barHitPoint;
-        if (plane.Raycast(aimRay, out float enter) && enter > 0.05f && enter < 5.0f)
+        bool validPlaneHit = plane.Raycast(aimRay, out float enter) && enter > 0f && enter < maxRayDistance;
+        if (validPlaneHit)
         {
             barHitPoint = aimRay.GetPoint(enter);
         }
         else
         {
-            // Nếu góc nghiêng quá lớn hoặc tay vượt quá mặt phẳng, lấy vị trí controller chiếu tới độ sâu thanh
-            Vector3 camLocalHand = trackedCamera.transform.InverseTransformPoint(worldPos);
-            barHitPoint = trackedCamera.transform.TransformPoint(new Vector3(camLocalHand.x, camLocalHand.y, barDepth));
+            barHitPoint = worldPos + forward * barDepth;
         }
 
-        Vector3 local = trackedCamera.transform.InverseTransformPoint(barHitPoint);
-        float targetY = useSingleBar ? barCenterOffset.y : hand.barOffset.y;
-        float targetX = useSingleBar ? barCenterOffset.x : hand.barOffset.x;
+        Vector3 local = _canvas != null ? _canvas.transform.InverseTransformPoint(barHitPoint) : transform.InverseTransformPoint(barHitPoint);
+        // Canvas XY coordinates are pixels (scale 0.001); thresholds are metres.
+        if (_canvas != null)
+            local = Vector3.Scale(local, _canvas.transform.localScale);
+        float targetY = useSingleBar ? 0f : hand.barOffset.y;
+        float targetX = useSingleBar ? 0f : hand.barOffset.x;
 
         float dx = local.x - targetX;
         float dy = local.y - targetY;
 
         float effectiveHalfWidth = (barWidth * 0.5f) * horizontalGate;
-        bool withinGate = Mathf.Abs(dx) <= effectiveHalfWidth;
-
-        if (withinGate)
+        bool withinGate = validPlaneHit && showBars && Mathf.Abs(dx) <= effectiveHalfWidth;
+        hand.touching = withinGate && Mathf.Abs(dx) <= barWidth * 0.5f
+            && Mathf.Abs(dy) <= Mathf.Max(barThickness * 0.5f, 0.01f);
+        if (hand.touching)
+        {
+            // Each hand owns its contact edge, cooldown, reticle and haptic pulse.
+            endPoint = barHitPoint;
+            hand.side = 0;
+            if (!wasTouching && hand.cooldown <= 0f)
+            {
+                hand.cooldown = cooldownPerHand;
+                PulseFlap(isLeft, isUpstroke: true);
+            }
+        }
+        else if (withinGate)
         {
             // PHÁT HIỆN QUÉT 2 CHIỀU:
             // 1) Quẹt TỪ DƯỚI LÊN (Upstroke)
@@ -611,6 +724,7 @@ public class BeeSwipeFlap : MonoBehaviour
 
     private void PulseFlap(bool isLeft, bool isUpstroke)
     {
+        if (bee != null && bee.IsPositionHolding) return;
         _flapHoldTimer = flapHoldSeconds;
         _glideTimer = glideFloatDuration;
 
@@ -663,31 +777,39 @@ public class BeeSwipeFlap : MonoBehaviour
     private void LateUpdate()
     {
         if (!_built) return;
+        FitCanvas();
         UpdateHand(_left, true);
         UpdateHand(_right, false);
-        FitCanvas();
+        bool bothTouching = _left.touching && _right.touching;
+        if (bothTouching && !_bothHandsTouching && enableFlightAssist && bee != null)
+            bee.AddVerticalImpulse(dualHandBonusImpulse);
+        _bothHandsTouching = bothTouching;
         UpdateVisuals();
     }
 
     private void FitCanvas()
     {
-        if (_canvasRect == null || trackedCamera == null) return;
+        if (_canvasRect == null) return;
+        if (trackedCamera != null)
+        {
+            float distance = Mathf.Max(0.75f, barDepth, trackedCamera.nearClipPlane + 0.2f);
+            _canvasRect.localPosition = useSingleBar
+                ? new Vector3(barCenterOffset.x, barCenterOffset.y, distance)
+                : new Vector3(0f, 0f, distance);
+        }
 
-        float worldHeight = 2f * barDepth * Mathf.Tan(trackedCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-        float scale = worldHeight / 1080f;
-        if (scale <= 0f) return;
-
+        const float scale = 0.001f;
         _canvasRect.localScale = new Vector3(scale, scale, 1f);
 
         float canvasWorldW = 1920f * scale;
         float canvasWorldH = 1080f * scale;
         float widthPx = barWidth / scale;
-        float thicknessPx = barThickness / scale;
+        float thicknessPx = barThickness * barVisualThicknessScale / scale;
 
         if (useSingleBar)
         {
             if (_mainBarImage != null)
-                FitBar(_mainBarImage, barCenterOffset, canvasWorldW, canvasWorldH, widthPx, thicknessPx);
+                FitBar(_mainBarImage, Vector2.zero, canvasWorldW, canvasWorldH, widthPx, thicknessPx);
         }
         else
         {
@@ -700,10 +822,10 @@ public class BeeSwipeFlap : MonoBehaviour
                                 float widthPx, float thicknessPx)
     {
         if (bar == null) return;
-        Vector2 anchor = new Vector2(0.5f + offset.x / worldW, 0.5f + offset.y / worldH);
+        Vector2 anchor = new Vector2(0.5f, 0.5f);
         bar.rectTransform.anchorMin = anchor;
         bar.rectTransform.anchorMax = anchor;
-        bar.rectTransform.anchoredPosition = Vector2.zero;
+        bar.rectTransform.anchoredPosition = new Vector2(offset.x / 0.001f, offset.y / 0.001f);
         bar.rectTransform.sizeDelta = new Vector2(widthPx, thicknessPx);
     }
 
@@ -767,7 +889,8 @@ public class BeeSwipeFlap : MonoBehaviour
         canvasGO.transform.SetParent(trackedCamera.transform, false);
         RectTransform rect = canvasGO.AddComponent<RectTransform>();
         rect.sizeDelta = new Vector2(1920f, 1080f);
-        rect.localPosition = new Vector3(0f, 0f, barDepth);
+        // Keep the interaction target below the centre of the tracked view.
+        rect.localPosition = new Vector3(barCenterOffset.x, barCenterOffset.y, Mathf.Max(0.75f, barDepth));
         rect.localRotation = Quaternion.identity;
         _canvas = canvasGO.AddComponent<Canvas>();
         _canvas.renderMode = RenderMode.WorldSpace;
@@ -794,8 +917,8 @@ public class BeeSwipeFlap : MonoBehaviour
         }
 
         _built = true;
-        Debug.Log("[BeeSwipeFlap] Đã dựng thanh quẹt ngang nối liền + ray (parent = " +
-                  trackedCamera.name + ").");
+        Debug.Log("[BeeSwipeFlap] Đã dựng thanh quẹt ngang buồng lái cố định trên thân ong (parent = " +
+                  transform.name + "). Người chơi tự do nhìn ngắm 360 độ thế giới!");
     }
 
     private Image CreateBar(string name)
@@ -999,6 +1122,26 @@ public class BeeSwipeFlap : MonoBehaviour
         // Đảm bảo không có SortingGroup 2D can thiệp làm ẩn mesh 3D trong VR
         var sg = anchor.GetComponent<UnityEngine.Rendering.SortingGroup>();
         if (sg != null) SafeDestroy(sg);
+
+        // Đảm bảo Model luôn active
+        Transform modelObj = anchor.Find("Model");
+        if (modelObj != null) modelObj.gameObject.SetActive(true);
+
+        // Tạo chóp vàng phát sáng (Bee Muzzle Glow) ở đầu mũi tay cầm làm điểm định hướng ngắm
+        Transform tip = anchor.Find("RayTip");
+        if (tip != null && matAccent != null && tip.Find("BeeMuzzleGlow") == null)
+        {
+            GameObject glowGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            glowGO.name = "BeeMuzzleGlow";
+            glowGO.transform.SetParent(tip, false);
+            glowGO.transform.localPosition = Vector3.zero;
+            glowGO.transform.localRotation = Quaternion.identity;
+            glowGO.transform.localScale = new Vector3(0.016f, 0.016f, 0.016f);
+            Collider col = glowGO.GetComponent<Collider>();
+            if (col != null) SafeDestroy(col);
+            var glowRend = glowGO.GetComponent<MeshRenderer>();
+            if (glowRend != null) glowRend.sharedMaterial = matAccent;
+        }
 
         state.skinned = true;
     }

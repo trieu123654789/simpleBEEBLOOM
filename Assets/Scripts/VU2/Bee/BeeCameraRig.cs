@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeCameraRig - FIRST-PERSON VR rig cho vai con ong (giống ảnh mẫu: Bee POV).
 // BeeCameraRig - Rig VR goc nhin thu nhat cho nhan vat ong.
 //
@@ -30,6 +30,7 @@ using UnityEngine;
 using UnityEngine.XR;
 
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(100)]
 public class BeeCameraRig : MonoBehaviour
 {
     /// <summary>Che do goc nhin. / Camera view mode.</summary>
@@ -211,7 +212,7 @@ public class BeeCameraRig : MonoBehaviour
     // =========================================================================
     private readonly List<Behaviour> _disabledLocomotion = new List<Behaviour>();
     private Vector3 _cameraLocalOffset;
-    private Quaternion _cameraLocalRotation;
+    private bool _hasTrackedHeadOrigin;
     private Transform _bodyVisual;
     private Renderer[] _bodyRenderers;
     private Renderer[] _wingRenderers;
@@ -258,12 +259,14 @@ public class BeeCameraRig : MonoBehaviour
     {
         ResolveReferences();
         if (trackedCamera == null || playerRig == null) return;
+        if (playerRig == transform) return;
+
+        CaptureHeadOrigin();
 
         Quaternion targetRotation = GetTargetRigRotation();
         playerRig.rotation = targetRotation;
 
-        Vector3 camLocalInRig = playerRig.InverseTransformPoint(trackedCamera.transform.position);
-        playerRig.position = GetEyeWorldPosition() - targetRotation * camLocalInRig;
+        playerRig.position = GetEyeWorldPosition() - playerRig.TransformVector(_cameraLocalOffset);
     }
 
     /// <summary>Chuyen doi nhanh giua first-person va third-person.</summary>
@@ -323,22 +326,23 @@ public class BeeCameraRig : MonoBehaviour
             _bodyRenderers = keep.ToArray();
         }
 
-        if (trackedCamera != null)
-        {
-            // Chot offset local cua camera MOT LAN. Giữ nguyên offset này về sau
-            // để không triệt tiêu room-scale (người chơi nghiêng người vẫn dịch được).
-            _cameraLocalOffset = playerRig != null
-                ? playerRig.InverseTransformPoint(trackedCamera.transform.position)
-                : trackedCamera.transform.localPosition;
-            _cameraLocalRotation = playerRig != null
-                ? Quaternion.Inverse(playerRig.rotation) * trackedCamera.transform.rotation
-                : trackedCamera.transform.localRotation;
-        }
-
         _currentFov = trackedCamera != null ? trackedCamera.fieldOfView : targetFov;
-        _resolved = true;
+        _resolved = trackedCamera != null && playerRig != null;
 
         ApplyBodyVisibility();
+    }
+
+    private bool IsHeadTracked()
+    {
+        InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+        return head.isValid && head.TryGetFeatureValue(CommonUsages.isTracked, out bool tracked) && tracked;
+    }
+
+    private void CaptureHeadOrigin()
+    {
+        // Capture once, then preserve all physical head movement relative to this origin.
+        _cameraLocalOffset = playerRig.InverseTransformPoint(trackedCamera.transform.position);
+        _hasTrackedHeadOrigin = IsHeadTracked();
     }
 
     /// <summary>Gom renderer cua rieng hai pivot canh (Wing_L / Wing_R).</summary>
@@ -413,23 +417,23 @@ public class BeeCameraRig : MonoBehaviour
     // UpdateRigPose - Dua XR Origin sao cho CAMERA (khong phai transform cua
     // camera) den dung diem "mat" cua con ong.
     //
-    //   rig.position = eyeWorld - rig.rotation * camLocalInRig
+    //   rig.position = eyeWorld - rig.TransformVector(initialHeadOffset)
     //
-    // Tự động thích ứng theo độ cao thực của kính VR (khi người chơi đứng dậy,
-    // ngồi xuống, đeo kính vào hoặc bấm nút recenter trên Quest), không bao giờ
-    // bị tụt xuống đất (độn thổ) hoặc lệch khỏi thân ong.
+    // Only the initial tracked pose is compensated. Subsequent head translation
+    // and rotation belong to tracking, including crouching and leaning.
     // =============================================================================
     private void UpdateRigPose()
     {
         // Neu script nam tren chinh XR Origin thi BeeController da lo het.
         if (playerRig == transform) return;
 
+        // XR tracking can become available after Start (for example when putting on the headset).
+        if (!_hasTrackedHeadOrigin && IsHeadTracked()) CaptureHeadOrigin();
+
         Quaternion targetRotation = GetTargetRigRotation();
         playerRig.rotation = targetRotation;
 
-        // Đọc vị trí local thực tế của camera trong playerRig tại frame hiện tại
-        Vector3 camLocalInRig = playerRig.InverseTransformPoint(trackedCamera.transform.position);
-        Vector3 targetPosition = GetEyeWorldPosition() - targetRotation * camLocalInRig;
+        Vector3 targetPosition = GetEyeWorldPosition() - playerRig.TransformVector(_cameraLocalOffset);
 
         if (smoothRigPosition)
         {
@@ -482,7 +486,7 @@ public class BeeCameraRig : MonoBehaviour
     private Vector3 GetEyeWorldPosition()
     {
         Vector3 eye = transform.TransformPoint(eyeOffset);
-        if (enableHeadBob && trackedCamera != null)
+        if (enableHeadBob && trackedCamera != null && (bee == null || (!bee.enableLeftTriggerHold && !bee.comfortDescent && !bee.IsPositionHolding)))
         {
             eye += trackedCamera.transform.up * _bobHeadOffset;
         }
@@ -619,35 +623,19 @@ public class BeeCameraRig : MonoBehaviour
         if (viewMode == ViewMode.ThirdPersonDrone)
         {
             // Third person: visualRoot di chuyen nhu mot object binh thuong.
-            visualRoot.SetPositionAndRotation(transform.position, transform.rotation);
+            visualRoot.SetPositionAndRotation(transform.position + Vector3.up * (bee != null ? bee.HoldVisualBob : 0f), transform.rotation);
             return;
         }
 
-        // First person: gan visualRoot theo he toa do CAMERA de no luon
-        // nằm đúng chỗ trên màn hình dù người chơi có nghiêng đầu.
-        Vector3 targetPosition = trackedCamera.transform.TransformPoint(visualOffset);
+        // First person: Giữ thân và cánh ong gắn cố định trên thân con ong (BeeRoot)
+        // để người chơi có thể tự do nhìn ngắm 360 độ thế giới xung quanh một cách thoáng đãng,
+        // không bị thân/cánh ong dán chặt xoay theo mắt kính làm cản trở tầm nhìn!
+        Vector3 targetPosition = transform.TransformPoint(visualOffset);
+        targetPosition += transform.TransformDirection(_bobVisualOffset);
+        targetPosition += Vector3.up * (bee != null ? bee.HoldVisualBob : 0f);
+        visualRoot.position = targetPosition;
 
-        // === Cong bob offset vao visualRoot (KHONG vao XR Origin) ===
-        // Bob chi hien o ngoai vi (than/canh ong), camera hoan toan dung yen.
-        targetPosition += trackedCamera.transform.TransformDirection(_bobVisualOffset);
-
-        if (visualInstantFollow)
-        {
-            visualRoot.position = targetPosition;
-        }
-        else
-        {
-            float t = visualFollowLag > 0.0001f
-                ? 1f - Mathf.Exp(-1f / visualFollowLag * Time.deltaTime)
-                : 1f;
-            visualRoot.position = Vector3.Lerp(visualRoot.position, targetPosition,
-                t * visualFollowScale);
-        }
-
-        // Goc: tron giua huong bay cua ong va huong camera de canh khong "dinh".
-        // Cong bob roll vao day (chi xoay visual, khong xoay XR Origin).
-        Quaternion cameraRotation = trackedCamera.transform.rotation * Quaternion.Euler(visualEulerOffset);
-        Quaternion baseRot = Quaternion.Slerp(transform.rotation, cameraRotation, 0.5f);
+        Quaternion baseRot = transform.rotation * Quaternion.Euler(visualEulerOffset);
         visualRoot.rotation = baseRot * Quaternion.Euler(0f, 0f, _bobVisualRoll);
     }
 

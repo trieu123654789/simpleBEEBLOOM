@@ -11,7 +11,12 @@ public class XRDeviceSimulatorAutoToggle : MonoBehaviour
 {
     private void Awake()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        // Never create simulated XR devices in the standalone headset build.
+        gameObject.SetActive(false);
+#else
         CheckAndToggle();
+#endif
     }
 
     private void Update()

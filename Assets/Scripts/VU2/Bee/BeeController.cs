@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeController - Core flight for the bee avatar (single bee).
 // BeeController - Điều khiển bay cốt lõi cho nhân vật ong.
 //
@@ -49,6 +49,21 @@ public class BeeController : MonoBehaviour
     [Tooltip("Ngưỡng gia tốc lắc tay để đập cánh (m/s²). Lắc nhẹ trên Quest khoảng 2.5 - 3.5 m/s².")]
     public float shakeThreshold = 3.0f;
 
+    [Header("VR Flight & Gaze Steering / Bay theo hướng nhìn VR")]
+    [Tooltip("Camera chính kính VR. Để trống sẽ tự tìm Camera.main.")]
+    public Camera vrCamera;
+
+    [Tooltip("Bật chế độ bay theo hướng nhìn kính VR (Head-Gaze Steering). Tắt đi (false) để góc nhìn VR tự do 100% không bị khóa theo hướng bay.")]
+    public bool enableVrGazeFlight = false;
+
+    [Tooltip("Góc liếc mắt tự do (độ). Trong phạm vi này người chơi có thể liếc nhìn xung quanh mà không làm lệch hướng bay thẳng.")]
+    [Range(0f, 45f)]
+    public float gazeSteeringDeadzone = 12f;
+
+    [Tooltip("Độ nhạy bám theo hướng nhìn khi bay (0.5 - 1.5). Càng lớn ong lượn theo hướng đầu càng dứt khoát.")]
+    [Range(0.2f, 2.0f)]
+    public float gazeSteeringResponsiveness = 1.0f;
+
     // =========================================================================
     // FLIGHT SETTINGS / CÀI ĐẶT BAY
     // =========================================================================
@@ -68,6 +83,77 @@ public class BeeController : MonoBehaviour
 
     [Tooltip("Trọng lực (m/s^2) kéo ong hạ độ cao khi thả nút bay.")]
     public float gravity = 4.5f;
+
+    [Header("Fall & Trigger Hold / Roi va giu vi tri")]
+    public bool useNaturalFall = true;
+    [Tooltip("Gentler passive descent; preserves the original saved flight settings.")]
+    public bool comfortDescent = false;
+    [Min(0.1f)] public float comfortFallAcceleration = 2f;
+    [Min(0.1f)] public float comfortMaxFallSpeed = 1.2f;
+    public float HoldVisualBob { get; private set; }
+    [Tooltip("Downward acceleration when not flapping, in metres per second squared.")]
+    [Min(0f)] public float fallAcceleration = 9.81f;
+    public bool enableLeftTriggerHold = true;
+    [Tooltip("Vertical hover displacement in metres while holding left trigger.")]
+    [Range(0f, 0.05f)] public float holdBobAmplitude = 0.015f;
+    [Tooltip("Hover oscillations per second while holding left trigger.")]
+    [Range(0.1f, 3f)] public float holdBobFrequency = 1.2f;
+    public bool IsPositionHolding { get; private set; }
+    private Vector3 _holdPosition;
+    private float _holdElapsed;
+
+    private bool ReadLeftHoldTrigger()
+    {
+        if (!enableLeftTriggerHold) return false;
+        float threshold = IsPositionHolding ? 0.45f : 0.65f;
+        var device = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        if (device.isValid)
+        {
+            if (device.TryGetFeatureValue(XRCommonUsages.trigger, out float value)) return value >= threshold;
+            if (device.TryGetFeatureValue(XRCommonUsages.triggerButton, out bool pressed)) return pressed;
+        }
+        foreach (var input in InputSystem.devices)
+        {
+            bool left = false;
+            foreach (var usage in input.usages) if (usage.ToString() == "LeftHand") left = true;
+            if (!left) continue;
+            var trigger = input.TryGetChildControl<UnityEngine.InputSystem.Controls.AxisControl>("trigger");
+            if (trigger != null && trigger.ReadValue() >= threshold) return true;
+        }
+        return false;
+    }
+
+    private static float IntegrateDescent(float velocity, float acceleration, float terminalSpeed, float deltaTime)
+    {
+        if (deltaTime <= 0f || acceleration <= 0f) return velocity;
+        terminalSpeed = Mathf.Max(0.01f, terminalSpeed);
+        // Exact integration of dv/dt = -g - (g / terminalSpeed) * v.
+        return -terminalSpeed + (velocity + terminalSpeed)
+            * Mathf.Exp(-acceleration * deltaTime / terminalSpeed);
+    }
+
+    private void UpdatePositionHold(bool pressed)
+    {
+        if (pressed && !IsPositionHolding)
+        {
+            _holdPosition = transform.position;
+            _holdElapsed = 0f;
+        }
+        IsPositionHolding = pressed;
+        if (!pressed) { HoldVisualBob = 0f; return; }
+        _currentForwardSpeed = _currentStrafeSpeed = _verticalVelocity = 0f;
+        Speed = 0f;
+        _holdElapsed += Time.deltaTime;
+        // Ease into an absolute offset; never integrate bobbing into altitude drift.
+        float bob = Mathf.Sin(_holdElapsed * holdBobFrequency * Mathf.PI * 2f)
+            * holdBobAmplitude * Mathf.Clamp01(_holdElapsed * 2f);
+        HoldVisualBob = bob;
+        Vector3 next = _holdPosition;
+        if (maxFlightAltitude > 0f) next.y = Mathf.Min(next.y, maxFlightAltitude);
+        if (groundCollision) next = ResolveGroundCollision(next, Vector3.zero);
+        transform.position = next;
+    }
+
 
     [Tooltip("Tốc độ rơi tối đa khi thả nút bay (m/s).")]
     public float maxFallSpeed = 4f;
@@ -225,15 +311,19 @@ public class BeeController : MonoBehaviour
     {
         get
         {
+            if (ReadLeftHoldTrigger()) return false;
             // 1. Input Action nếu đã cấu hình binding
-            if (flapAction.action != null && flapAction.action.enabled && flapAction.action.IsPressed())
+            if (flapAction.action != null && flapAction.action.enabled && flapAction.action.IsPressed()
+                && !(enableLeftTriggerHold && flapAction.action.activeControl != null
+                    && flapAction.action.activeControl.path.Contains("trigger")
+                    && System.Linq.Enumerable.Any(flapAction.action.activeControl.device.usages, usage => usage.ToString() == "LeftHand")))
                 return true;
 
             // 2. Đọc trực tiếp phần cứng VR Controller (Trigger / Grip / Nút A, B, X, Y)
             if (enableDirectXrInput && enableDirectXrFlap)
             {
                 UpdateXrDevices();
-                if (CheckXrFlapInput(_rightHand) || CheckXrFlapInput(_leftHand))
+                if (CheckXrFlapInput(_rightHand) || CheckXrFlapInput(_leftHand, !enableLeftTriggerHold))
                     return true;
 
                 // 3. Vung tay / Lắc tay đập cánh (Shake Flapping)
@@ -265,7 +355,7 @@ public class BeeController : MonoBehaviour
     /// <summary>Thêm xung lực bay lên tức thời theo trục Y (dành cho vỗ cánh dạng nhịp / swipe flap trợ lực vừa phải).</summary>
     public void AddVerticalImpulse(float impulse)
     {
-        if (impulse <= 0f) return;
+        if (impulse <= 0f || IsPositionHolding) return;
         // Triệt tiêu đà rơi vừa phải, tạo lực nhấc tự nhiên theo từng nhịp đập cánh
         if (_verticalVelocity < 0f)
             _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, 0.4f, impulse * 1.6f);
@@ -371,13 +461,13 @@ public class BeeController : MonoBehaviour
         if (_rightDevices.Count > 0) _rightHand = _rightDevices[0];
     }
 
-    private bool CheckXrFlapInput(XRInputDevice device)
+    private bool CheckXrFlapInput(XRInputDevice device, bool allowTrigger = true)
     {
         if (!device.isValid) return false;
 
         // Bóp cò (Trigger)
-        if (device.TryGetFeatureValue(XRCommonUsages.triggerButton, out bool trigBtn) && trigBtn) return true;
-        if (device.TryGetFeatureValue(XRCommonUsages.trigger, out float trigVal) && trigVal > 0.25f) return true;
+        if (allowTrigger && device.TryGetFeatureValue(XRCommonUsages.triggerButton, out bool trigBtn) && trigBtn) return true;
+        if (allowTrigger && device.TryGetFeatureValue(XRCommonUsages.trigger, out float trigVal) && trigVal > 0.25f) return true;
 
         // Nút chính A/X hoặc B/Y
         if (device.TryGetFeatureValue(XRCommonUsages.primaryButton, out bool btnPrimary) && btnPrimary) return true;
@@ -451,16 +541,6 @@ public class BeeController : MonoBehaviour
             {
                 Vector2 val = leftStick.ReadValue();
                 if (val.sqrMagnitude > 0.01f) input = val;
-            }
-
-            if (input.sqrMagnitude < 0.01f)
-            {
-                var anyStick = InputSystem.FindControl("<XRController>/thumbstick") as UnityEngine.InputSystem.Controls.Vector2Control;
-                if (anyStick != null)
-                {
-                    Vector2 val = anyStick.ReadValue();
-                    if (val.sqrMagnitude > 0.01f) input = val;
-                }
             }
 
             if (input.sqrMagnitude < 0.01f && Gamepad.current != null)
@@ -634,9 +714,10 @@ public class BeeController : MonoBehaviour
 
     private void Update()
     {
+        UpdatePositionHold(!ExternalMovementLocked && ReadLeftHoldTrigger());
         UpdateSteering();
         UpdateStamina();
-        UpdateMovement();
+        if (!IsPositionHolding) UpdateMovement();
         ApplyRotation();
     }
 
@@ -650,9 +731,25 @@ public class BeeController : MonoBehaviour
         float turnVal = ReadCombinedTurnInput();
         Vector2 moveStick = ReadCombinedMovementInput();
 
-        // Ưu tiên cần xoay tay phải / phím Q-E để quay góc nhìn 360 độ tự do
-        // Nếu không xoay cần phải, cần trái gạt ngang vẫn hỗ trợ rẽ hướng tự nhiên
-        float effectiveTurn = Mathf.Abs(turnVal) > 0.05f ? turnVal : moveStick.x;
+        // Left stick translates only; right stick (or Q/E) owns rotation.
+        float effectiveTurn = turnVal;
+
+        // VR Gaze Flight: Khi người chơi quay đầu ngắm hướng bay mới và đẩy cần tới
+        if (enableVrGazeFlight && Mathf.Abs(effectiveTurn) < 0.05f)
+        {
+            if (vrCamera == null) vrCamera = Camera.main;
+            if (vrCamera != null && (moveStick.y > 0.05f || _currentForwardSpeed > 0.2f))
+            {
+                float headYaw = vrCamera.transform.eulerAngles.y;
+                float deltaAngle = Mathf.DeltaAngle(_yaw, headYaw);
+                if (Mathf.Abs(deltaAngle) > gazeSteeringDeadzone)
+                {
+                    float excess = Mathf.Abs(deltaAngle) - gazeSteeringDeadzone;
+                    float gazeTurn = Mathf.Sign(deltaAngle) * Mathf.Clamp01(excess / 40f);
+                    effectiveTurn = gazeTurn * Mathf.Clamp01(gazeSteeringResponsiveness);
+                }
+            }
+        }
 
         // Giảm nhẹ tốc độ quay khi đang bay nhanh
         float speedRatio = Mathf.Clamp01(Speed / Mathf.Max(0.1f, moveSpeed));
@@ -707,6 +804,22 @@ public class BeeController : MonoBehaviour
     // =========================================================================
     // UpdateMovement - Bay lên bằng nút bay, Đi tới / lui / rẽ bằng Joystick & WASD
     // =========================================================================
+    private Quaternion GetMovementRotation()
+    {
+        if (vrCamera == null) vrCamera = Camera.main;
+        if (vrCamera != null)
+        {
+            Vector3 forward = Vector3.ProjectOnPlane(vrCamera.transform.forward, Vector3.up);
+            if (forward.sqrMagnitude > 0.001f)
+                return Quaternion.LookRotation(forward.normalized, Vector3.up);
+            // Looking vertically: derive heading from the headset's horizontal right axis.
+            Vector3 right = Vector3.ProjectOnPlane(vrCamera.transform.right, Vector3.up);
+            if (right.sqrMagnitude > 0.001f)
+                return Quaternion.LookRotation(Vector3.Cross(right.normalized, Vector3.up), Vector3.up);
+        }
+        return Quaternion.Euler(0f, _yaw, 0f);
+    }
+
     private void UpdateMovement()
     {
         if (ExternalMovementLocked) return;
@@ -730,7 +843,7 @@ public class BeeController : MonoBehaviour
             : moveDeceleration;
         _currentStrafeSpeed = Mathf.MoveTowards(_currentStrafeSpeed, targetStrafe, strafeAccel * Time.deltaTime);
 
-        Quaternion yawRotation = Quaternion.Euler(0f, _yaw, 0f);
+        Quaternion yawRotation = GetMovementRotation();
         Vector3 forwardDir = yawRotation * Vector3.forward;
         Vector3 rightDir = yawRotation * Vector3.right;
         Vector3 horizontalVelocity = forwardDir * _currentForwardSpeed + rightDir * _currentStrafeSpeed;
@@ -744,6 +857,13 @@ public class BeeController : MonoBehaviour
         {
             float liftAcc = flapLift * ExternalFlapThrustScale;
             _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, maxAscendSpeed, liftAcc * Time.deltaTime);
+        }
+        else if (useNaturalFall)
+        {
+            // Gravity plus linear drag: approach terminal speed smoothly instead of a hard cutoff.
+            float acceleration = comfortDescent ? Mathf.Min(fallAcceleration, comfortFallAcceleration) : fallAcceleration;
+            float terminalSpeed = comfortDescent ? Mathf.Min(maxFallSpeed, comfortMaxFallSpeed) : maxFallSpeed;
+            _verticalVelocity = IntegrateDescent(_verticalVelocity, acceleration, terminalSpeed, Time.deltaTime);
         }
         else if (enableBeeHover)
         {
@@ -786,7 +906,7 @@ public class BeeController : MonoBehaviour
         Vector3 velocity = horizontalVelocity + Vector3.up * _verticalVelocity;
 
         // Thở bồng bềnh khi ong lơ lửng tại chỗ
-        if (enableBeeHover && Speed < 0.6f && Mathf.Abs(_verticalVelocity) < 0.4f)
+        if (!useNaturalFall && enableBeeHover && Speed < 0.6f && Mathf.Abs(_verticalVelocity) < 0.4f)
         {
             float hoverFloat = Mathf.Sin(Time.time * hoverBobFrequency * Mathf.PI * 2f) * (hoverBobAmplitude * 0.6f);
             velocity += Vector3.up * hoverFloat;

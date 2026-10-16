@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeKeyboardAssist - Giup dap CANH bang Space/Shift khi dang test voi
 // XR DEVICE SIMULATOR.
 //
@@ -176,10 +176,8 @@ public class BeeKeyboardAssist : MonoBehaviour
         // chi chay toi roi roi xuong. Nguon dap canh lay ca tu tay cam VR.
         bool flap = IsFlapRequested(k, vr);
 
-        // Quan trong: PHAI gai override nay, khong thi IsFlapping = false ->
-        // BeeCameraRig.UpdateBob() dung phase (khong con "lac lac" khi bay) va
-        // BeeFlapping khong biet dang dap manh.
-        bee.ExternalFlapOverride = flap;
+        // BeeController already reads hardware and keyboard input directly.
+        // Leave the external override to gesture input so we cannot erase a swipe.
 
         // Day cuong do voc canh cho BeeFlapping (1 = dap het suc, 0 = dap thuong).
         //   Neu khong set, ExternalFlapBoost = -1 va BeeFlapping se khong nang
@@ -189,7 +187,7 @@ public class BeeKeyboardAssist : MonoBehaviour
         if (_flappingFx == null && autoFindFlapping)
             _flappingFx = FindObjectOfType<BeeFlapping>();
         if (_flappingFx != null)
-            _flappingFx.ExternalFlapBoost = flap ? 1f : 0f;
+            _flappingFx.ExternalFlapBoost = bee.FlapPressed ? 1f : 0f;
 
         // Luc nang khi dap canh (ca VR lan ban phim).
         bee.ExternalVerticalThrust = flap ? flapLift : 0f;
@@ -324,7 +322,7 @@ public class BeeKeyboardAssist : MonoBehaviour
     /// </summary>
     private void LateUpdate()
     {
-        if (!directLift) return;
+        if (!directLift || (bee != null && bee.IsPositionHolding)) return;
         if (bee == null) return;
 
         // KHONG return khi k == null: o VR that khong co ban phim, van phai

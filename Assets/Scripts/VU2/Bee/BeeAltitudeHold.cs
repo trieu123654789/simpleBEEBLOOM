@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeAltitudeHold - Giu con ong bay SAT mat nuoc / mat dat nhu anh mau.
 // BeeAltitudeHold - Giữ con ong bay SÁT mặt nước / mặt đất như ảnh mẫu.
 //
@@ -92,6 +92,7 @@ public class BeeAltitudeHold : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (_bee != null && _bee.IsPositionHolding) return;
         if (!TryProbeSurface(out float surfaceY))
         {
             CurrentAltitude = -1f;
@@ -125,7 +126,7 @@ public class BeeAltitudeHold : MonoBehaviour
         }
 
         // --- 3. Luot sat mat nuoc khi dang luoi va bay ngang ---
-        if (!autoCruiseWhenGliding || _bee == null) return;
+        if (!autoCruiseWhenGliding || _bee == null || _bee.useNaturalFall) return;
         if (_bee.IsFlapping) return;
         if (Mathf.Abs(_bee.Pitch) > levelPitchLimit) return;   // nguoi choi dang chu dong len/xuong
         if (CurrentAltitude <= cruiseAltitude) return;
