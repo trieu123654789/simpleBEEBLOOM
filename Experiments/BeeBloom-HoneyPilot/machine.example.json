@@ -1,0 +1,8 @@
+{
+  "webPlatformPath": "../../../simple.webplatform",
+  "gamaHome": "C:/Program Files/Gama",
+  "gamaHost": "127.0.0.1",
+  "gamaPort": 1000,
+  "headlessPort": 6875,
+  "nodePath": ""
+}

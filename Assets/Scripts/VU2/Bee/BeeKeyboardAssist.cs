@@ -189,6 +189,14 @@ public class BeeKeyboardAssist : MonoBehaviour
         if (_flappingFx != null)
             _flappingFx.ExternalFlapBoost = bee.FlapPressed ? 1f : 0f;
 
+        // Flight V2 owns all lift; keyboard and right-trigger remain inputs to BeeController.
+        if (bee.enableRhythmFlight)
+        {
+            bee.ExternalVerticalThrust = 0f;
+            bee.ExternalFlapThrustScale = 1f;
+            return;
+        }
+
         // Luc nang khi dap canh (ca VR lan ban phim).
         bee.ExternalVerticalThrust = flap ? flapLift : 0f;
 
@@ -322,7 +330,7 @@ public class BeeKeyboardAssist : MonoBehaviour
     /// </summary>
     private void LateUpdate()
     {
-        if (!directLift || (bee != null && bee.IsPositionHolding)) return;
+        if (!directLift || (bee != null && (bee.IsPositionHolding || bee.enableRhythmFlight))) return;
         if (bee == null) return;
 
         // KHONG return khi k == null: o VR that khong co ban phim, van phai

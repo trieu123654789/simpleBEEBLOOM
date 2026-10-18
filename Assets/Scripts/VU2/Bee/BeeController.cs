@@ -84,6 +84,27 @@ public class BeeController : MonoBehaviour
     [Tooltip("Trọng lực (m/s^2) kéo ong hạ độ cao khi thả nút bay.")]
     public float gravity = 4.5f;
 
+    [Header("Flight V2 / Nhip vo - luot - phanh")]
+    [Tooltip("New flight feel. Turn off to compare against the saved legacy tuning.")]
+    public bool enableRhythmFlight = true;
+    [Range(0.08f, 0.5f)] public float strokeLiftDuration = 0.22f;
+    [Min(0f)] public float strokeLiftScale = 1.8f;
+    [Min(0f)] public float strokeStaminaCost = 3f;
+    [Range(0f, 4f)] public float restGlideDuration = 1.25f;
+    [Min(0f)] public float restGlideSinkSpeed = 0.35f;
+    [Min(0.1f)] public float restGlideDeceleration = 1.4f;
+    [Range(0.1f, 2f)] public float glideExitDuration = 0.6f;
+    [Range(0.1f, 1.5f)] public float holdBrakeDuration = 0.4f;
+    public bool IsPositionBraking => IsPositionHolding && enableRhythmFlight
+        && _brakeElapsed < Mathf.Max(0.1f, holdBrakeDuration);
+    public bool IsRestGliding => enableRhythmFlight && !IsPositionHolding
+        && !_strokeLift.Active && _restGlideRemaining > 0f;
+    private readonly BeeLiftEnvelope _strokeLift = new BeeLiftEnvelope();
+    private float _restGlideRemaining;
+    private float _brakeElapsed;
+    private Vector3 _brakeStartVelocity;
+    private Vector3 _lastFlightVelocity;
+
     [Header("Fall & Trigger Hold / Roi va giu vi tri")]
     public bool useNaturalFall = true;
     [Tooltip("Gentler passive descent; preserves the original saved flight settings.")]
@@ -134,26 +155,107 @@ public class BeeController : MonoBehaviour
 
     private void UpdatePositionHold(bool pressed)
     {
+        StepPositionHold(pressed, Time.deltaTime);
+    }
+
+    private void StepPositionHold(bool pressed, float deltaTime)
+    {
+        deltaTime = Mathf.Max(0f, deltaTime);
         if (pressed && !IsPositionHolding)
         {
             _holdPosition = transform.position;
-            _holdElapsed = 0f;
+            _holdElapsed = _brakeElapsed = 0f;
+            _brakeStartVelocity = _lastFlightVelocity;
+            ClearStrokeLift();
+            ExternalFlapOverride = false;
+            ExternalVerticalThrust = 0f;
         }
         IsPositionHolding = pressed;
         if (!pressed) { HoldVisualBob = 0f; return; }
-        _currentForwardSpeed = _currentStrafeSpeed = _verticalVelocity = 0f;
-        Speed = 0f;
-        _holdElapsed += Time.deltaTime;
-        // Ease into an absolute offset; never integrate bobbing into altitude drift.
-        float bob = Mathf.Sin(_holdElapsed * holdBobFrequency * Mathf.PI * 2f)
-            * holdBobAmplitude * Mathf.Clamp01(_holdElapsed * 2f);
-        HoldVisualBob = bob;
+
         Vector3 next = _holdPosition;
+        Vector3 brakeVelocity = Vector3.zero;
+        if (enableRhythmFlight)
+        {
+            float duration = Mathf.Max(0.1f, holdBrakeDuration);
+            float before = Mathf.Clamp01(_brakeElapsed / duration);
+            _brakeElapsed = Mathf.Min(duration, _brakeElapsed + deltaTime);
+            float after = _brakeElapsed / duration;
+            next = transform.position + _brakeStartVelocity * duration
+                * (BeeFlightMath.BrakeIntegral(after) - BeeFlightMath.BrakeIntegral(before));
+            brakeVelocity = _brakeStartVelocity * (1f - Mathf.SmoothStep(0f, 1f, after));
+        }
         if (maxFlightAltitude > 0f) next.y = Mathf.Min(next.y, maxFlightAltitude);
-        if (groundCollision) next = ResolveGroundCollision(next, Vector3.zero);
+        if (groundCollision) next = ResolveGroundCollision(next, brakeVelocity);
+        _holdPosition = next;
         transform.position = next;
+        // Releasing during braking keeps only the remaining momentum, never the entry velocity.
+        Vector3 localVelocity = Quaternion.Inverse(GetMovementRotation()) * brakeVelocity;
+        _currentForwardSpeed = localVelocity.z;
+        _currentStrafeSpeed = localVelocity.x;
+        _verticalVelocity = brakeVelocity.y;
+        _lastFlightVelocity = brakeVelocity;
+        Speed = new Vector2(brakeVelocity.x, brakeVelocity.z).magnitude;
+        _holdElapsed += deltaTime;
+        HoldVisualBob = Mathf.Sin(_holdElapsed * holdBobFrequency * Mathf.PI * 2f)
+            * holdBobAmplitude * Mathf.Clamp01(_holdElapsed * 2f);
     }
 
+    public bool TryQueueRhythmStroke(float strength)
+    {
+        if (!enableRhythmFlight || IsPositionHolding || ExternalMovementLocked || IsExhausted) return false;
+        float cost = Mathf.Max(0f, strokeStaminaCost);
+        if (_stamina < cost || !_strokeLift.Add(strength * strokeLiftScale, strokeLiftDuration)) return false;
+        _stamina = Mathf.Max(0f, _stamina - cost);
+        _restGlideRemaining = Mathf.Max(0.01f, strokeLiftDuration) + Mathf.Max(0f, restGlideDuration);
+        return true;
+    }
+
+    // Bonus belongs to two already-paid strokes; it must not bypass hold or create stored lift.
+    public void QueueRhythmPairBonus(float strength)
+    {
+        if (!enableRhythmFlight || IsPositionHolding || ExternalMovementLocked) return;
+        _strokeLift.Add(strength * strokeLiftScale, strokeLiftDuration);
+    }
+
+    public void ClearStrokeLift()
+    {
+        _strokeLift.Clear();
+        _restGlideRemaining = 0f;
+    }
+
+    private float StepRhythmVertical(float deltaTime, bool continuousFlap)
+    {
+        bool pulsing = _strokeLift.Active;
+        float lift = _strokeLift.Step(deltaTime);
+        float velocity = _verticalVelocity;
+        if (continuousFlap)
+        {
+            // Button flight and gesture flight share one lift budget, not additive controllers.
+            velocity += Mathf.Max(Mathf.Max(0f, flapLift) * deltaTime, lift);
+        }
+        else
+        {
+            float acceleration = comfortDescent ? Mathf.Min(fallAcceleration, comfortFallAcceleration) : fallAcceleration;
+            float terminal = comfortDescent ? Mathf.Min(maxFallSpeed, comfortMaxFallSpeed) : maxFallSpeed;
+            float fall = IntegrateDescent(velocity, acceleration, terminal, deltaTime);
+            float glide = Mathf.MoveTowards(velocity, -Mathf.Min(maxFallSpeed, restGlideSinkSpeed),
+                Mathf.Max(0.1f, restGlideDeceleration) * deltaTime);
+            float blend = pulsing ? 1f : Mathf.Clamp01(_restGlideRemaining / Mathf.Max(0.1f, glideExitDuration));
+            velocity = Mathf.Lerp(fall, glide, blend) + lift;
+        }
+        _restGlideRemaining = Mathf.Max(0f, _restGlideRemaining - deltaTime);
+        return Mathf.Clamp(velocity, -maxFallSpeed, maxAscendSpeed);
+    }
+
+    private void ResetFlightV2State()
+    {
+        ClearStrokeLift();
+        IsPositionHolding = false;
+        HoldVisualBob = 0f;
+        _brakeStartVelocity = _lastFlightVelocity = Vector3.zero;
+        _brakeElapsed = _holdElapsed = 0f;
+    }
 
     [Tooltip("Tốc độ rơi tối đa khi thả nút bay (m/s).")]
     public float maxFallSpeed = 4f;
@@ -241,6 +343,12 @@ public class BeeController : MonoBehaviour
     // =========================================================================
     // GROUND COLLISION / VA CHẠM MẶT ĐẤT
     // =========================================================================
+    [Header("Surface skim / Luot sat be mat")]
+    public bool enableSurfaceSkim = true;
+    [Min(0.1f)] public float skimDistance = 1.5f;
+    [Min(0f)] public float skimMinSpeed = 1.2f;
+    [Range(0f, 0.3f)] public float skimHapticStrength = 0.08f;
+
     [Header("Ground / Va chạm mặt đất")]
     [Tooltip("Bật để ong không rơi xuyên mặt đất.")]
     public bool groundCollision = true;
@@ -659,6 +767,8 @@ public class BeeController : MonoBehaviour
     /// </summary>
     public bool ReadCombinedFlapInput()
     {
+        if (enableRhythmFlight)
+            return !IsPositionHolding && (_strokeLift.Active || RawHardwareFlapPressed);
         if (ExternalFlapOverride) return true;
 
         return RawHardwareFlapPressed;
@@ -680,12 +790,8 @@ public class BeeController : MonoBehaviour
 
     private void Awake()
     {
-        // Chống độn thổ: nếu vị trí ban đầu bị lưu lệch xuống lòng đất hoặc lọt vào tường ngoài
-        if (transform.position.y < 0.5f || transform.position.z < -2f)
-        {
-            transform.position = new Vector3(3.84f, 1.60f, 3.46f);
-            transform.rotation = Quaternion.identity;
-        }
+        if (Application.isPlaying && GetComponent<BeeSurfaceSkim>() == null)
+            gameObject.AddComponent<BeeSurfaceSkim>();
 
         _stamina = maxStamina;
         _yaw = transform.eulerAngles.y;
@@ -707,6 +813,7 @@ public class BeeController : MonoBehaviour
 
     private void OnDisable()
     {
+        ResetFlightV2State();
         steerAction.action?.Disable();
         turnAction.action?.Disable();
         flapAction.action?.Disable();
@@ -714,6 +821,11 @@ public class BeeController : MonoBehaviour
 
     private void Update()
     {
+        if (ExternalMovementLocked)
+        {
+            ClearStrokeLift();
+            _lastFlightVelocity = Vector3.zero;
+        }
         UpdatePositionHold(!ExternalMovementLocked && ReadLeftHoldTrigger());
         UpdateSteering();
         UpdateStamina();
@@ -770,9 +882,12 @@ public class BeeController : MonoBehaviour
     private void UpdateStamina()
     {
         bool flapPressed = ReadCombinedFlapInput();
-        IsFlapping = flapPressed && !IsExhausted;
+        IsFlapping = enableRhythmFlight
+            ? !IsPositionHolding && (_strokeLift.Active || (flapPressed && !IsExhausted))
+            : flapPressed && !IsExhausted;
 
-        if (IsFlapping)
+        // Gesture stamina was paid once at stroke acceptance; continuous buttons drain over time.
+        if (IsFlapping && (!enableRhythmFlight || RawHardwareFlapPressed))
         {
             _stamina -= staminaDrainPerSecond * Time.deltaTime;
             if (_stamina <= 0f)
@@ -853,7 +968,11 @@ public class BeeController : MonoBehaviour
         // ---------------------------------------------------------------------
         // 2. DI CHUYỂN DỌC TRỤC Y (Nhấn nút bay = bay lên; Thả = lơ lửng bồng bềnh như ong thật)
         // ---------------------------------------------------------------------
-        if (IsFlapping)
+        if (enableRhythmFlight)
+        {
+            _verticalVelocity = StepRhythmVertical(Time.deltaTime, IsFlapping && RawHardwareFlapPressed);
+        }
+        else if (IsFlapping)
         {
             float liftAcc = flapLift * ExternalFlapThrustScale;
             _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, maxAscendSpeed, liftAcc * Time.deltaTime);
@@ -886,7 +1005,7 @@ public class BeeController : MonoBehaviour
         }
 
         // Lực nâng bổ sung từ bên ngoài (phím test Q/E hoặc assist)
-        if (Mathf.Abs(ExternalVerticalThrust) > 0.001f)
+        if (!enableRhythmFlight && Mathf.Abs(ExternalVerticalThrust) > 0.001f)
         {
             _verticalVelocity += ExternalVerticalThrust * Time.deltaTime;
         }
@@ -906,7 +1025,7 @@ public class BeeController : MonoBehaviour
         Vector3 velocity = horizontalVelocity + Vector3.up * _verticalVelocity;
 
         // Thở bồng bềnh khi ong lơ lửng tại chỗ
-        if (!useNaturalFall && enableBeeHover && Speed < 0.6f && Mathf.Abs(_verticalVelocity) < 0.4f)
+        if (!enableRhythmFlight && !useNaturalFall && enableBeeHover && Speed < 0.6f && Mathf.Abs(_verticalVelocity) < 0.4f)
         {
             float hoverFloat = Mathf.Sin(Time.time * hoverBobFrequency * Mathf.PI * 2f) * (hoverBobAmplitude * 0.6f);
             velocity += Vector3.up * hoverFloat;
@@ -915,7 +1034,7 @@ public class BeeController : MonoBehaviour
         Vector3 next = transform.position + velocity * Time.deltaTime;
 
         // Rập rình vi mô tự nhiên của côn trùng (organic micro-wander)
-        if (organicJitterScale > 0.0001f)
+        if (!enableRhythmFlight && organicJitterScale > 0.0001f)
         {
             float jX = (Mathf.PerlinNoise(Time.time * 3f, 0.1f) - 0.5f) * organicJitterScale;
             float jY = (Mathf.PerlinNoise(0.1f, Time.time * 3f) - 0.5f) * organicJitterScale;
@@ -932,6 +1051,7 @@ public class BeeController : MonoBehaviour
             next.y = maxFlightAltitude;
         }
 
+        _lastFlightVelocity = Time.deltaTime > 0f ? (next - transform.position) / Time.deltaTime : Vector3.zero;
         transform.position = next;
 
 
@@ -950,78 +1070,25 @@ public class BeeController : MonoBehaviour
     // =========================================================================
     // GROUND COLLISION / VA CHẠM MẶT ĐẤT
     // =========================================================================
-    private readonly RaycastHit[] _hitBuffer = new RaycastHit[16];
-    private readonly RaycastHit[] _hitBuffer2 = new RaycastHit[16];
-
-    private bool IsIgnoredCollider(Collider col)
-    {
-        if (col == null) return true;
-        Transform t = col.transform;
-        // Bỏ qua chính con ong và toàn bộ các bộ phận con cháu của nó (Head, Body...)
-        if (t == transform || t.IsChildOf(transform)) return true;
-        return false;
-    }
-
-    private void PickGround(RaycastHit h, ref RaycastHit best, ref bool hasHit,
-                            ref float bestDist, float ceiling)
-    {
-        if (h.collider == null) return;
-        if (IsIgnoredCollider(h.collider)) return; // BỎ QUA CHÍNH MÌNH ĐỂ KHÔNG BỊ TỰ BẮN LÊN TRỜI!
-        if (h.normal.y < 0.3f) return;
-        if (h.point.y > ceiling) return;
-
-        float d = Vector3.SqrMagnitude(h.point - transform.position);
-        if (d < bestDist) { bestDist = d; best = h; hasHit = true; }
-    }
+    private readonly BeeFlightCollision _flightCollision = new BeeFlightCollision();
 
     public Vector3 ResolveGroundCollision(Vector3 desiredPosition, Vector3 motion)
     {
-        IsGrounded = false;
-
-        int mask = (groundMask.value != 0) ? groundMask.value : Physics.DefaultRaycastLayers;
-        float r = BodyRadius;
-        float clear = Mathf.Max(0f, groundClearance);
-
-        float dist = Mathf.Max(motion.magnitude, 0.1f) + r + clear;
-        Vector3 from = new Vector3(desiredPosition.x, transform.position.y + r, desiredPosition.z);
-        int downCount = Physics.SphereCastNonAlloc(
-            from, r, Vector3.down, _hitBuffer, dist, mask, QueryTriggerInteraction.Ignore);
-
-        int motionCount = 0;
-        // Chỉ quét theo hướng chuyển động nếu đang hạ cánh / rơi xuống đất (motion.y <= 0)
-        if (motion.y <= 0.05f && motion.sqrMagnitude > 0.0001f)
+        var rig = GetComponent<BeeCameraRig>();
+        bool grounded, ceiling;
+        Vector3 resolved = _flightCollision.Move(transform, rig != null ? rig.playerRig : null,
+            desiredPosition, BodyRadius, groundClearance,
+            groundMask.value != 0 ? groundMask.value : Physics.DefaultRaycastLayers,
+            out grounded, out ceiling);
+        IsGrounded = grounded;
+        if ((grounded && _verticalVelocity < 0f) || (ceiling && _verticalVelocity > 0f))
+            _verticalVelocity = 0f;
+        if (grounded)
         {
-            motionCount = Physics.SphereCastNonAlloc(
-                transform.position, r, motion.normalized, _hitBuffer2, motion.magnitude + clear, mask,
-                QueryTriggerInteraction.Ignore);
-        }
-
-        RaycastHit best = default;
-        bool hasHit = false;
-        float bestDist = float.MaxValue;
-        float ceiling = transform.position.y + r;
-        for (int i = 0; i < downCount; i++) PickGround(_hitBuffer[i], ref best, ref hasHit, ref bestDist, ceiling);
-        for (int i = 0; i < motionCount; i++) PickGround(_hitBuffer2[i], ref best, ref hasHit, ref bestDist, ceiling);
-
-        if (!hasHit) return desiredPosition;
-
-        // Điểm chạm thực tế trên bề mặt đất + khoảng cách giữ an toàn clear
-        float floorY = best.point.y + clear;
-
-        if (desiredPosition.y < floorY)
-        {
-            desiredPosition.y = floorY;
-            IsGrounded = true;
-
-            if (_verticalVelocity < 0f) _verticalVelocity = 0f;
-
-            // Ma sát mặt đất khi hạ cánh
             _currentForwardSpeed = Mathf.MoveTowards(_currentForwardSpeed, 0f, groundFriction * Time.deltaTime);
             _currentStrafeSpeed = Mathf.MoveTowards(_currentStrafeSpeed, 0f, groundFriction * Time.deltaTime);
-            Speed = Mathf.Max(0f, Speed - Speed * groundFriction * Time.deltaTime);
         }
-
-        return desiredPosition;
+        return resolved;
     }
 
     // =========================================================================
@@ -1058,6 +1125,7 @@ public class BeeController : MonoBehaviour
     // =========================================================================
     public void Teleport(Vector3 position, float yawDegrees)
     {
+        ResetFlightV2State();
         transform.position = position;
         _yaw = Mathf.Repeat(yawDegrees, 360f);
         _pitch = 0f;
@@ -1074,6 +1142,7 @@ public class BeeController : MonoBehaviour
 
     public void StopFlying()
     {
+        ResetFlightV2State();
         _currentForwardSpeed = 0f;
         _currentStrafeSpeed = 0f;
         _verticalVelocity = 0f;

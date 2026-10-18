@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BeeFlapping - Visual + audio feedback for the bee's wing beat.
 // BeeFlapping - Hiệu ứng hình ảnh và âm thanh cho động tác vỗ cánh.
 //
@@ -102,6 +102,18 @@ public class BeeFlapping : MonoBehaviour
     [Tooltip("Clip tiếng vỗ cánh (nên loop).")]
     public AudioClip flapClip;
 
+    [Tooltip("Khi Flap Clip trống, dùng Chubby Bumblebee đã nhập trong Resources/BeeAudio.")]
+    public bool useChubbyBumblebeeDefault = true;
+    [Tooltip("Đồng bộ nhấn âm theo pha và cường độ animation cánh.")]
+    public bool syncAudioToWings = true;
+    [Range(0f, 1f)] public float wingBeatAudioDepth = 0.55f;
+    [Range(0f, 1f)] public float audioSpatialBlend = 0.5f;
+    [Min(0.01f)] public float audioFadeSpeed = 2f;
+    private float _audibleWingStrength;
+    private float _audibleWingFrequency;
+    private float _audioLevel;
+    private bool _audioEnabled = true;
+
     [Tooltip("Volume tối đa của tiếng vỗ cánh (0-1).")]
     [Range(0f, 1f)]
     public float flapVolume = 0.5f;
@@ -181,14 +193,17 @@ public class BeeFlapping : MonoBehaviour
 
         if (flapClip == null)
         {
-            flapClip = GenerateProceduralBeeBuzzClip();
+            if (useChubbyBumblebeeDefault)
+                flapClip = Resources.Load<AudioClip>("BeeAudio/ChubbyBumblebeeLoop");
+            if (flapClip == null) flapClip = GenerateProceduralBeeBuzzClip();
         }
 
         flapAudioSource.clip = flapClip;
         flapAudioSource.loop = true;
         flapAudioSource.playOnAwake = false;
-        flapAudioSource.spatialBlend = 0.5f; // dung hoa 3D de ro tieng vo ve trong kinh VR
-        flapAudioSource.volume = flapVolume * 0.4f;
+        flapAudioSource.spatialBlend = audioSpatialBlend; // dung hoa 3D de ro tieng vo ve trong kinh VR
+        flapAudioSource.volume = 0f;
+        flapAudioSource.dopplerLevel = 0f;
     }
 
 
@@ -259,6 +274,8 @@ public class BeeFlapping : MonoBehaviour
             if (_flapPhase > Mathf.PI * 2f) _flapPhase -= Mathf.PI * 2f;
         }
 
+        _audibleWingFrequency = Mathf.Max(0f, frequency);
+        _audibleWingStrength = Mathf.Clamp01((1f - _restBlend) * amplitude / Mathf.Max(1f, flapAngle));
         float wave = Mathf.Sin(_flapPhase);
 
         // Canh gap them khi khong dap (dang luoi) cho thong hien khong gian.
@@ -315,26 +332,29 @@ public class BeeFlapping : MonoBehaviour
     {
         if (flapAudioSource == null) return;
 
+        if (!_audioEnabled) return;
         float speedNorm = _bee != null ? _bee.SpeedNormalized : 0f;
         bool flapping = _bee != null && _bee.IsFlapping;
+        float strength = syncAudioToWings ? _audibleWingStrength
+            : (flapping ? 1f : Mathf.Lerp(0.35f, 1f, speedNorm));
+        float rate = syncAudioToWings
+            ? Mathf.Clamp01(_audibleWingFrequency / Mathf.Max(0.01f, flapFrequency)) : speedNorm;
+        float targetPitch = Mathf.Lerp(minPitch, maxPitch, rate);
+        flapAudioSource.pitch = Mathf.Lerp(flapAudioSource.pitch, targetPitch, 1f - Mathf.Exp(-8f * Time.deltaTime));
+        flapAudioSource.spatialBlend = audioSpatialBlend;
+        _audioLevel = Mathf.MoveTowards(_audioLevel, flapVolume * strength, audioFadeSpeed * Time.deltaTime);
+        // Accentuate the downstroke using the exact phase used by UpdateWingBeat.
+        // Keep the waveform looping; restarting a three-second SFX per beat stacks voices.
+        float beat = 0.5f - 0.5f * Mathf.Cos(_flapPhase);
+        flapAudioSource.volume = _audioLevel * (syncAudioToWings ? Mathf.Lerp(1f - wingBeatAudioDepth, 1f, beat) : 1f);
+        if (_audioLevel > 0.001f && !flapAudioSource.isPlaying) flapAudioSource.Play();
+        if (_audioLevel <= 0.001f && flapAudioSource.isPlaying) flapAudioSource.Stop();
+    }
 
-        if (!flapAudioSource.isPlaying && (speedNorm > 0.02f || flapping))
-        {
-            flapAudioSource.Play();
-        }
-
-        if (flapAudioSource.isPlaying)
-        {
-            float targetPitch = Mathf.Lerp(minPitch, maxPitch, speedNorm);
-            if (flapping) targetPitch += 0.15f;
-            flapAudioSource.pitch = Mathf.Lerp(flapAudioSource.pitch, targetPitch, 8f * Time.deltaTime);
-
-            float targetVol = flapping
-                ? flapVolume
-                : Mathf.Lerp(flapVolume * 0.35f, flapVolume, speedNorm);
-
-            flapAudioSource.volume = Mathf.MoveTowards(flapAudioSource.volume, targetVol, 1.5f * Time.deltaTime);
-        }
+    private void OnDisable()
+    {
+        _audioLevel = 0f;
+        if (flapAudioSource != null) flapAudioSource.Stop();
     }
 
     /// <summary>Tổng hợp âm thanh vo ve cánh ong (bzzz) theo sóng hài tự nhiên của ong thật.</summary>
@@ -378,19 +398,11 @@ public class BeeFlapping : MonoBehaviour
     /// </summary>
     public void SetFlapAudioEnabled(bool enabled)
     {
-        if (flapAudioSource == null) return;
-
-        if (enabled)
+        _audioEnabled = enabled;
+        if (!enabled)
         {
-            if (flapAudioSource.clip != null && !flapAudioSource.isPlaying)
-            {
-                flapAudioSource.Play();
-            }
-        }
-        else if (flapAudioSource.isPlaying)
-        {
-            flapAudioSource.Stop();
+            _audioLevel = 0f;
+            if (flapAudioSource != null) flapAudioSource.Stop();
         }
     }
 }
-

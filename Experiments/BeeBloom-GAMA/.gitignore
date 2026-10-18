@@ -1,0 +1,8 @@
+Runtime/
+UnityDemo/Assets/Plugins/
+UnityDemo/Library/
+UnityDemo/Logs/
+UnityDemo/Temp/
+UnityDemo/UserSettings/
+Build/
+__pycache__/

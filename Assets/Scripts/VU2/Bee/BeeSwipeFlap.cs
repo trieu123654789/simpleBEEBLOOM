@@ -145,6 +145,17 @@ public class BeeSwipeFlap : MonoBehaviour
     [Tooltip("Vùng chống rung (m): phải đi qua ±deadband mới tính 1 nhịp. Tránh rung mép thanh.")]
     public float crossDeadband = 0.025f;
 
+    [Header("Flight V2 / Nhan nhip hai tay")]
+    [Tooltip("Two accepted strokes this close in time count as one paired beat.")]
+    [Range(0.05f, 0.4f)] public float pairedStrokeWindow = 0.18f;
+    [Tooltip("Minimum interval per hand in Flight V2; reduces rewards for wrist jitter.")]
+    [Range(0.12f, 0.6f)] public float minimumRhythmInterval = 0.28f;
+    public int PairedFlapCount { get; private set; }
+    private readonly BeeStrokePairWindow _strokePairing = new BeeStrokePairWindow();
+    private bool RhythmFlight => bee != null && bee.enableRhythmFlight;
+    private float HandCooldown => RhythmFlight ? Mathf.Max(cooldownPerHand, minimumRhythmInterval) : cooldownPerHand;
+
+
     [Tooltip("Extra lift when both independent rays touch the bar together.")]
     [Min(0f)] public float dualHandBonusImpulse = 0.85f;
 
@@ -289,6 +300,8 @@ public class BeeSwipeFlap : MonoBehaviour
     private void OnDisable()
     {
         _bothHandsTouching = false;
+        _strokePairing.Clear();
+        if (bee != null) bee.ClearStrokeLift();
         _left.touching = _right.touching = false;
         _flapHoldTimer = 0f;
         _glideTimer = 0f;
@@ -354,10 +367,18 @@ public class BeeSwipeFlap : MonoBehaviour
 
         // Hết hạn giữ vỗ cánh → ong bắt đầu lướt hoặc rơi
         if (_flapHoldTimer > 0f) _flapHoldTimer -= Time.deltaTime;
-        if (bee != null) bee.ExternalFlapOverride = _flapHoldTimer > 0f;
+        if (bee != null)
+        {
+            bee.ExternalFlapOverride = !RhythmFlight && _flapHoldTimer > 0f;
+            if (bee.IsPositionHolding || bee.ExternalMovementLocked)
+            {
+                _flapHoldTimer = _glideTimer = 0f;
+                _strokePairing.Clear();
+            }
+        }
 
         // Trợ lực bay: đệm lướt êm, giảm trọng lực sau nhịp vỗ
-        if (enableFlightAssist && bee != null)
+        if (enableFlightAssist && bee != null && !RhythmFlight)
         {
             if (_glideTimer > 0f)
             {
@@ -650,7 +671,7 @@ public class BeeSwipeFlap : MonoBehaviour
             hand.side = 0;
             if (!wasTouching && hand.cooldown <= 0f)
             {
-                hand.cooldown = cooldownPerHand;
+                hand.cooldown = HandCooldown;
                 PulseFlap(isLeft, isUpstroke: true);
             }
         }
@@ -663,7 +684,7 @@ public class BeeSwipeFlap : MonoBehaviour
                 if (hand.cooldown <= 0f)
                 {
                     hand.side = 1;
-                    hand.cooldown = cooldownPerHand;
+                    hand.cooldown = HandCooldown;
                     PulseFlap(isLeft, isUpstroke: true);
                 }
             }
@@ -673,7 +694,7 @@ public class BeeSwipeFlap : MonoBehaviour
                 if (hand.cooldown <= 0f)
                 {
                     hand.side = -1;
-                    hand.cooldown = cooldownPerHand;
+                    hand.cooldown = HandCooldown;
                     PulseFlap(isLeft, isUpstroke: false);
                 }
             }
@@ -724,19 +745,29 @@ public class BeeSwipeFlap : MonoBehaviour
 
     private void PulseFlap(bool isLeft, bool isUpstroke)
     {
-        if (bee != null && bee.IsPositionHolding) return;
-        _flapHoldTimer = flapHoldSeconds;
-        _glideTimer = glideFloatDuration;
-
-        // TRỢ LỰC BAY: Cung cấp xung lực bay lên tức thì
-        if (enableFlightAssist && bee != null)
+        if (bee != null && (bee.IsPositionHolding || bee.ExternalMovementLocked)) return;
+        bool paired = false;
+        if (RhythmFlight)
+        {
+            if (!enableFlightAssist || !bee.TryQueueRhythmStroke(assistLiftImpulse)) return;
+            paired = _strokePairing.Register(isLeft, Time.time, pairedStrokeWindow);
+            if (paired)
+            {
+                bee.QueueRhythmPairBonus(dualHandBonusImpulse);
+                PairedFlapCount++;
+            }
+        }
+        else if (enableFlightAssist && bee != null)
         {
             bee.AddVerticalImpulse(assistLiftImpulse);
         }
+        _flapHoldTimer = flapHoldSeconds;
+        _glideTimer = glideFloatDuration;
 
         HandState hand = isLeft ? _left : _right;
         hand.flash = 0.16f;
-        _mainBarFlashTimer = 0.16f;
+        _mainBarFlashTimer = paired ? 0.28f : 0.16f;
+        if (paired) _left.flash = _right.flash = 0.28f;
         FlapCount++;
 
         // HAPTICS: Rung dứt khoát trên tay vừa quẹt qua thanh
@@ -781,7 +812,7 @@ public class BeeSwipeFlap : MonoBehaviour
         UpdateHand(_left, true);
         UpdateHand(_right, false);
         bool bothTouching = _left.touching && _right.touching;
-        if (bothTouching && !_bothHandsTouching && enableFlightAssist && bee != null)
+        if (!RhythmFlight && bothTouching && !_bothHandsTouching && enableFlightAssist && bee != null)
             bee.AddVerticalImpulse(dualHandBonusImpulse);
         _bothHandsTouching = bothTouching;
         UpdateVisuals();

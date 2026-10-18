@@ -126,7 +126,7 @@ public class BeeAltitudeHold : MonoBehaviour
         }
 
         // --- 3. Luot sat mat nuoc khi dang luoi va bay ngang ---
-        if (!autoCruiseWhenGliding || _bee == null || _bee.useNaturalFall) return;
+        if (!autoCruiseWhenGliding || _bee == null || _bee.useNaturalFall || _bee.enableRhythmFlight) return;
         if (_bee.IsFlapping) return;
         if (Mathf.Abs(_bee.Pitch) > levelPitchLimit) return;   // nguoi choi dang chu dong len/xuong
         if (CurrentAltitude <= cruiseAltitude) return;
@@ -157,6 +157,7 @@ public class BeeAltitudeHold : MonoBehaviour
         {
             Collider collider = _hits[i].collider;
             if (collider == null) continue;
+            if (BeeMapSurfaces.IsLegacyWalkingProxy(collider.transform)) continue;
             if (IsSelf(collider.transform)) continue;
             if (ignorePlayerRig && playerRig != null && collider.transform.IsChildOf(playerRig)) continue;
 
