@@ -52,6 +52,25 @@ checkpoint thật không bị sửa. Kiểm tra Editor còn bao gồm 17 kiểm 
 21 tương tác, 26 đậu hoa, 23 grip, 53 hiệu ứng và 18 đồng bộ thế giới.
 Chưa kiểm tra APK đổi tên trên Quest vì không có thiết bị ADB trong lượt này.
 
+APK kiểm tra mới: `Experiments/LetItBee-HoneyPilot/Build/LetItBee-Quest-identity-fix.apk`.
+Build Android ARM64 thành công, 0 lỗi; còn 639 cảnh báo build cần được xem trong
+đợt rà soát asset/toolchain riêng. Nhãn app là `Let It Bee`, package
+`com.quoctrieu.letitbee`. File APK là artifact cục bộ, không đưa lên Git.
+Sau build đã kiểm tra scene sạch, không thiếu script, tham chiếu pilot đầy đủ
+và khôi phục đúng ba XR preloaded assets mà bước dọn build của Unity gỡ ra.
+Thông số scene/prefab/Project Settings và checkpoint khớp bản chụp trước sửa
+(ngoại trừ chuẩn hóa xuống dòng của file settings).
+
+Tại thư mục pilot, cài APK mới và cập nhật kết nối bằng PowerShell Administrator:
+
+```powershell
+.\Start-Simple.ps1 -Headless
+.\Connect-Quest.ps1 -UpdateFirewall -EnableStreaming -InstallApk '.\Build\LetItBee-Quest-identity-fix.apk'
+```
+
+Quest cần cùng mạng với PC và đã chấp nhận USB debugging. Nếu chỉ cập nhật IP,
+bỏ `-InstallApk`; nếu không chiếu màn hình, bỏ `-EnableStreaming`.
+
 Mục tiêu hiện tại là chuẩn hóa nền kết nối và thử vòng **hoa → mật → tổ** trước
 khi phát triển gameplay chính. Chưa yêu cầu đóng gói đi thi hoặc làm level design.
 
