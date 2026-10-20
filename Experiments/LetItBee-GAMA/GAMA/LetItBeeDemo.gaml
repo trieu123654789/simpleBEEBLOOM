@@ -1,4 +1,4 @@
-model BeeBloomDemo
+model LetItBeeDemo
 
 // Transport/gameplay test only. Stress is a dimensionless illustration,
 // NOT a calibrated salinity model or a prediction about real bees/flowers.
@@ -63,12 +63,12 @@ species flower {
         draw string(flower_id) color: #black size: 1;
     }
 }
-experiment BeeBloomLink type: gui {
+experiment LetItBeeLink type: gui {
     permanent { }
     float minimum_cycle_duration <- 0.1;
     parameter "Illustrative stress (not real salinity)" var: stress min: 0.0 max: 1.0;
     output {
-        display BeeBloomMap type: java2D background: #lightgray {
+        display LetItBeeMap type: java2D background: #lightgray {
             species hive;
             species flower;
             species bee_agent;

@@ -40,7 +40,7 @@ namespace LetItBee.HoneyPilot
             JObject result = await Request("configure", new JObject {
                 ["config_json"] = BeeConnectionProfile.ForSimpleServer(configuration).ToString(Formatting.None)
             });
-            if ((string)result["state"]?["schema"] != HoneyGamaClient.Schema || (bool?)result["response"]?["accepted"] != true)
+            if (!HoneyGamaClient.IsSupportedSchema((string)result["state"]?["schema"]) || (bool?)result["response"]?["accepted"] != true)
                 throw new InvalidOperationException("SIMPLE/GAMA configuration refused: " + result["response"]);
             return result;
         }

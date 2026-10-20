@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-public class BeeBloomDemo : MonoBehaviour
+public class LetItBeeDemo : MonoBehaviour
 {
     public string serverUrl = "ws://127.0.0.1:6871";
     public Material demoMaterial;
@@ -48,7 +48,7 @@ public class BeeBloomDemo : MonoBehaviour
         connected = false; snapshot = null; actions.Clear(); eventId = 0;
         try {
             status = "Loading real GAMA model...";
-            await client.Connect(serverUrl, Path.Combine(root, "GAMA/BeeBloomDemo.gaml"));
+            await client.Connect(serverUrl, Path.Combine(root, "GAMA/LetItBeeDemo.gaml"));
             if (stopped) return;
             if (selfTest) { await SelfTest(); return; }
             await client.Command("play");
@@ -144,7 +144,7 @@ public class BeeBloomDemo : MonoBehaviour
         small ??= new GUIStyle(GUI.skin.label) { fontSize=14, wordWrap=true };
         GUI.Box(new Rect(16,16,380,Screen.height-32),GUIContent.none);
         GUILayout.BeginArea(new Rect(32,28,348,Screen.height-56));
-        GUILayout.Label("BEE BLOOM / LAB",heading);
+        GUILayout.Label("LET IT BEE / LAB",heading);
         GUILayout.Label("UNITY  <-->  GAMA",text);
         GUILayout.Label("Isolated desktop connection experiment",small);
         GUILayout.Space(15); GUILayout.Label(status,text);
@@ -217,7 +217,7 @@ public class BeeBloomDemo : MonoBehaviour
         bool disconnected=false;
         try { await client.Snapshot(); } catch { disconnected=true; }
         Check(disconnected,"Disconnected transport reports error instead of fabricated data");
-        client=new GamaClient(); await client.Connect(serverUrl,Path.Combine(root,"GAMA/BeeBloomDemo.gaml"));
+        client=new GamaClient(); await client.Connect(serverUrl,Path.Combine(root,"GAMA/LetItBeeDemo.gaml"));
         snapshot=await client.Snapshot(); Check((int)snapshot[5]==0,"Reconnect starts an explicitly fresh isolated experiment");
         await client.Command("stop"); client.Dispose();
         WriteTestResult(true,null);

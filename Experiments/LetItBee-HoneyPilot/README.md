@@ -1,15 +1,15 @@
-# Bee Bloom — Honey Pilot
+# Let It Bee — Honey Pilot
 
-Package thử hai hoa, một cục mật, một ô tổ trong scene SCN_BeeBloom.
-Luồng hiện hành: Unity → SIMPLE WebPlatform → LinkToUnity → BeeBloomVR.
+Package thử hai hoa, một cục mật, một ô tổ trong scene SCN_LetItBee.
+Luồng hiện hành: Unity → SIMPLE WebPlatform → LinkToUnity → LetItBeeVR.
 
-Kế hoạch, tiến độ và hướng dẫn được hợp nhất tại **[Docs/BeeBloom.md](../../Docs/BeeBloom.md)**:
+Kế hoạch, tiến độ và hướng dẫn được hợp nhất tại **[Docs/LetItBee.md](../../Docs/LetItBee.md)**:
 
-- [Chạy, đổi IP và đường dẫn](../../Docs/BeeBloom.md#4-chạy-simple-và-cấu-hình-chuyển-máy).
-- [Thụ phấn, lấy/cầm/thả/gắn mật](../../Docs/BeeBloom.md#3-vòng-chơi-thử-hiện-tại).
-- [Tự hồi mật, reset lượt thử và đổi bố trí level](../../Docs/BeeBloom.md#hồi-mật-để-thử-lại-và-đổi-bố-trí-level): dùng `Reset-HoneyPilot.ps1`; có backup tự động, không sửa scene.
-- [Giao thức và mã nguồn](../../Docs/BeeBloom.md#5-kiến-trúc-và-giao-thức-unitygama).
-- [Kiểm chứng và giới hạn](../../Docs/BeeBloom.md#9-kiểm-chứng-và-giới-hạn).
+- [Chạy, đổi IP và đường dẫn](../../Docs/LetItBee.md#4-chạy-simple-và-cấu-hình-chuyển-máy).
+- [Thụ phấn, lấy/cầm/thả/gắn mật](../../Docs/LetItBee.md#3-vòng-chơi-thử-hiện-tại).
+- [Tự hồi mật, reset lượt thử và đổi bố trí level](../../Docs/LetItBee.md#hồi-mật-để-thử-lại-và-đổi-bố-trí-level): dùng `Reset-HoneyPilot.ps1`; có backup tự động, không sửa scene.
+- [Giao thức và mã nguồn](../../Docs/LetItBee.md#5-kiến-trúc-và-giao-thức-unitygama).
+- [Kiểm chứng và giới hạn](../../Docs/LetItBee.md#9-kiểm-chứng-và-giới-hạn).
 
 `HoneyPilot` read-only và direct cổng 6873 còn phục vụ chẩn đoán;
-`BeeBloomVR` qua SIMPLE là luồng phát triển chính. Hướng dẫn đầy đủ ở cùng tài liệu trên.
+`LetItBeeVR` qua SIMPLE là luồng phát triển chính. Hướng dẫn đầy đủ ở cùng tài liệu trên.

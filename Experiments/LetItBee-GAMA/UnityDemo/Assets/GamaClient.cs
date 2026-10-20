@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 
-// Separate demo transport: no Bee Bloom singletons, PlayerPrefs or scene edits.
+// Separate demo transport: no Let It Bee singletons, PlayerPrefs or scene edits.
 public sealed class GamaClient : IDisposable
 {
     public const string SnapshotExpression = "[cycle, bee_agent[0].location.x, bee_agent[0].location.y, bee_agent[0].location.z, cargo, stored, visits, stress, flower collect [each.flower_id, each.location.x, each.location.y, each.nectar, each.pollinated]]";
@@ -40,7 +40,7 @@ public sealed class GamaClient : IDisposable
         await Task.Run(() => socket.Connect());
         socketId = await Timeout(hello.Task, 10000);
         experimentId = (string)await Command("load", new JObject {
-            ["model"] = model, ["experiment"] = "BeeBloomLink", ["console"] = false
+            ["model"] = model, ["experiment"] = "LetItBeeLink", ["console"] = false
         }, 60000);
         // Desktop GAMA acknowledges load before its UI/controller initializes the simulation.
         // A successful snapshot, not the load acknowledgement, is our readiness signal.

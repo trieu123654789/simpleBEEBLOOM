@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 783269295}
   - component: {fileID: 783269294}
   m_Layer: 0
-  m_Name: Bee Bloom GAMA demo
+  m_Name: Let It Bee GAMA demo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05340a7f9e8460845b2201707653bfcc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BeeBloomDemo
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBeeDemo
   serverUrl: ws://127.0.0.1:6871
   demoMaterial: {fileID: 2100000, guid: 0773c9fa3e0c31c448991ccd2d6c3d53, type: 2}
 --- !u!4 &783269295

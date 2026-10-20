@@ -69,6 +69,13 @@ species unity_linker parent: abstract_unity_linker {
                     } else if (op != "snapshot") { fault <- "unknown_operation"; }
                 }
             }
+            // Older APKs validate the old schema inside their old envelope.
+            // Deep copy keeps that compatibility view out of persisted authority.
+            map legacy_state <- [];
+            if (!empty(state)) {
+                legacy_state <- from_json(to_json(state));
+                legacy_state["schema"] <- legacy_pilot_schema;
+            }
             do send_message players: receivers mes: ["let_it_bee"::[
                 "correlation"::envelope["correlation"],"fault"::fault,
                 "snapshot"::["state"::state,"response"::response,"cycle"::cycle,
@@ -76,7 +83,7 @@ species unity_linker parent: abstract_unity_linker {
                     "bee_position"::[bee_position.x,bee_position.y,bee_position.z],"world_sync"::world_response]],
                 "bee_bloom"::[
                 "correlation"::envelope["correlation"],"fault"::fault,
-                "snapshot"::["state"::state,"response"::response,"cycle"::cycle,
+                "snapshot"::["state"::legacy_state,"response"::response,"cycle"::cycle,
                     "flower_positions"::flower_positions,"slot_position"::slot_coordinates,
                     "bee_position"::[bee_position.x,bee_position.y,bee_position.z],"world_sync"::world_response]]];
         }
@@ -97,5 +104,5 @@ experiment LetItBeeVR parent: HoneyPilot autorun: false type: unity {
     }
 }
 
-// Backward compatibility experiment alias
-experiment BeeBloomVR parent: LetItBeeVR autorun: false type: unity { }
+// Legacy APKs use the bee_bloom envelope above; they do not select experiment names.
+// Keep one Unity experiment: inheriting another Unity experiment crashes this GAMA runtime.

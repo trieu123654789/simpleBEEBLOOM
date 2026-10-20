@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/BeeBloomGamaDemo.unity
+    path: Assets/Scenes/LetItBeeGamaDemo.unity
     guid: 9aa5a238284eabb4bbaef5f76eae06bb
   m_configObjects: {}

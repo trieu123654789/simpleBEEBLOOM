@@ -3,6 +3,7 @@ param(
  [string]$AdbPath,
  [string]$Serial,
  [string]$InstallApk,
+ [string]$PackageName = 'com.quoctrieu.letitbee',
  [switch]$UpdateFirewall,
  [switch]$EnableStreaming,
  [switch]$PrepareOnly
@@ -75,7 +76,7 @@ if ($InstallApk) {
   throw "APK installation failed (exit $($install.Code)): $($install.Lines -join ' '). Details: $log. Connection upload and firewall update have not run."
  }
 }
-& (Join-Path $PSScriptRoot 'Set-BeeConnection.ps1') -Endpoint "ws://${PcAddress}:8080" -OutputPath $questProfile -PushToQuest -AdbPath $AdbPath -Serial $Serial
+& (Join-Path $PSScriptRoot 'Set-BeeConnection.ps1') -Endpoint "ws://${PcAddress}:8080" -OutputPath $questProfile -PushToQuest -AdbPath $AdbPath -Serial $Serial -PackageName $PackageName
 if ($UpdateFirewall) {
  $identity=[Security.Principal.WindowsIdentity]::GetCurrent()
  $admin=([Security.Principal.WindowsPrincipal]::new($identity)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)

@@ -83,10 +83,19 @@ if (!$Serial) {
 $target="/sdcard/Android/data/$PackageName/files"
 & $adb -s $Serial shell mkdir -p $target
 if ($LASTEXITCODE -ne 0) { throw 'Cannot create the app config directory. Install and open the app once first.' }
-& $adb -s $Serial push $destination "$target/letitbee-connection.json.tmp"
- & $adb -s $Serial push $destination "$target/beebloom-connection.json.tmp"
-if ($LASTEXITCODE -ne 0) { throw 'ADB config upload failed.' }
-& $adb -s $Serial shell mv "$target/letitbee-connection.json.tmp" "$target/letitbee-connection.json"
+# Stage both profiles before activation. Older APKs require their original schema.
+$legacyTemporary=$destination+'.legacy.'+[Guid]::NewGuid().ToString('N')+'.tmp'
+try {
+ [IO.File]::WriteAllText($legacyTemporary,(@{schema='beebloom-connection-v1';simpleEndpoint=$normalizedEndpoint} | ConvertTo-Json),[Text.UTF8Encoding]::new($false))
+ & $adb -s $Serial push $destination "$target/letitbee-connection.json.tmp"
+ if ($LASTEXITCODE -ne 0) { throw 'ADB modern config upload failed; active profiles were kept.' }
+ & $adb -s $Serial push $legacyTemporary "$target/beebloom-connection.json.tmp"
+ if ($LASTEXITCODE -ne 0) { throw 'ADB legacy config upload failed; active profiles were kept.' }
+ & $adb -s $Serial shell mv "$target/letitbee-connection.json.tmp" "$target/letitbee-connection.json"
+ if ($LASTEXITCODE -ne 0) { throw 'ADB modern config activation failed.' }
  & $adb -s $Serial shell mv "$target/beebloom-connection.json.tmp" "$target/beebloom-connection.json"
-if ($LASTEXITCODE -ne 0) { throw 'ADB config activation failed.' }
+ if ($LASTEXITCODE -ne 0) { throw 'ADB legacy config activation failed.' }
+} finally {
+ if ([IO.File]::Exists($legacyTemporary)) { [IO.File]::Delete($legacyTemporary) }
+}
 Write-Host 'Quest connection updated. No APK rebuild needed; a running client reconnects automatically.'

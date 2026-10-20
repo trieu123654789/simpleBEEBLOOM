@@ -161,10 +161,17 @@ global {
         view_status <- "UNITY SERVER | current simulation positions";
         map config <- from_json(config_json);
         checkpoint <- string(config["checkpoint"]);
+        string migration_backup <- "";
         if (file_exists(checkpoint)) {
-            map saved <- json_file(checkpoint).contents;
+            // json_file buffers can be shared across experiments. Never mutate that cache.
+            map saved <- from_json(to_json(json_file(checkpoint).contents));
             state <- saved["state"];
             receipts <- saved["receipts"];
+            if (state["schema"] = legacy_pilot_schema) {
+                // Capture a deep snapshot before changing only the identity schema.
+                migration_backup <- to_json(saved);
+                state["schema"] <- pilot_schema;
+            }
         }
         if (empty(state)) {
             state <- ["schema"::pilot_schema, "session"::config["session"], "revision"::0,
@@ -181,8 +188,16 @@ global {
             and state["contact_radius"] = config["contact_radius"]
             and state["grab_radius"] = config["grab_radius"] and state["snap_radius"] = config["snap_radius"];
         response <- ["event_id"::"configure", "accepted"::matches,
-            "reason"::(matches ? "ready" : "session_or_geometry_mismatch")];
+            "reason"::(matches ? "ready" : "session_or_geometry_mismatch"), "migrated"::(matches and migration_backup != "")];
         if (matches) {
+            if (migration_backup != "") {
+                string backup_path <- checkpoint + ".before-letitbee.json";
+                if (!file_exists(backup_path)) {
+                    save from_json(migration_backup) to: backup_path format: "json" rewrite: true;
+                }
+                last_contact <- int(state["last_contact"]);
+                do persist;
+            }
             string source <- config contains_key "world_source" ? string(config["world_source"]) : "";
             if (source != world_source) {
                 world_source <- source; world_sequence <- -1; world_signature <- "";

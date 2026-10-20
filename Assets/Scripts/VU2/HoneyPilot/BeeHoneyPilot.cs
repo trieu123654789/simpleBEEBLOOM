@@ -134,8 +134,8 @@ namespace LetItBee.HoneyPilot
         void OnEnable()
         {
 #if UNITY_EDITOR
-            if (UnityEditor.SessionState.GetBool("BeeBloom.Simple.IsolatedChecks", false)) {
-                UnityEditor.SessionState.EraseBool("BeeBloom.Simple.IsolatedChecks");
+            if (UnityEditor.SessionState.GetBool("LetItBee.Simple.IsolatedChecks", false)) {
+                UnityEditor.SessionState.EraseBool("LetItBee.Simple.IsolatedChecks");
                 ConnectionStatus = "Temporarily disabled for isolated SIMPLE checks";
                 enabled = false;
                 return;

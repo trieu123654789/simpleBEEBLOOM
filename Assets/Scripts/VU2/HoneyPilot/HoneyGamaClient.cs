@@ -11,7 +11,9 @@ namespace LetItBee.HoneyPilot
     // Dedicated transport: does not touch SIMPLE singletons or shared InputActions.
     public sealed class HoneyGamaClient : IHoneyClient
     {
-        public const string Schema = "beebloom-honey-pilot-v1";
+        public const string Schema = "letitbee-honey-pilot-v1";
+        public const string LegacySchema = "beebloom-honey-pilot-v1";
+        public static bool IsSupportedSchema(string schema) => schema == Schema || schema == LegacySchema;
         public const string SnapshotExpression = "to_json([\"state\"::state,\"response\"::response,\"cycle\"::cycle,\"flower_positions\"::flower_positions,\"slot_position\"::slot_coordinates,\"world_sync\"::world_response])";
         readonly ConcurrentDictionary<int, TaskCompletionSource<JToken>> pending = new();
         readonly TaskCompletionSource<string> hello = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -44,7 +46,7 @@ namespace LetItBee.HoneyPilot
             }, 60000);
             await AskAsync("configure", new JObject { ["config_json"] = configuration.ToString(Formatting.None) });
             JObject snapshot = await SnapshotAsync();
-            if ((string)snapshot["state"]?["schema"] != Schema || (bool?)snapshot["response"]?["accepted"] != true)
+            if (!IsSupportedSchema((string)snapshot["state"]?["schema"]) || (bool?)snapshot["response"]?["accepted"] != true)
                 throw new InvalidOperationException("GAMA configuration refused: " + snapshot["response"]);
             await CommandAsync("play");
             return snapshot;

@@ -93,7 +93,16 @@ class SimpleGama:
             if time.monotonic()>=retry_at:
                 print('SIMPLE retry, same correlation:',action,correlation,flush=True)
                 self.ws.send(message);retry_at=time.monotonic()+5
-            try: reply = self.receive().get('contents', {}).get('bee_bloom')
+            try:
+                contents = self.receive().get('contents', {})
+                reply = contents.get('let_it_bee')
+                if reply:
+                    assert reply['snapshot']['state'].get('schema') == 'letitbee-honey-pilot-v1'
+                    legacy = contents.get('bee_bloom')
+                    assert legacy and legacy['snapshot']['state'].get('schema') == 'beebloom-honey-pilot-v1'
+                    assert legacy['correlation'] == reply['correlation']
+                    modern_state = dict(reply['snapshot']['state']); modern_state['schema'] = 'beebloom-honey-pilot-v1'
+                    assert modern_state == legacy['snapshot']['state']
             except websocket.WebSocketTimeoutException: continue
             if reply and reply['correlation'] == correlation:
                 if reply['fault'] and action != 'configure':

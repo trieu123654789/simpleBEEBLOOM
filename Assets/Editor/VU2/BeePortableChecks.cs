@@ -24,6 +24,9 @@ public static class BeePortableChecks
             Check(BeeConnectionProfile.Resolve("ws://192.0.2.1:8080",path)=="ws://192.0.2.1:8080", "missing file preserves scene connection fallback");
             Profile("ws://192.0.2.2:8080");
             Check(BeeConnectionProfile.Resolve("ws://192.0.2.1:8080",path)=="ws://192.0.2.2:8080", "external profile overrides saved IP without changing scene");
+            File.WriteAllText(path, "{\"schema\":\"letitbee-connection-v1\",\"simpleEndpoint\":\"ws://192.0.2.3:8080\"}");
+            Check(BeeConnectionProfile.Resolve("ws://localhost:8080",path)=="ws://192.0.2.3:8080", "modern connection profile accepted");
+            Check(HoneyGamaClient.IsSupportedSchema("letitbee-honey-pilot-v1") && HoneyGamaClient.IsSupportedSchema("beebloom-honey-pilot-v1") && !HoneyGamaClient.IsSupportedSchema("other"), "modern and legacy gameplay schemas accepted, unknown schema refused");
             Profile("ws://localhost:8080");
             Check(BeeConnectionProfile.Resolve("ws://192.0.2.1:8080",path)=="ws://localhost:8080", "profile changes are read without app rebuild or cached IP");
             File.WriteAllText(path,"broken JSON");

@@ -13,8 +13,11 @@ namespace LetItBee.HoneyPilot
         public static string ConfigPath {
             get {
 #if UNITY_EDITOR
-                return Path.GetFullPath(Path.Combine(Application.dataPath,
+                string newPath = Path.GetFullPath(Path.Combine(Application.dataPath,
                     "../Experiments/LetItBee-HoneyPilot/Runtime/" + FileName));
+                if (File.Exists(newPath)) return newPath;
+                string legacyPath = Path.Combine(Path.GetDirectoryName(newPath), LegacyFileName);
+                return File.Exists(legacyPath) ? legacyPath : newPath;
 #else
                 string newPath = Path.Combine(Application.persistentDataPath, FileName);
                 if (File.Exists(newPath)) return newPath;

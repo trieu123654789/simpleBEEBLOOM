@@ -1,6 +1,6 @@
 # Let It Bee — Kế hoạch, tiến độ và hướng dẫn phát triển
 
-Cập nhật: **20/10/2026**. Đây là tài liệu chính của Let It Bee, hợp nhất các bản
+Cập nhật: **21/10/2026**. Đây là tài liệu chính của Let It Bee, hợp nhất các bản
 plan, checklist, tiến độ và hướng dẫn kỹ thuật đã tạo trong quá trình làm việc.
 Khi thay đổi phạm vi hoặc hoàn thành công việc, cập nhật tại đây.
 
@@ -22,6 +22,35 @@ HUD và thông số bay người dùng đã lưu được giữ nguyên; hiệu 
 - [11. Tài liệu nền và nguồn tham khảo](#11-tài-liệu-nền-và-nguồn-tham-khảo)
 
 ## 1. Trạng thái và phạm vi đã chốt
+
+### Bản đổi tên đã kiểm tra ngày 21/10
+
+Thư mục hiện hành là `Experiments/LetItBee-HoneyPilot`, scene là
+`Assets/Scenes/VU2/SCN_LetItBee.unity`. Các ghi nhận ngày trước ở dưới là lịch sử
+kiểm chứng; không dùng tên APK lịch sử làm tên file của bản build mới.
+
+Schema gameplay hiện hành là `letitbee-honey-pilot-v1`. Client mới chấp nhận cả
+schema BeeBloom cũ; server trả riêng envelope `let_it_bee` và envelope tương thích
+`bee_bloom` có schema cũ cho APK cũ. Schema quan sát `beebloom-world-v1` được giữ
+nguyên ở hai đầu để không đổi giao thức tọa độ. Đây là các tên tương thích kỹ thuật.
+
+Checkpoint cũ chỉ được chuyển schema khi session, vị trí và bán kính đều khớp.
+Server lưu bản `TEN-CHECKPOINT.json.before-letitbee.json` trước khi chuyển, giữ
+nguyên revision, mật, phấn và receipts. Cấu hình không khớp bị từ chối mà không
+ghi checkpoint. Không tự reset lượt chơi khi đổi tên.
+
+`Connect-Quest.ps1` mặc định cập nhật app `com.quoctrieu.letitbee`. Với APK BeeBloom
+cũ, thêm `-PackageName com.quoctrieu.beebloom`. Hai package là hai app riêng trên
+Android; script không gỡ app cũ hay xóa dữ liệu. Tiến độ gameplay vẫn do checkpoint
+GAMA theo session quản lý. Mỗi app nhận profile mới và profile tương thích tên cũ;
+từng bước upload/activate được kiểm tra mã lỗi riêng.
+
+Đã kiểm chứng với server thật: 32 kiểm tra gameplay trực tiếp GAMA, 32 kiểm tra
+qua SIMPLE, 25 kiểm tra client Unity C# và 11 kiểm tra chuyển đổi schema/checkpoint.
+Bản sao checkpoint thật (revision 34, đã gắn 1 cục, 34 receipts) chuyển đổi đúng;
+checkpoint thật không bị sửa. Kiểm tra Editor còn bao gồm 17 kiểm tra cấu hình,
+21 tương tác, 26 đậu hoa, 23 grip, 53 hiệu ứng và 18 đồng bộ thế giới.
+Chưa kiểm tra APK đổi tên trên Quest vì không có thiết bị ADB trong lượt này.
 
 Mục tiêu hiện tại là chuẩn hóa nền kết nối và thử vòng **hoa → mật → tổ** trước
 khi phát triển gameplay chính. Chưa yêu cầu đóng gói đi thi hoặc làm level design.
