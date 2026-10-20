@@ -19,6 +19,16 @@ namespace BeeBloom.HoneyPilot
             DefaultIP = uri.Host;
             DefaultPort = uri.Port.ToString();
         }
+        void Start()
+        {
+            // ConnectionManager.Start calls Connect synchronously. An unreachable
+            // LAN address then stalls scene startup on Quest before its first frame.
+            // Keep SIMPLE's handshake, but let the pilot own retries and timeouts.
+            UpdateConnectionState(ConnectionState.PENDING);
+            var socket = GetSocket();
+            socket.WaitTime = TimeSpan.FromSeconds(5);
+            socket.ConnectAsync();
+        }
         protected override void HandleConnectionClosed(object sender, CloseEventArgs e)
         {
             // The base manager reconnects immediately on close. Reconnect belongs

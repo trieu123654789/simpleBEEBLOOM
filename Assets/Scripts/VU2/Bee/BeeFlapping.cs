@@ -256,6 +256,12 @@ public class BeeFlapping : MonoBehaviour
             amplitude = 0f;
         }
 
+        if (_bee != null && _bee.IsFlowerPerched)
+        {
+            frequency = amplitude = 0f;
+            flapping = false;
+        }
+
         // Cu dap manh: nhip nhanh + bien do lon hon -> nhin ro la "bam dap".
         if (boost > 0.05f)
         {
@@ -288,7 +294,8 @@ public class BeeFlapping : MonoBehaviour
         // Nang/ha than theo nhip canh -> co cam giac "song".
         if (body != null && bodyBobAmplitude > 0f)
         {
-            body.localPosition = _bodyBasePos + Vector3.up * (wave * bodyBobAmplitude * (0.35f + 0.65f * Mathf.Clamp01(speedNorm)));
+            float bob = _bee != null && _bee.IsFlowerPerched ? 0f : wave * bodyBobAmplitude * (0.35f + 0.65f * Mathf.Clamp01(speedNorm));
+            body.localPosition = _bodyBasePos + Vector3.up * bob;
         }
     }
 

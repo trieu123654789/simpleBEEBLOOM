@@ -121,10 +121,12 @@ public abstract class WebSocketConnector : MonoBehaviour
     protected void SendMessageToServer(string message, Action<bool> successCallback)
     {
 
-        if (!socket.IsAlive)
+        // IsAlive sends a blocking ping. In a receive callback that can hold up
+        // authentication and the next GAMA response; the protocol has its own heartbeat.
+        if (socket == null || socket.ReadyState != WebSocketState.Open)
         {
             // Debug.LogError("WebSocket is not connected. Cannot send message: " + message);
-            // successCallback(false);
+            successCallback?.Invoke(false);
             return;
         }
         if (message == null || message.Length == 0)

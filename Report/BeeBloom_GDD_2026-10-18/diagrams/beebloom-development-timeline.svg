@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="232" viewBox="0 0 1200 232" role="img" aria-label="Các mốc phát triển theo Git">
+<title>Các mốc phát triển theo Git</title>
+<desc>Bốn mốc trong lịch sử mã nguồn: nhập nền SIMPLE ngày 30 tháng 9, chỉnh bay ngày 6 tháng 10, sửa rig và hai ray ngày 14 tháng 10, tích hợp pilot GAMA ngày 18 tháng 10 năm 2026.</desc>
+<rect x="0" y="0" width="1200" height="232" fill="#FFFFFF"/>
+<text x="168" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">30/09/2026</text>
+<text x="456" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">06/10/2026</text>
+<text x="744" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">14/10/2026</text>
+<text x="1032" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">18/10/2026</text>
+<path d="M 232 144 L 345 144" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 356 144 L 344 149 L 344 139 Z" fill="#5E6B70"/>
+<rect x="250" y="112" width="88" height="24" rx="4" fill="#FFFFFF"/>
+<text x="294" y="128" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Map + XR</text>
+<path d="M 556 144 L 633 144" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 644 144 L 632 149 L 632 139 Z" fill="#5E6B70"/>
+<rect x="552" y="112" width="96" height="24" rx="4" fill="#FFFFFF"/>
+<text x="600" y="128" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Bay cơ bản</text>
+<path d="M 844 144 L 929 144" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 940 144 L 928 149 L 928 139 Z" fill="#5E6B70"/>
+<rect x="858" y="112" width="68" height="24" rx="4" fill="#FFFFFF"/>
+<text x="892" y="128" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Rig VR</text>
+<rect x="104" y="108" width="128" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="168" y="140" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="168" dy="0">Nhập dự án</tspan><tspan x="168" dy="20">nền SIMPLE</tspan></text>
+<rect x="356" y="120" width="200" height="48" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="456" y="149.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">Chỉnh điều khiển bay</text>
+<rect x="644" y="120" width="200" height="48" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="744" y="149.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">Sửa rig và hai ray VR</text>
+<rect x="940" y="120" width="184" height="48" rx="24" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="1032" y="149.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">Nối pilot với GAMA</text>
+</svg>

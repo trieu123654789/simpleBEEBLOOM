@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="524" viewBox="0 0 1200 524" role="img" aria-label="Luồng xác nhận giao dịch Unity SIMPLE GAMA">
+<title>Luồng xác nhận giao dịch Unity SIMPLE GAMA</title>
+<desc>Unity gửi yêu cầu qua SIMPLE tới GAMA. GAMA từ chối thao tác không hợp lệ hoặc ghi state và biên nhận trước khi trả snapshot để Unity hiển thị kết quả.</desc>
+<rect x="0" y="0" width="1200" height="524" fill="#FFFFFF"/>
+<path d="M 416 48 L 416 476" stroke="#5E6B70" stroke-width="2" fill="none"/>
+<path d="M 784 48 L 784 476" stroke="#5E6B70" stroke-width="2" fill="none"/>
+<text x="232" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">UNITY VR</text>
+<text x="600" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">SIMPLE WEBPLATFORM</text>
+<text x="968" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">GAMA</text>
+<path d="M 308 132 L 509 132" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 520 132 L 508 137 L 508 127 Z" fill="#5E6B70"/>
+<rect x="348" y="100" width="132" height="24" rx="4" fill="#FFFFFF"/>
+<text x="414" y="116" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Pose + event_id</text>
+<path d="M 680 132 L 853 132" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 864 132 L 852 137 L 852 127 Z" fill="#5E6B70"/>
+<rect x="720" y="100" width="104" height="24" rx="4" fill="#FFFFFF"/>
+<text x="772" y="116" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">bee_request</text>
+<path d="M 968 156 L 968 237" fill="none" stroke="#996515" stroke-width="2" stroke-linecap="round"/>
+<path d="M 968 248 L 963 236 L 973 236 Z" fill="#996515"/>
+<rect x="980" y="186" width="88" height="24" rx="4" fill="#FFFFFF"/>
+<text x="984" y="202" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#996515" text-anchor="start">Không đạt</text>
+<path d="M 1072 132 L 1140 132 L 1140 436 L 1059 436" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 1048 436 L 1060 431 L 1060 441 Z" fill="#5E6B70"/>
+<rect x="1096" y="348" width="40" height="24" rx="4" fill="#FFFFFF"/>
+<text x="1132" y="364" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="end">Đạt</text>
+<path d="M 896 284 L 728 284 L 728 436 L 691 436" fill="none" stroke="#996515" stroke-width="2" stroke-linecap="round"/>
+<path d="M 680 436 L 692 431 L 692 441 Z" fill="#996515"/>
+<rect x="736" y="248" width="124" height="24" rx="4" fill="#FFFFFF"/>
+<text x="798" y="264" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#996515" text-anchor="middle">accepted=false</text>
+<path d="M 888 436 L 691 436" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 680 436 L 692 431 L 692 441 Z" fill="#5E6B70"/>
+<rect x="718" y="404" width="132" height="24" rx="4" fill="#FFFFFF"/>
+<text x="784" y="420" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">ACK + snapshot</text>
+<path d="M 520 436 L 343 436" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 332 436 L 344 431 L 344 441 Z" fill="#5E6B70"/>
+<rect x="354" y="404" width="144" height="24" rx="4" fill="#FFFFFF"/>
+<text x="426" y="420" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Kết quả xác nhận</text>
+<rect x="156" y="96" width="152" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="232" y="128" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="232" dy="0">Unity đọc</tspan><tspan x="232" dy="20">input và tư thế</tspan></text>
+<rect x="520" y="96" width="160" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="600" y="128" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="600" dy="0">SIMPLE chuyển</tspan><tspan x="600" dy="20">yêu cầu</tspan></text>
+<rect x="864" y="108" width="208" height="48" rx="8" fill="#F3EDE3" stroke="#996515" stroke-width="2"/>
+<text x="968" y="137.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">GAMA kiểm tra hợp lệ</text>
+<rect x="896" y="248" width="144" height="72" rx="8" fill="#F3EDE3" stroke="#996515" stroke-width="2"/>
+<text x="968" y="280" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="968" dy="0">GAMA từ chối</tspan><tspan x="968" dy="20">giao dịch</tspan></text>
+<rect x="888" y="400" width="160" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="968" y="432" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="968" dy="0">GAMA lưu state</tspan><tspan x="968" dy="20">và biên nhận</tspan></text>
+<rect x="520" y="400" width="160" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="600" y="432" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="600" dy="0">SIMPLE chuyển</tspan><tspan x="600" dy="20">phản hồi</tspan></text>
+<rect x="132" y="412" width="200" height="48" rx="24" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="232" y="441.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">Unity hiển thị kết quả</text>
+</svg>

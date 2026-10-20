@@ -32,6 +32,12 @@ species unity_linker parent: abstract_unity_linker {
             map envelope <- from_json(envelope_json);
             string op <- string(envelope["operation"]);
             map payload <- envelope["payload"];
+            // A disconnected headset may have been removed without a clean
+            // goodbye. Keep the checkpoint, but do not leave its ID owning the
+            // pilot forever when no such player remains in the simulation.
+            if (pilot_owner != "" and empty(unity_player where (each.name = pilot_owner))) {
+                pilot_owner <- "";
+            }
             bool permitted <- pilot_owner = "" or pilot_owner = id;
             string fault <- permitted ? "" : "pilot_owned_by_another_player";
             if (permitted) {
@@ -58,6 +64,8 @@ species unity_linker parent: abstract_unity_linker {
                         ask world { do set_pose(string(payload["pose_json"])); }
                     } else if (op = "transact") {
                         ask world { do transact(string(payload["request_json"])); }
+                    } else if (op = "sync_world") {
+                        ask world { do sync_world(string(payload["world_json"])); }
                     } else if (op != "snapshot") { fault <- "unknown_operation"; }
                 }
             }
@@ -65,7 +73,7 @@ species unity_linker parent: abstract_unity_linker {
                 "correlation"::envelope["correlation"],"fault"::fault,
                 "snapshot"::["state"::state,"response"::response,"cycle"::cycle,
                     "flower_positions"::flower_positions,"slot_position"::slot_coordinates,
-                    "bee_position"::[bee_position.x,bee_position.y,bee_position.z]]]];
+                    "bee_position"::[bee_position.x,bee_position.y,bee_position.z],"world_sync"::world_response]]];
         }
     }
 }
@@ -80,5 +88,6 @@ experiment BeeBloomVR parent: HoneyPilot autorun: false type: unity {
     }
     action remove_player(string id_input) {
         ask unity_player where (each.name = id_input) { do die; }
+        if (pilot_owner = id_input) { pilot_owner <- ""; }
     }
 }

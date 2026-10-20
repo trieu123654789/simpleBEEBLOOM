@@ -81,11 +81,20 @@ class SimpleGama:
     def ask(self, action, **args):
         correlation = uuid.uuid4().hex
         envelope = dict(correlation=correlation, operation=action, payload=args)
-        self.ws.send(json.dumps(dict(type='ask', action='bee_request', agent='simulation[0].unity_linker[0]',
-            args=json.dumps(dict(id=self.player, envelope_json=json.dumps(envelope))))))
-        deadline = time.monotonic() + 15
+        message=json.dumps(dict(type='ask', action='bee_request', agent='simulation[0].unity_linker[0]',
+            args=json.dumps(dict(id=self.player, envelope_json=json.dumps(envelope)))))
+        # Match the Unity client's idempotent retry contract. Keep both the RPC
+        # correlation and nested transaction event_id identical on retransmit.
+        self.ws.send(message)
+        deadline = time.monotonic() + 30
+        retry_at=time.monotonic()+5
+        self.ws.settimeout(1)
         while time.monotonic() < deadline:
-            reply = self.receive().get('contents', {}).get('bee_bloom')
+            if time.monotonic()>=retry_at:
+                print('SIMPLE retry, same correlation:',action,correlation,flush=True)
+                self.ws.send(message);retry_at=time.monotonic()+5
+            try: reply = self.receive().get('contents', {}).get('bee_bloom')
+            except websocket.WebSocketTimeoutException: continue
             if reply and reply['correlation'] == correlation:
                 if reply['fault'] and action != 'configure':
                     raise RuntimeError(reply['fault'])
@@ -101,7 +110,7 @@ class SimpleGama:
 
     def close(self):
         self.mon.send('remove_player_headset', id=self.player)
-        time.sleep(0.3)
+        self.mon.wait(lambda s:self.player not in s.get('player',{}))
         self.ws.close()
         self.mon.close()
 

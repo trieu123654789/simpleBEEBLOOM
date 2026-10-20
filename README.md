@@ -12,7 +12,8 @@ Hiện đang chuẩn hóa nền phát triển và thử vòng hoa → mật → 
 - Pilot hai hoa, một cục mật, một ô tổ; GAMA xác nhận tài nguyên và giao dịch.
 - Unity → SIMPLE WebPlatform → LinkToUnity → GAMA; endpoint ngoài APK,
   đường dẫn checkpoint cấu hình trên server.
-- APK có bộ đọc cấu hình ngoài đã build; chưa nghiệm thu trên Quest.
+- APK có bộ đọc cấu hình ngoài; đã sửa và xác nhận mở được cảnh trên Quest,
+  còn kiểm thử vòng tương tác và đậu hoa trên kính.
 
 Mục tiêu chính 5 cục/lượt, màn 2 xâm nhập mặn, NPC và cutscene còn trong kế hoạch.
 Không coi mô hình pilot là dữ liệu sinh thái đã hiệu chuẩn.

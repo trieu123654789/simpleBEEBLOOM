@@ -24,6 +24,15 @@ if ($gamaHost -notmatch '^[A-Za-z0-9.-]+$' -or $GamaPort -lt 1 -or $GamaPort -gt
 $node=if($machine.nodePath){Resolve-MachinePath $machine.nodePath}else{(Get-Command node -ErrorAction Stop).Source}
 $runtime = Join-Path $PSScriptRoot 'Runtime/simple-platform'
 New-Item -ItemType Directory -Force $runtime | Out-Null
+# The official dev runtime resolves toolkit assets relative to its working
+# directory. Our .env lives here, so mirror the official bundled files here too.
+$runtimeToolkit=Join-Path $runtime 'toolkit'
+New-Item -ItemType Directory -Force $runtimeToolkit | Out-Null
+foreach($assetName in @('scrcpyServer-v3.3.4-rom1v','tdg.oculuswirelessadb.apk','eu.project_simple.adbautoenable.apk','eu.project_simple.no-loft.apk')) {
+ $source=Join-Path (Join-Path $WebPlatform 'toolkit') $assetName
+ if (Test-Path -LiteralPath $source) { Copy-Item -LiteralPath $source -Destination (Join-Path $runtimeToolkit $assetName) -Force }
+ else { Write-Warning "Official SIMPLE toolkit asset missing: $source. Headset setup/streaming may be unavailable; gameplay services can still start." }
+}
 $ownedRunning = 0
 foreach ($entry in @(@{File='platform.pid';Marker='simple-compat.mjs'}, @{File='web.pid';Marker='vite.config.mjs'})) {
  $record = Join-Path $runtime $entry.File
@@ -75,8 +84,16 @@ import react from $reactImport;
 import tailwindcss from $tailwindImport;
 import autoprefixer from $autoprefixerImport;
 import tailwindConfig from $tailwindConfigImport;
+import { createRequire } from 'node:module';
+// Excluded dependencies remain bare imports in optimized decoder chunks. The
+// cache lives outside WebPlatform, so resolve them from its installed packages.
+const platformRequire = createRequire($platformJson + '/package.json');
+const streamingAliases = ['@yume-chan/adb-scrcpy', '@yume-chan/stream-extra'].map(name => ({
+ find: name, replacement: platformRequire.resolve(name)
+}));
 export default {
  root: $platformJson, cacheDir: $cacheJson, plugins: [react()],
+ resolve: { alias: streamingAliases },
  css: { postcss: { plugins: [tailwindcss({ ...tailwindConfig,
    content: $contentJson
  }), autoprefixer()] } },
@@ -89,12 +106,17 @@ export default {
 $loader = ([Uri](Join-Path $WebPlatform 'node_modules/tsx/dist/loader.mjs')).AbsoluteUri
 $connectorUri = ([Uri](Join-Path $WebPlatform 'src/api/simulation/GamaConnector.ts')).AbsoluteUri
 $connectorImport=$connectorUri | ConvertTo-Json -Compress
+$playersImport=([Uri](Join-Path $WebPlatform 'src/api/multiplayer/PlayerManager.ts')).AbsoluteUri | ConvertTo-Json -Compress
+$heartbeatImport=([Uri](Join-Path $PSScriptRoot 'SimpleHeartbeatCompat.mjs')).AbsoluteUri | ConvertTo-Json -Compress
 $isHeadless = $Headless.IsPresent.ToString().ToLowerInvariant()
 @"
 // WebPlatform 4.0 compatibility: GUI load replies with an experiment name,
 // not a headless experiment id. GUI commands use its active experiment;
 // headless commands require the experiment id returned by load.
 import GamaConnector from $connectorImport;
+import PlayerManager from $playersImport;
+import { installHeartbeatCleanup } from $heartbeatImport;
+installHeartbeatCleanup(PlayerManager);
 const headless = $isHeadless;
 const connectGama = GamaConnector.prototype.connectGama;
 GamaConnector.prototype.connectGama = function () {
@@ -132,7 +154,17 @@ GamaConnector.prototype.sendMessages = function (callback) {
 "@ | Set-Content (Join-Path $runtime 'simple-compat.mjs')
 $compat = ([Uri](Join-Path $runtime 'simple-compat.mjs')).AbsoluteUri
 $api = Join-Path $WebPlatform 'src/api/index.ts'
-$backend = Start-Process $node -ArgumentList @('--import', $loader, '--import', $compat, ('"'+$api+'"')) -WorkingDirectory $runtime -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'platform.log') -RedirectStandardError (Join-Path $runtime 'platform-error.log')
+$adbCommand=Get-Command adb -ErrorAction SilentlyContinue
+$adbExe=if($machine.adbPath){Resolve-MachinePath $machine.adbPath}elseif($adbCommand){$adbCommand.Source}else{$null}
+if (!$adbExe) {
+ $candidate=Get-ChildItem -Path "$env:ProgramFiles/Unity/Hub/Editor/*/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/platform-tools/adb.exe" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+ if($candidate){$adbExe=$candidate.FullName}
+}
+$previousPath=$env:Path
+try {
+ if($adbExe){$env:Path=(Split-Path -Parent $adbExe)+';'+$previousPath}
+ $backend = Start-Process $node -ArgumentList @('--import', $loader, '--import', $compat, ('"'+$api+'"')) -WorkingDirectory $runtime -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'platform.log') -RedirectStandardError (Join-Path $runtime 'platform-error.log')
+} finally {$env:Path=$previousPath}
 $backend.Id | Set-Content (Join-Path $runtime 'platform.pid')
 $vite = Join-Path $WebPlatform 'node_modules/vite/bin/vite.js'
 $frontend = Start-Process $node -ArgumentList @(('"'+$vite+'"'),'--config',('"'+(Join-Path $runtime 'vite.config.mjs')+'"'),'--configLoader','native') -WorkingDirectory $runtime -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtime 'web.log') -RedirectStandardError (Join-Path $runtime 'web-error.log')

@@ -120,6 +120,21 @@ public class BeeController : MonoBehaviour
     [Tooltip("Hover oscillations per second while holding left trigger.")]
     [Range(0.1f, 3f)] public float holdBobFrequency = 1.2f;
     public bool IsPositionHolding { get; private set; }
+    public bool IsFlowerPerched { get; private set; }
+    // Runtime ownership only; does not alter any serialized flight binding.
+    public bool RightHandInteractionOwnsInput { get; set; }
+
+    public void SetFlowerPerched(bool perched)
+    {
+        IsFlowerPerched = perched;
+        ClearStrokeLift();
+        _brakeStartVelocity = _lastFlightVelocity = Vector3.zero;
+        _currentForwardSpeed = _currentStrafeSpeed = _verticalVelocity = 0f;
+        Speed = HoldVisualBob = 0f;
+        IsFlapping = false;
+        _holdPosition = transform.position;
+        _brakeElapsed = Mathf.Max(0.1f, holdBrakeDuration);
+    }
     private Vector3 _holdPosition;
     private float _holdElapsed;
 
@@ -161,6 +176,14 @@ public class BeeController : MonoBehaviour
     private void StepPositionHold(bool pressed, float deltaTime)
     {
         deltaTime = Mathf.Max(0f, deltaTime);
+        if (IsFlowerPerched)
+        {
+            // The flower owns translation until release; do not restore the pre-landing hold point.
+            IsPositionHolding = pressed;
+            _holdPosition = transform.position;
+            HoldVisualBob = 0f;
+            return;
+        }
         if (pressed && !IsPositionHolding)
         {
             _holdPosition = transform.position;
@@ -203,7 +226,7 @@ public class BeeController : MonoBehaviour
 
     public bool TryQueueRhythmStroke(float strength)
     {
-        if (!enableRhythmFlight || IsPositionHolding || ExternalMovementLocked || IsExhausted) return false;
+        if (!enableRhythmFlight || IsPositionHolding || IsFlowerPerched || ExternalMovementLocked || IsExhausted) return false;
         float cost = Mathf.Max(0f, strokeStaminaCost);
         if (_stamina < cost || !_strokeLift.Add(strength * strokeLiftScale, strokeLiftDuration)) return false;
         _stamina = Mathf.Max(0f, _stamina - cost);
@@ -214,7 +237,7 @@ public class BeeController : MonoBehaviour
     // Bonus belongs to two already-paid strokes; it must not bypass hold or create stored lift.
     public void QueueRhythmPairBonus(float strength)
     {
-        if (!enableRhythmFlight || IsPositionHolding || ExternalMovementLocked) return;
+        if (!enableRhythmFlight || IsPositionHolding || IsFlowerPerched || ExternalMovementLocked) return;
         _strokeLift.Add(strength * strokeLiftScale, strokeLiftDuration);
     }
 
@@ -251,6 +274,7 @@ public class BeeController : MonoBehaviour
     private void ResetFlightV2State()
     {
         ClearStrokeLift();
+        IsFlowerPerched = false;
         IsPositionHolding = false;
         HoldVisualBob = 0f;
         _brakeStartVelocity = _lastFlightVelocity = Vector3.zero;
@@ -422,6 +446,9 @@ public class BeeController : MonoBehaviour
             if (ReadLeftHoldTrigger()) return false;
             // 1. Input Action nếu đã cấu hình binding
             if (flapAction.action != null && flapAction.action.enabled && flapAction.action.IsPressed()
+                && !(RightHandInteractionOwnsInput && flapAction.action.activeControl != null
+                    && (flapAction.action.activeControl.path.Contains("grip") || flapAction.action.activeControl.path.Contains("trigger"))
+                    && System.Linq.Enumerable.Any(flapAction.action.activeControl.device.usages, usage => usage.ToString() == "RightHand"))
                 && !(enableLeftTriggerHold && flapAction.action.activeControl != null
                     && flapAction.action.activeControl.path.Contains("trigger")
                     && System.Linq.Enumerable.Any(flapAction.action.activeControl.device.usages, usage => usage.ToString() == "LeftHand")))
@@ -431,7 +458,7 @@ public class BeeController : MonoBehaviour
             if (enableDirectXrInput && enableDirectXrFlap)
             {
                 UpdateXrDevices();
-                if (CheckXrFlapInput(_rightHand) || CheckXrFlapInput(_leftHand, !enableLeftTriggerHold))
+                if (CheckXrFlapInput(_rightHand, !RightHandInteractionOwnsInput, !RightHandInteractionOwnsInput) || CheckXrFlapInput(_leftHand, !enableLeftTriggerHold))
                     return true;
 
                 // 3. Vung tay / Lắc tay đập cánh (Shake Flapping)
@@ -569,7 +596,7 @@ public class BeeController : MonoBehaviour
         if (_rightDevices.Count > 0) _rightHand = _rightDevices[0];
     }
 
-    private bool CheckXrFlapInput(XRInputDevice device, bool allowTrigger = true)
+    private bool CheckXrFlapInput(XRInputDevice device, bool allowTrigger = true, bool allowGrip = true)
     {
         if (!device.isValid) return false;
 
@@ -582,8 +609,8 @@ public class BeeController : MonoBehaviour
         if (device.TryGetFeatureValue(XRCommonUsages.secondaryButton, out bool btnSecondary) && btnSecondary) return true;
 
         // Nút bóp hông (Grip)
-        if (device.TryGetFeatureValue(XRCommonUsages.gripButton, out bool gripBtn) && gripBtn) return true;
-        if (device.TryGetFeatureValue(XRCommonUsages.grip, out float gripVal) && gripVal > 0.4f) return true;
+        if (allowGrip && device.TryGetFeatureValue(XRCommonUsages.gripButton, out bool gripBtn) && gripBtn) return true;
+        if (allowGrip && device.TryGetFeatureValue(XRCommonUsages.grip, out float gripVal) && gripVal > 0.4f) return true;
 
         return false;
     }
@@ -767,6 +794,7 @@ public class BeeController : MonoBehaviour
     /// </summary>
     public bool ReadCombinedFlapInput()
     {
+        if (IsFlowerPerched) return false;
         if (enableRhythmFlight)
             return !IsPositionHolding && (_strokeLift.Active || RawHardwareFlapPressed);
         if (ExternalFlapOverride) return true;
@@ -829,7 +857,8 @@ public class BeeController : MonoBehaviour
         UpdatePositionHold(!ExternalMovementLocked && ReadLeftHoldTrigger());
         UpdateSteering();
         UpdateStamina();
-        if (!IsPositionHolding) UpdateMovement();
+        if (!IsPositionHolding && !IsFlowerPerched) UpdateMovement();
+        if (IsFlowerPerched) { HoldVisualBob = 0f; IsFlapping = false; }
         ApplyRotation();
     }
 

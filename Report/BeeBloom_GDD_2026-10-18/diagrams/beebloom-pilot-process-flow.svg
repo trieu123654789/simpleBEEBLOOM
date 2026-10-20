@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="684" viewBox="0 0 1200 684" role="img" aria-label="Vòng chơi thành công của pilot Bee Bloom">
+<title>Vòng chơi thành công của pilot Bee Bloom</title>
+<desc>Người chơi ghé hoa A, nhận phấn, lấy và cầm mật, ghé hoa B để chuyển phấn, đưa mật về ô tổ và nhận xác nhận 1 trên 1 từ GAMA.</desc>
+<rect x="0" y="0" width="1200" height="684" fill="#FFFFFF"/>
+<path d="M 488 84 L 677 84" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 688 84 L 676 89 L 676 79 Z" fill="#5E6B70"/>
+<rect x="530" y="52" width="116" height="24" rx="4" fill="#FFFFFF"/>
+<text x="588" y="68" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Đủ gần hoa A</text>
+<path d="M 792 108 L 792 177" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 792 188 L 787 176 L 797 176 Z" fill="#5E6B70"/>
+<rect x="804" y="132" width="100" height="24" rx="4" fill="#FFFFFF"/>
+<text x="808" y="148" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="start">Phấn cây A</text>
+<path d="M 684 212 L 491 212" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 480 212 L 492 207 L 492 217 Z" fill="#5E6B70"/>
+<rect x="516" y="180" width="132" height="24" rx="4" fill="#FFFFFF"/>
+<text x="582" y="196" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Yêu cầu lấy mật</text>
+<path d="M 412 248 L 412 293" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 412 304 L 407 292 L 417 292 Z" fill="#5E6B70"/>
+<rect x="424" y="260" width="92" height="24" rx="4" fill="#FFFFFF"/>
+<text x="428" y="276" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="start">ID cục mật</text>
+<path d="M 480 340 L 677 340" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 688 340 L 676 345 L 676 335 Z" fill="#5E6B70"/>
+<rect x="520" y="308" width="128" height="24" rx="4" fill="#FFFFFF"/>
+<text x="584" y="324" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Mật đang mang</text>
+<path d="M 792 364 L 792 421" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 792 432 L 787 420 L 797 420 Z" fill="#5E6B70"/>
+<rect x="804" y="382" width="96" height="24" rx="4" fill="#FFFFFF"/>
+<text x="808" y="398" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="start">Vị trí hoa B</text>
+<path d="M 712 468 L 495 468" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 484 468 L 496 463 L 496 473 Z" fill="#5E6B70"/>
+<rect x="526" y="436" width="144" height="24" rx="4" fill="#FFFFFF"/>
+<text x="598" y="452" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="middle">Hoa B nhận phấn</text>
+<path d="M 412 504 L 412 561" fill="none" stroke="#5E6B70" stroke-width="2" stroke-linecap="round"/>
+<path d="M 412 572 L 407 560 L 417 560 Z" fill="#5E6B70"/>
+<rect x="424" y="522" width="120" height="24" rx="4" fill="#FFFFFF"/>
+<text x="428" y="538" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="400" fill="#5E6B70" text-anchor="start">Yêu cầu gắn ô</text>
+<rect x="336" y="48" width="152" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="412" y="80" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="412" dy="0">Người chơi</tspan><tspan x="412" dy="20">bay đến hoa A</tspan></text>
+<rect x="688" y="60" width="208" height="48" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="792" y="89.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">GAMA cấp phấn cây A</text>
+<rect x="684" y="188" width="216" height="48" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="792" y="217.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">Người chơi giữ cò phải</text>
+<rect x="344" y="176" width="136" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="412" y="208" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="412" dy="0">GAMA xác</tspan><tspan x="412" dy="20">nhận lấy mật</tspan></text>
+<rect x="344" y="304" width="136" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="412" y="336" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="412" dy="0">Người chơi</tspan><tspan x="412" dy="20">cầm cục mật</tspan></text>
+<rect x="688" y="316" width="208" height="48" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="792" y="345.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">Người chơi ghé hoa B</text>
+<rect x="712" y="432" width="160" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="792" y="464" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="792" dy="0">GAMA ghi nhận</tspan><tspan x="792" dy="20">chuyển phấn</tspan></text>
+<rect x="340" y="432" width="144" height="72" rx="8" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="412" y="464" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle"><tspan x="412" dy="0">Người chơi</tspan><tspan x="412" dy="20">đưa mật về tổ</tspan></text>
+<rect x="320" y="572" width="184" height="48" rx="24" fill="#E3EDEA" stroke="#176B53" stroke-width="2"/>
+<text x="412" y="601.6" font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" font-size="16" font-weight="700" fill="#17272F" text-anchor="middle">GAMA chốt ô tổ 1/1</text>
+</svg>

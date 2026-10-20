@@ -14,6 +14,8 @@ namespace BeeBloom.HoneyPilot
         readonly ConcurrentDictionary<string, TaskCompletionSource<JObject>> pending = new();
         BeeSimpleConnection connection;
         bool disposed;
+        public bool WaitingForAdmission => connection != null && connection.TransportReady
+            && !connection.IsConnectionState(ConnectionState.AUTHENTICATED);
 
         public HoneySimpleClient(Transform parent) { this.parent = parent; }
 
@@ -51,16 +53,17 @@ namespace BeeBloom.HoneyPilot
             if (disposed || connection == null || !connection.TransportReady || !connection.IsConnectionState(ConnectionState.AUTHENTICATED))
                 throw new InvalidOperationException("SIMPLE player is not authenticated");
             string correlation = Guid.NewGuid().ToString("N");
-            var completion = new TaskCompletionSource<JObject>();
+            var completion = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);
             pending[correlation] = completion;
             var envelope = new JObject { ["correlation"] = correlation, ["operation"] = operation, ["payload"] = payload };
             try {
-                connection.SendExecutableAsk("bee_request", new Dictionary<string,string> {
+                var arguments = new Dictionary<string,string> {
                     ["id"] = connection.GetConnectionId(), ["envelope_json"] = envelope.ToString(Formatting.None)
-                });
-                if (await Task.WhenAny(completion.Task, Task.Delay(8000)) != completion.Task)
-                    throw new TimeoutException("SIMPLE/GAMA did not acknowledge " + operation);
-                return await completion.Task;
+                };
+                return await HoneyRpcRetry.WaitAsync(completion.Task,
+                    () => !disposed && connection != null && connection.TransportReady
+                        && connection.IsConnectionState(ConnectionState.AUTHENTICATED),
+                    () => connection.SendExecutableAsk("bee_request", arguments), operation);
             } finally { pending.TryRemove(correlation, out _); }
         }
 

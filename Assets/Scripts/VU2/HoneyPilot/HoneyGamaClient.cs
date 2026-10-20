@@ -12,7 +12,7 @@ namespace BeeBloom.HoneyPilot
     public sealed class HoneyGamaClient : IHoneyClient
     {
         public const string Schema = "beebloom-honey-pilot-v1";
-        public const string SnapshotExpression = "to_json([\"state\"::state,\"response\"::response,\"cycle\"::cycle,\"flower_positions\"::flower_positions,\"slot_position\"::slot_coordinates])";
+        public const string SnapshotExpression = "to_json([\"state\"::state,\"response\"::response,\"cycle\"::cycle,\"flower_positions\"::flower_positions,\"slot_position\"::slot_coordinates,\"world_sync\"::world_response])";
         readonly ConcurrentDictionary<int, TaskCompletionSource<JToken>> pending = new();
         readonly TaskCompletionSource<string> hello = new(TaskCreationOptions.RunContinuationsAsynchronously);
         WebSocket socket;

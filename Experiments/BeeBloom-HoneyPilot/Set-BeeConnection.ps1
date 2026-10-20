@@ -18,12 +18,56 @@ if ($PushToQuest -and $address.Host -in @('localhost','127.0.0.1','0.0.0.0')) {
 }
 $destination=[IO.Path]::GetFullPath($OutputPath)
 [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($destination)) | Out-Null
-$profile=@{schema='beebloom-connection-v1';simpleEndpoint="ws://$($address.Host):$($address.Port)"} | ConvertTo-Json
-# Atomic replacement: a running client never reads a half-written JSON file.
-$temporary=$destination+'.'+[Guid]::NewGuid().ToString('N')+'.tmp'
-[IO.File]::WriteAllText($temporary,$profile,[Text.UTF8Encoding]::new($false))
-if ([IO.File]::Exists($destination)) { [IO.File]::Replace($temporary,$destination,[NullString]::Value) }
-else { [IO.File]::Move($temporary,$destination) }
+$normalizedEndpoint="ws://$($address.Host):$($address.Port)"
+$profile=@{schema='beebloom-connection-v1';simpleEndpoint=$normalizedEndpoint} | ConvertTo-Json
+$unchanged=$false
+if ([IO.File]::Exists($destination)) {
+ try {
+  $existing=[IO.File]::ReadAllText($destination) | ConvertFrom-Json
+  $unchanged=($null -ne $existing -and @($existing.PSObject.Properties).Count -eq 2 -and
+   $existing.schema -ceq 'beebloom-connection-v1' -and $existing.simpleEndpoint -ceq $normalizedEndpoint)
+ } catch { $unchanged=$false }
+}
+if (!$unchanged) {
+ # File.Replace attempts to merge the old file's Windows metadata and can fail
+ # with ERROR_UNABLE_TO_REMOVE_REPLACED. Rename a complete file on the same
+ # volume instead; never delete/truncate the active profile as a fallback.
+ if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT -and
+     !('BeeBloom.ConnectionAtomicFile' -as [type])) {
+  Add-Type -TypeDefinition @'
+using System.Runtime.InteropServices;
+namespace BeeBloom {
+ public static class ConnectionAtomicFile {
+  [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool MoveFileEx(string source, string destination, uint flags);
+ }
+}
+'@
+ }
+ $temporary=$destination+'.'+[Guid]::NewGuid().ToString('N')+'.tmp'
+ try {
+  [IO.File]::WriteAllText($temporary,$profile,[Text.UTF8Encoding]::new($false))
+  for ($attempt=0; $attempt -lt 6; $attempt++) {
+   try {
+    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+     # MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH
+     if (![BeeBloom.ConnectionAtomicFile]::MoveFileEx($temporary,$destination,9)) {
+      $nativeError=[Runtime.InteropServices.Marshal]::GetLastWin32Error()
+      throw [ComponentModel.Win32Exception]::new($nativeError,"Cannot atomically update connection file '$destination' (Windows error $nativeError). Close programs locking this file and retry.")
+     }
+    } elseif ([IO.File]::Exists($destination)) { [IO.File]::Replace($temporary,$destination,[NullString]::Value) }
+    else { [IO.File]::Move($temporary,$destination) }
+    break
+   } catch {
+    if ($attempt -eq 5) { throw }
+    Start-Sleep -Milliseconds 150
+   }
+  }
+ } finally {
+  if ([IO.File]::Exists($temporary)) { [IO.File]::Delete($temporary) }
+ }
+} else { Write-Host 'Connection endpoint unchanged; existing file kept.' }
 Write-Host "Connection file: $destination"
 if (!$PushToQuest) { return }
 if ($PackageName -notmatch '^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$') { throw 'Invalid Android package name.' }
