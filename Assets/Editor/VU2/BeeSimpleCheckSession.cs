@@ -10,11 +10,11 @@ using UnityEngine.XR.Management;
 [InitializeOnLoad]
 public static class BeeSimpleCheckSession
 {
-    const string ActiveKey = "BeeBloom.Simple.NoHeadsetChecks";
-    const string BackgroundKey = "BeeBloom.Simple.CheckBackground";
-    const string XrCloneName = "BeeBloom isolated XR checks (temporary)";
-    const string SkyCloneName = "BeeBloom isolated sky checks (temporary)";
-    const string SkyOriginalKey = "BeeBloom.Simple.CheckSkyOriginal";
+    const string ActiveKey = "LetItBee.Simple.NoHeadsetChecks";
+    const string BackgroundKey = "LetItBee.Simple.CheckBackground";
+    const string XrCloneName = "LetItBee isolated XR checks (temporary)";
+    const string SkyCloneName = "LetItBee isolated sky checks (temporary)";
+    const string SkyOriginalKey = "LetItBee.Simple.CheckSkyOriginal";
     static XRGeneralSettings original, temporary;
     static Material originalSky, temporarySky;
     public static bool Active => SessionState.GetBool(ActiveKey, false);
@@ -25,14 +25,14 @@ public static class BeeSimpleCheckSession
         if (Active) UseTemporaryXrSettings();
     }
 
-    [MenuItem("Bee Bloom/Check SIMPLE without headset")]
+    [MenuItem("Let It Bee/Check SIMPLE without headset")]
     public static void Begin()
     {
         if (EditorApplication.isPlaying || UnityEngine.SceneManagement.SceneManager.GetActiveScene().isDirty)
             throw new InvalidOperationException("Keep the latest saved scene in Edit Mode before isolated checks.");
         SessionState.SetBool(BackgroundKey, Application.runInBackground);
         SessionState.SetBool(ActiveKey, true);
-        SessionState.SetBool("BeeBloom.Simple.IsolatedChecks", true);
+        SessionState.SetBool("LetItBee.Simple.IsolatedChecks", true);
         EditorApplication.isPlaying = true;
     }
 
@@ -89,9 +89,9 @@ public static class BeeSimpleCheckSession
             Application.runInBackground = SessionState.GetBool(BackgroundKey, false);
             SessionState.EraseBool(ActiveKey);
             SessionState.EraseBool(BackgroundKey);
-            SessionState.EraseBool("BeeBloom.Simple.IsolatedChecks");
+            SessionState.EraseBool("LetItBee.Simple.IsolatedChecks");
             SessionState.EraseString(SkyOriginalKey);
-            SessionState.EraseString("BeeBloom.Simple.CheckEndpoint");
+            SessionState.EraseString("LetItBee.Simple.CheckEndpoint");
         }
     }
 

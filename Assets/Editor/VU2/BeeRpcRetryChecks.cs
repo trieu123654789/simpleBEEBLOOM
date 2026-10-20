@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 
 public static class BeeRpcRetryChecks
 {
-    [MenuItem("Bee Bloom/Check RPC Recovery")]
+    [MenuItem("Let It Bee/Check RPC Recovery")]
     public static void Begin() => _ = Run();
 
     public static async Task<string> Run()

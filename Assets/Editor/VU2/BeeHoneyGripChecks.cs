@@ -1,9 +1,9 @@
 using System;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 public static class BeeHoneyGripChecks
 {
 #if UNITY_EDITOR
-    [UnityEditor.MenuItem("Bee Bloom/Check Honey Grip")]
+    [UnityEditor.MenuItem("Let It Bee/Check Honey Grip")]
     public static void RunMenu() { UnityEngine.Debug.Log(Run()); }
 #endif
     static int count;

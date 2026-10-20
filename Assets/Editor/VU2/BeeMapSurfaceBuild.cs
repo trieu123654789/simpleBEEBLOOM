@@ -11,6 +11,6 @@ public sealed class BeeMapSurfaceBuild : IProcessSceneWithReport
     {
         // Unity also processes the transient scene copy before entering Play.
         // Do this before static batching replaces each MeshFilter's source mesh.
-        if (scene.name == "SCN_BeeBloom") BeeMapSurfaces.Install(scene);
+        if (scene.name == "SCN_LetItBee") BeeMapSurfaces.Install(scene);
     }
 }

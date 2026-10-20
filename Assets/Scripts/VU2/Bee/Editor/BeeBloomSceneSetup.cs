@@ -1,9 +1,9 @@
 // =============================================================================
-// BeeBloomSceneSetup - Editor Script tự động tạo toàn bộ BeeBloom game objects.
-// Chạy từ Menu: VU2/Bee/🐝 Setup BeeBloom Scene
+// LetItBeeSceneSetup - Editor Script tự động tạo toàn bộ LetItBee game objects.
+// Chạy từ Menu: VU2/Bee/🐝 Setup Let It Bee Scene
 //
 // SAU KHI CHẠY sẽ tạo:
-//   [BeeBloom_Manager]    → BeeSustainabilityManager, BeeQuestManager, BeeAudioManager
+//   [LetItBee_Manager]    → BeeSustainabilityManager, BeeQuestManager, BeeAudioManager
 //   [BeePlayer]           → BeeController, BeePollinationSystem, BeeGameStats, BeeShakeFlap,
 //                           BeeControllerShakeAdapter, BeeFlapping, BeeFlightInput, BeeAltitudeHold
 //   [BeeHUD]              → BeeHud, BeeSustainabilityHUD, BeeHudSprites (child of Main Camera)
@@ -17,14 +17,14 @@
 using UnityEngine;
 using UnityEditor;
 
-public static class BeeBloomSceneSetup
+public static class LetItBeeSceneSetup
 {
-    [MenuItem("VU2/Bee/🐝 Setup BeeBloom Scene (Auto)")]
+    [MenuItem("VU2/Bee/🐝 Setup Let It Bee Scene (Auto)")]
     public static void SetupScene()
     {
         bool confirm = EditorUtility.DisplayDialog(
-            "🐝 Setup BeeBloom",
-            "Script sẽ tạo tất cả GameObjects cần thiết cho BeeBloom VR.\n\n" +
+            "🐝 Setup Let It Bee",
+            "Script sẽ tạo tất cả GameObjects cần thiết cho Let It Bee VR.\n\n" +
             "Lưu ý: Bạn vẫn cần gán prefab hoa và AudioClip thủ công trong Inspector.\n\n" +
             "Tiếp tục?",
             "✅ Tạo ngay", "❌ Huỷ");
@@ -32,9 +32,9 @@ public static class BeeBloomSceneSetup
         if (!confirm) return;
 
         // =========================================================
-        // 1. BeeBloom_Manager
+        // 1. LetItBee_Manager
         // =========================================================
-        var manager = FindOrCreate("BeeBloom_Manager");
+        var manager = FindOrCreate("LetItBee_Manager");
         EnsureComp<BeeSustainabilityManager>(manager);
         EnsureComp<BeeQuestManager>(manager);
         EnsureComp<BeeAudioManager>(manager);
@@ -64,7 +64,7 @@ public static class BeeBloomSceneSetup
         Camera mainCam = Camera.main;
         if (mainCam == null)
         {
-            Debug.LogWarning("[BeeBloomSetup] Không tìm thấy Main Camera! BeeHUD sẽ là root object.");
+            Debug.LogWarning("[LetItBeeSetup] Không tìm thấy Main Camera! BeeHUD sẽ là root object.");
         }
 
         Transform hudParent = mainCam != null ? mainCam.transform : null;
@@ -155,7 +155,7 @@ public static class BeeBloomSceneSetup
             UnityEngine.SceneManagement.SceneManager.GetActiveScene());
 
         EditorUtility.DisplayDialog(
-            "🐝 BeeBloom Setup Hoàn tất!",
+            "🐝 LetItBee Setup Hoàn tất!",
             "Đã tạo xong tất cả GameObjects!\n\n" +
             "VIỆC CÒN LẠI:\n" +
             "1. Gán Flower Prefab vào BeeFlowerSpawner.flowerPrefabs\n" +
@@ -166,22 +166,22 @@ public static class BeeBloomSceneSetup
             "💡 Xem Console để biết thêm chi tiết.",
             "👍 OK");
 
-        Debug.Log("[BeeBloomSetup] ✅ Setup hoàn tất! Kiểm tra Hierarchy.");
+        Debug.Log("[LetItBeeSetup] ✅ Setup hoàn tất! Kiểm tra Hierarchy.");
         Selection.activeGameObject = manager;
     }
 
     // =========================================================
     // Menu item kiểm tra compile lỗi
     // =========================================================
-    [MenuItem("VU2/Bee/🔍 Validate BeeBloom Scripts")]
+    [MenuItem("VU2/Bee/🔍 Validate LetItBee Scripts")]
     public static void ValidateScripts()
     {
         bool ok = true;
         void Check<T>(string name) where T : MonoBehaviour
         {
             var t = typeof(T);
-            if (t == null) { Debug.LogError($"[BeeBloom] ❌ Missing: {name}"); ok = false; }
-            else Debug.Log($"[BeeBloom] ✅ {name}");
+            if (t == null) { Debug.LogError($"[LetItBee] ❌ Missing: {name}"); ok = false; }
+            else Debug.Log($"[LetItBee] ✅ {name}");
         }
 
         Check<BeeController>("BeeController");
@@ -198,8 +198,8 @@ public static class BeeBloomSceneSetup
         Check<BeeSustainabilityHUD>("BeeSustainabilityHUD");
         Check<BeeHud>("BeeHud");
 
-        if (ok) Debug.Log("[BeeBloom] 🎉 Tất cả scripts compile OK!");
-        else    Debug.LogError("[BeeBloom] ⚠️ Có script bị lỗi, kiểm tra Console.");
+        if (ok) Debug.Log("[LetItBee] 🎉 Tất cả scripts compile OK!");
+        else    Debug.LogError("[LetItBee] ⚠️ Có script bị lỗi, kiểm tra Console.");
     }
 
     // =========================================================
@@ -208,8 +208,8 @@ public static class BeeBloomSceneSetup
     [MenuItem("VU2/Bee/🌸 Create Sample Flower Prefab")]
     public static void CreateSampleFlowerPrefab()
     {
-        string path = "Assets/Prefabs/BeeBloom/SampleFlower.prefab";
-        System.IO.Directory.CreateDirectory("Assets/Prefabs/BeeBloom");
+        string path = "Assets/Prefabs/LetItBee/SampleFlower.prefab";
+        System.IO.Directory.CreateDirectory("Assets/Prefabs/LetItBee");
 
         // Tạo flower GO
         var flowerGO = new GameObject("SampleFlower");
@@ -242,7 +242,7 @@ public static class BeeBloomSceneSetup
         Object.DestroyImmediate(flowerGO);
 
         AssetDatabase.Refresh();
-        Debug.Log($"[BeeBloom] 🌸 Sample Flower Prefab đã tạo tại: {path}");
+        Debug.Log($"[LetItBee] 🌸 Sample Flower Prefab đã tạo tại: {path}");
         EditorGUIUtility.PingObject(prefab);
         Selection.activeObject = prefab;
     }
@@ -307,11 +307,11 @@ public static class BeeBloomSceneSetup
     private static void CreatePlaceholderFlowers()
     {
         // Nếu đã có SampleFlower prefab thì gán vào spawners
-        string prefabPath = "Assets/Prefabs/BeeBloom/SampleFlower.prefab";
+        string prefabPath = "Assets/Prefabs/LetItBee/SampleFlower.prefab";
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (prefab == null)
         {
-            Debug.LogWarning("[BeeBloomSetup] Chưa có flower prefab. Chạy 'Create Sample Flower Prefab' trước.");
+            Debug.LogWarning("[LetItBeeSetup] Chưa có flower prefab. Chạy 'Create Sample Flower Prefab' trước.");
             return;
         }
 
@@ -323,7 +323,7 @@ public static class BeeBloomSceneSetup
             if (!spawner.flowerPrefabs.Contains(prefab))
                 spawner.flowerPrefabs.Add(prefab);
         }
-        Debug.Log("[BeeBloomSetup] ✅ Đã gán SampleFlower prefab vào tất cả BeeFlowerSpawner.");
+        Debug.Log("[LetItBeeSetup] ✅ Đã gán SampleFlower prefab vào tất cả BeeFlowerSpawner.");
     }
 }
 #endif

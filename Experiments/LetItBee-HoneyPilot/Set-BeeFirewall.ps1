@@ -19,7 +19,7 @@ if ($parts.Count -gt 2 -or ![Net.IPAddress]::TryParse($parts[0],[ref]$remoteIp) 
 if ($parts.Count -eq 2 -and ($parts[1] -notmatch '^\d+$' -or [int]$parts[1] -lt 16 -or [int]$parts[1] -gt 32)) {
  throw 'Use a local subnet with a prefix from /16 to /32.'
 }
-$ruleName='BeeBloom SIMPLE Quest TCP 8080'
+$ruleName='LetItBee SIMPLE Quest TCP 8080'
 $existing=@(& netsh advfirewall firewall show rule "name=$ruleName")
 if ($LASTEXITCODE -eq 0) {
  & netsh advfirewall firewall set rule "name=$ruleName" new dir=in action=allow enable=yes protocol=TCP localport=8080 "localip=$LocalAddress" "remoteip=$RemoteAddress" "profile=$($Profile.ToLowerInvariant())"

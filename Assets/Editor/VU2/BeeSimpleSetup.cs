@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -29,13 +29,13 @@ public static class BeeSimpleSetup
     public static string Configure(string pcIp)
     {
         var scene=UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        if (EditorApplication.isPlaying || scene.isDirty || scene.path!="Assets/Scenes/VU2/SCN_BeeBloom.unity")
-            throw new InvalidOperationException("Save the latest SCN_BeeBloom in Edit Mode before configuring SIMPLE.");
+        if (EditorApplication.isPlaying || scene.isDirty || scene.path!="Assets/Scenes/VU2/SCN_LetItBee.unity")
+            throw new InvalidOperationException("Save the latest SCN_LetItBee in Edit Mode before configuring SIMPLE.");
         var before=Capture();
         Directory.CreateDirectory("Library/HoneyPilot");
         File.WriteAllText("Library/HoneyPilot/simple-component-baseline.json",before.ToString(Formatting.Indented));
         var pilot=scene.GetRootGameObjects().SelectMany(x=>x.GetComponentsInChildren<BeeHoneyPilot>(true)).Single();
-        Undo.RecordObject(pilot,"Connect Bee Bloom through SIMPLE");
+        Undo.RecordObject(pilot,"Connect Let It Bee through SIMPLE");
         pilot.useSimpleToolchain=true;
         pilot.simpleEndpoint="ws://"+pcIp+":8080";
         EditorUtility.SetDirty(pilot);
@@ -49,12 +49,12 @@ public static class BeeSimpleSetup
     public static string SaveVerifiedConnection()
     {
         var scene=UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        if (EditorApplication.isPlaying || scene.path!="Assets/Scenes/VU2/SCN_BeeBloom.unity")
-            throw new InvalidOperationException("Use SCN_BeeBloom in Edit Mode.");
+        if (EditorApplication.isPlaying || scene.path!="Assets/Scenes/VU2/SCN_LetItBee.unity")
+            throw new InvalidOperationException("Use SCN_LetItBee in Edit Mode.");
         var baseline=JObject.Parse(File.ReadAllText("Library/HoneyPilot/simple-component-baseline.json"));
         foreach (var item in baseline.Properties()) {
             var fields=item.Value["MonoBehaviour"] as JObject;
-            if ((string)fields?["m_EditorClassIdentifier"]=="Assembly-CSharp::BeeBloom.HoneyPilot.BeeHoneyPilot") {
+            if ((string)fields?["m_EditorClassIdentifier"]=="Assembly-CSharp::LetItBee.HoneyPilot.BeeHoneyPilot") {
                 fields.Remove("useSimpleToolchain");fields.Remove("simpleEndpoint");
             }
         }
@@ -73,10 +73,10 @@ public static class BeeSimpleSetup
             bool internet=PlayerSettings.Android.forceInternetPermission;
             try {
                 PlayerSettings.Android.forceInternetPermission=true;
-                Directory.CreateDirectory("Experiments/BeeBloom-HoneyPilot/Build");
+                Directory.CreateDirectory("Experiments/LetItBee-HoneyPilot/Build");
                 var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                    scenes=new[]{"Assets/Scenes/VU2/SCN_BeeBloom.unity"},target=BuildTarget.Android,
-                    locationPathName="Experiments/BeeBloom-HoneyPilot/Build/BeeBloom-SIMPLE.apk",
+                    scenes=new[]{"Assets/Scenes/VU2/SCN_LetItBee.unity"},target=BuildTarget.Android,
+                    locationPathName="Experiments/LetItBee-HoneyPilot/Build/LetItBee-SIMPLE.apk",
                     options=BuildOptions.Development|BuildOptions.CompressWithLz4
                 });
                 File.WriteAllText("Library/HoneyPilot/simple-apk-build.json",JsonConvert.SerializeObject(new {

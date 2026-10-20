@@ -14,7 +14,7 @@ def main():
     config=configuration();config['world_source']=uuid.uuid4().hex
     config['checkpoint']=str(FOLDER/('validation-'+config['session']+'.json'))
     # A unique URI ensures this verifies today's source, not a GAMA compiler cache.
-    text=(ROOT/'Experiments/BeeBloom-HoneyPilot/GAMA/BeeBloomHoneyPilot.gaml').read_text(encoding='utf-8-sig')
+    text=(ROOT/'Experiments/LetItBee-HoneyPilot/GAMA/LetItBeeHoneyPilot.gaml').read_text(encoding='utf-8-sig')
     text=text.replace('    action frame_map {','    action capture(string target) { save snapshot(self,"HoneyPilotMap",{800,800}) to: target; }\n    action frame_map {')
     model=FOLDER/('WorldCheck-'+uuid.uuid4().hex+'.gaml');model.write_text(text,encoding='utf-8')
     g=Gama.__new__(Gama);g.config=config;g.sequence=0;g.experiment=None
@@ -31,7 +31,7 @@ def main():
     def actors():return expr('synced_entity collect [each.entity_id,each.entity_kind,each.entity_position.x,each.entity_position.y,each.entity_position.z,each.location.x,each.location.y]')
     def entity(key,kind,pos):return dict(id=key,kind=kind,label=key,position=pos)
     base=[entity('player-bee','bee',[10,20,2]),entity('flower-a','flower',[0,0,1.5]),entity('flower-b','flower',[2,0,1.5]),entity('slot-a','hive',[0,4,5.2])]
-    def packet(seq,entries):return dict(schema='beebloom-world-v1',source=config['world_source'],sequence=seq,entities=entries)
+    def packet(seq,entries):return dict(schema='letitbee-world-v1',source=config['world_source'],sequence=seq,entities=entries)
     try:
         g.experiment=g.command('load',model=str(model),experiment='HoneyPilot',console=False)
         g.ask('configure',config_json=json.dumps(config))

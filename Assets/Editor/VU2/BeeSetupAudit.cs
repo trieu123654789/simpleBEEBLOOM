@@ -1,7 +1,7 @@
 // =============================================================================
-// BeeSetupAudit - Kiem tra viec setup scene BeeBloom co dung khong.
+// BeeSetupAudit - Kiem tra viec setup scene LetItBee co dung khong.
 //
-// MENU: VU2/Bee/Audit BeeBloom Setup (Current Scene)
+// MENU: VU2/Bee/Audit LetItBee Setup (Current Scene)
 //
 // Kiem tra:
 //   1. Script ong: Controller / CameraRig / FlightInput / AltitudeHold / Flapping...
@@ -18,7 +18,7 @@ using UnityEngine;
 
 public static class BeeSetupAudit
 {
-    [MenuItem("VU2/Bee/Audit BeeBloom Setup (Current Scene)", false, 15)]
+    [MenuItem("VU2/Bee/Audit LetItBee Setup (Current Scene)", false, 15)]
     public static void Audit()
     {
         StringBuilder sb = new StringBuilder();

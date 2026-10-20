@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.XR;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Presentation only: never owns inventory, tracking, colliders or flight.
     // Mesh/line buffers are reused; no per-frame GameObjects or particle allocations.

@@ -1,11 +1,12 @@
-model BeeBloomHoneyPilot
+model LetItBeeHoneyPilot
 
 // Gameplay experiment, not a calibrated botanical or honey production model.
 // Coordinates in messages are GAMA X,Y,Z = Unity X,Z,Y, in metres.
 global {
     geometry shape <- rectangle(200, 200);
     float step <- 0.1;
-    string pilot_schema <- "beebloom-honey-pilot-v1";
+    string pilot_schema <- "letitbee-honey-pilot-v1";
+    string legacy_pilot_schema <- "beebloom-honey-pilot-v1";
     map state <- [];
     map receipts <- [];
     map response <- [];
@@ -56,7 +57,7 @@ global {
             try {
                 map saved <- json_file(workspace_checkpoint).contents;
                 map candidate <- saved["state"];
-                if (candidate["schema"] = pilot_schema and length(list(candidate["flowers"])) = 2) {
+                if ((candidate["schema"] = pilot_schema or candidate["schema"] = legacy_pilot_schema) and length(list(candidate["flowers"])) = 2) {
                     state <- candidate;
                     list fs <- state["flowers"];
                     map a <- fs[0]; map b <- fs[1]; map h <- state["slot"];

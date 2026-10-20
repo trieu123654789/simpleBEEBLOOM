@@ -15,7 +15,7 @@ class Gama:
         self.ws = websocket.create_connection(f'ws://127.0.0.1:{port}', timeout=45)
         self.hello = json.loads(self.ws.recv())['content']
         self.sequence, self.experiment = 0, None
-        self.experiment = self.command('load', model=str(ROOT/'GAMA/BeeBloomHoneyPilot.gaml'), experiment='HoneyPilot', console=False)
+        self.experiment = self.command('load', model=str(ROOT/'GAMA/LetItBeeHoneyPilot.gaml'), experiment='HoneyPilot', console=False)
         self.ask('configure', config_json=json.dumps(config))
     def command(self, kind, **fields):
         self.sequence += 1

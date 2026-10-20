@@ -2,8 +2,8 @@
 .SYNOPSIS
 Reset the two-flower test loop with an automatic checkpoint backup.
 .DESCRIPTION
-Close Bee Bloom on Quest and Stop Play in Unity first. SIMPLE/GAMA must be
-running. The script stops only BeeBloomVR, then resets progress. Launch that
+Close Let It Bee on Quest and Stop Play in Unity first. SIMPLE/GAMA must be
+running. The script stops only LetItBeeVR, then resets progress. Launch that
 experiment again in SIMPLE afterwards. It never writes Unity scene settings.
 .PARAMETER UseCurrentLayout
 Archive the whole checkpoint so the next Unity/APK configure supplies geometry.
@@ -22,7 +22,7 @@ $ErrorActionPreference='Stop'
 function New-HoneyProgress($saved) {
  # Only gameplay progress changes. Scene geometry and tuning remain authoritative.
  $fresh=$saved | ConvertTo-Json -Depth 64 | ConvertFrom-Json
- if ($fresh.state.schema -ne 'beebloom-honey-pilot-v1' -or @($fresh.state.flowers).Count -ne 2) {
+ if ($fresh.state.schema -ne 'letitbee-honey-pilot-v1' -and $fresh.state.schema -ne 'beebloom-honey-pilot-v1' -or @($fresh.state.flowers).Count -ne 2) {
   throw 'Unsupported checkpoint. This reset tool is for the current two-flower pilot.'
  }
  $fresh.state.revision=0
@@ -41,10 +41,10 @@ function New-HoneyProgress($saved) {
 }
 
 function Write-HoneyCheckpoint([string]$path, [string]$json) {
- if (!('BeeBloom.ConnectionAtomicFile' -as [type])) {
+ if (!('LetItBee.ConnectionAtomicFile' -as [type])) {
   Add-Type -TypeDefinition @'
 using System.Runtime.InteropServices;
-namespace BeeBloom {
+namespace LetItBee {
  public static class ConnectionAtomicFile {
   [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
   [return: MarshalAs(UnmanagedType.Bool)]
@@ -56,7 +56,7 @@ namespace BeeBloom {
  $temporary=$path+'.'+[Guid]::NewGuid().ToString('N')+'.tmp'
  try {
   [IO.File]::WriteAllText($temporary,$json,[Text.UTF8Encoding]::new($false))
-  if (![BeeBloom.ConnectionAtomicFile]::MoveFileEx($temporary,$path,9)) {
+  if (![LetItBee.ConnectionAtomicFile]::MoveFileEx($temporary,$path,9)) {
    throw [ComponentModel.Win32Exception]::new([Runtime.InteropServices.Marshal]::GetLastWin32Error(),'Checkpoint is locked. Original progress and backup were kept; close the locking program and retry.')
   }
  } finally {
@@ -65,7 +65,7 @@ namespace BeeBloom {
 }
 
 if (!$Session) {
- $scene=Join-Path $PSScriptRoot '../../Assets/Scenes/VU2/SCN_BeeBloom.unity'
+ $scene=Join-Path $PSScriptRoot '../../Assets/Scenes/VU2/SCN_LetItBee.unity'
  $found=[regex]::Matches([IO.File]::ReadAllText($scene),'(?m)^\s*sessionId:\s*([a-f0-9]{32})\s*$')
  if ($found.Count -ne 1) { throw 'Cannot identify one saved pilot session. Pass -Session <32-character ID>.' }
  $Session=$found[0].Groups[1].Value
@@ -129,11 +129,11 @@ try {
  $state=Read-HoneyMonitor
  $players=if ($state.player -is [Array]) { @($state.player) } else { @($state.player.PSObject.Properties | ForEach-Object {$_.Value}) }
  if (@($players | Where-Object {$_.connected}).Count -gt 0) {
-  throw 'Close Bee Bloom on the headset and Stop Play in Unity first. Wait 15 seconds, then retry. No progress was changed.'
+  throw 'Close Let It Bee on the headset and Stop Play in Unity first. Wait 15 seconds, then retry. No progress was changed.'
  }
  if (!$state.gama.connected) { throw 'GAMA is not connected. Start GAMA/SIMPLE first; no progress was changed.' }
  if ($state.gama.experiment_state -ne 'NONE') {
-  if ($state.gama.experiment_name -ne 'BeeBloomVR') { throw 'Another experiment is running. It was left unchanged.' }
+  if ($state.gama.experiment_name -ne 'LetItBeeVR' -and $state.gama.experiment_name -ne 'BeeBloomVR') { throw 'Another experiment is running. It was left unchanged.' }
   Send-HoneyMonitor @{type='stop_experiment'}
   $deadline=[DateTime]::UtcNow.AddSeconds(25)
   do {
@@ -160,6 +160,6 @@ try {
  Write-Host "Backup: $backup"
  if ($UseCurrentLayout) { Write-Host 'Progress cleared. GAMA will accept geometry/tuning from the next Unity/APK connection.' }
  else { Write-Host 'Reset complete: both flowers have nectar, no carried pollen/chunk, hive empty. Saved geometry/tuning kept.' }
- Write-Host 'Next: launch BeeBloomVR in http://localhost:8000, then open Bee Bloom and add the headset to the experiment.'
+ Write-Host 'Next: launch LetItBeeVR in http://localhost:8000, then open Let It Bee and add the headset to the experiment.'
  Write-Host 'No Unity scene, prefab, Inspector value, connection IP or APK was changed.'
 } finally { $socket.Dispose() }

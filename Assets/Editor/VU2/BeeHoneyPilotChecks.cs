@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -20,7 +20,7 @@ public static class BeeHoneyPilotChecks
     {
         var checks = new List<string>(); HoneyGamaClient client = null;
         try {
-            var pilot = GameObject.Find("BeeBloom Honey Pilot").GetComponent<BeeHoneyPilot>();
+            var pilot = GameObject.Find("LetItBee Honey Pilot").GetComponent<BeeHoneyPilot>();
             void Check(bool ok, string label) { if (!ok) throw new Exception(label); checks.Add(label); }
             Check(pilot.flowerAHead != pilot.flowerBHead && pilot.plantAId != pilot.plantBId, "two independent flower plants");
             Check(pilot.honeyMesh != null && Mathf.Abs(pilot.honeyMesh.bounds.size.x - 0.16f) < 0.001f, "physical nectar model is 16 cm wide");
@@ -57,7 +57,7 @@ public static class BeeHoneyPilotChecks
             Check((int)snapshot["state"]["stored"] == 1 && (bool)snapshot["state"]["pollinated"][1], "fresh Unity connection restores model progress");
             await Send(deposit); Check((int)snapshot["state"]["stored"] == 1 && (bool)snapshot["response"]["accepted"], "lost deposit acknowledgement can be safely retried after reconnect");
             Write(new { passed = true, count = checks.Count, checks, finishedUtc = DateTime.UtcNow.ToString("O") });
-            Debug.Log("Bee Bloom honey pilot: " + checks.Count + " Unity/GAMA client integration checks passed.");
+            Debug.Log("Let It Bee honey pilot: " + checks.Count + " Unity/GAMA client integration checks passed.");
         } catch (Exception ex) {
             Write(new { passed = false, count = checks.Count, checks, error = ex.ToString() }); Debug.LogError("Honey pilot check: " + ex.Message);
         } finally { client?.Dispose(); }

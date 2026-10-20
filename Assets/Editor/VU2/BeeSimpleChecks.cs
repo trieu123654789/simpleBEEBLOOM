@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -28,7 +28,7 @@ public static class BeeSimpleChecks
             string session = Guid.NewGuid().ToString("N");
             var a = new JArray(0,0,1.5); var b = new JArray(2,0,1.5); var h = new JArray(0,4,5.2);
             var config = new JObject {
-                ["session"] = session, ["checkpoint"] = Application.dataPath.Replace("/Assets", "") + "/Experiments/BeeBloom-HoneyPilot/Runtime/simple-check-"+session+".json",
+                ["session"] = session, ["checkpoint"] = Application.dataPath.Replace("/Assets", "") + "/Experiments/LetItBee-HoneyPilot/Runtime/simple-check-"+session+".json",
                 ["flowers"] = new JArray(
                     new JObject { ["id"]="flower-a",["plant_id"]="plant-a",["species"]="pilot",["position"]=a.DeepClone() },
                     new JObject { ["id"]="flower-b",["plant_id"]="plant-b",["species"]="pilot",["position"]=b.DeepClone() }),
@@ -37,7 +37,7 @@ public static class BeeSimpleChecks
             };
             var world = new BeeWorldSync(); config["world_source"] = world.Source;
             client = new HoneySimpleClient(go.transform);
-            string endpoint = SessionState.GetString("BeeBloom.Simple.CheckEndpoint", "ws://127.0.0.1:8080");
+            string endpoint = SessionState.GetString("LetItBee.Simple.CheckEndpoint", "ws://127.0.0.1:8080");
             var snap = await client.ConnectAsync(endpoint, "", config);
             Check((string)snap["state"]["session"]==session,"Unity connects using SIMPLE ConnectionManager and LinkToUnity");
             long cycle=(long)snap["cycle"]; await Task.Delay(400);snap=await client.SnapshotAsync();

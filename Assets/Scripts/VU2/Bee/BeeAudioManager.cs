@@ -1,6 +1,6 @@
 // =============================================================================
-// BeeAudioManager - Quản lý âm thanh môi trường cho game BeeBloom.
-// BeeAudioManager - Environmental audio manager for BeeBloom.
+// BeeAudioManager - Quản lý âm thanh môi trường cho game Let It Bee.
+// BeeAudioManager - Environmental audio manager for Let It Bee.
 //
 // CHIẾN LƯỢC ÂM THANH / AUDIO STRATEGY
 //   1. AMBIENT: tiếng côn trùng, gió, nước — thay đổi theo EcosystemStatus

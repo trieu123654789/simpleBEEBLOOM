@@ -1,4 +1,4 @@
-Shader "BeeBloom/HoneyNectar"
+Shader "LetItBee/HoneyNectar"
 {
     Properties
     {

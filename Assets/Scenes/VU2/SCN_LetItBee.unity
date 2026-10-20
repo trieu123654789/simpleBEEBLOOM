@@ -101764,7 +101764,7 @@ GameObject:
   - component: {fileID: 1806865663}
   - component: {fileID: 1806865662}
   m_Layer: 2
-  m_Name: BeeBloom Honey Pilot
+  m_Name: LetItBee Honey Pilot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101781,7 +101781,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03566f31c3834e34ab329145cbec9542, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BeeBloom.HoneyPilot.BeeHoneyPilot
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeeHoneyPilot
   beeRoot: {fileID: 1236083359}
   rightHand: {fileID: 1085840207}
   flowerAHead: {fileID: 1090905783}
@@ -101802,8 +101802,8 @@ MonoBehaviour:
   useSimpleToolchain: 1
   simpleEndpoint: ws://192.168.2.8:8080
   endpoint: ws://127.0.0.1:6873
-  modelOnServer: C:/Projects/Unity/simple.CTU.VU2/Experiments/BeeBloom-HoneyPilot/GAMA/BeeBloomHoneyPilot.gaml
-  checkpointDirectoryOnServer: C:/Projects/Unity/simple.CTU.VU2/Experiments/BeeBloom-HoneyPilot/Runtime/checkpoints
+  modelOnServer: C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/GAMA/LetItBeeHoneyPilot.gaml
+  checkpointDirectoryOnServer: C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/Runtime/checkpoints
   sessionId: 1f28f796590a4f208226a1de2dfda7c2
   speciesId: chrysanthemum-pilot
   plantAId: plant-a

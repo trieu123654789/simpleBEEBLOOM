@@ -19,7 +19,7 @@ if (![Net.IPAddress]::TryParse($PcAddress,[ref]$ip) -or $ip.AddressFamily -ne [N
     $PcAddress -in @('127.0.0.1','0.0.0.0')) { throw 'PcAddress must be the PC LAN IPv4 address.' }
 # Quest and Editor profiles are separate. Updating a headset never overwrites
 # the Editor loopback profile or any saved Unity scene/Inspector setting.
-$questProfile=Join-Path $PSScriptRoot 'Runtime/quest/beebloom-connection.json'
+$questProfile=Join-Path $PSScriptRoot 'Runtime/quest/letitbee-connection.json'
 & (Join-Path $PSScriptRoot 'Set-BeeConnection.ps1') -Endpoint "ws://${PcAddress}:8080" -OutputPath $questProfile
 if ($PrepareOnly) { Write-Host 'Prepared Quest profile only; no device/firewall changes.'; return }
 if (!$AdbPath) {
@@ -118,4 +118,4 @@ if ($EnableStreaming) {
  if (!$streamReady) { throw "Gameplay profile was updated, but wireless ADB $streamTarget is not ready. Keep Quest on the same Wi-Fi; guest-network isolation can block screen streaming." }
  Write-Host "Wireless ADB ready: $streamTarget. Open http://localhost:8000/streamPlayerScreen in Chrome or Edge."
 }
-Write-Host "Quest now targets ws://${PcAddress}:8080. Open Bee Bloom, run BeeBloomVR in SIMPLE and add the player."
+Write-Host "Quest now targets ws://${PcAddress}:8080. Open Let It Bee, run LetItBeeVR in SIMPLE and add the player."

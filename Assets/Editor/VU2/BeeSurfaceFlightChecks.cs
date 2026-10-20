@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public static class BeeSurfaceFlightChecks
 {
-    [MenuItem("Bee Bloom/Check Surface Flight")]
+    [MenuItem("Let It Bee/Check Surface Flight")]
     public static void RunMenu() => Debug.Log(Run());
 
     public static string Run()

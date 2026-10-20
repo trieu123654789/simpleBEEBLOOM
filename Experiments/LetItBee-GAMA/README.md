@@ -1,9 +1,9 @@
-# Bee Bloom — Unity ↔ GAMA lab
+# Let It Bee — Unity ↔ GAMA lab
 
 > **Lab lịch sử, không phải luồng game hiện tại.** Tài liệu này mô tả demo desktop direct WebSocket riêng.
-> Tiến độ và kết nối Bee Bloom hiện hành xem [tài liệu chính](../../Docs/BeeBloom.md).
+> Tiến độ và kết nối Let It Bee hiện hành xem [tài liệu chính](../../Docs/LetItBee.md).
 
-Demo thử nghiệm độc lập, ngày 18/10/2026. Không sửa scene, prefab, HUD, camera, thông số bay hoặc Build Settings của project Bee Bloom chính.
+Demo thử nghiệm độc lập, ngày 18/10/2026. Không sửa scene, prefab, HUD, camera, thông số bay hoặc Build Settings của project Let It Bee chính.
 
 ## Mục đích và giới hạn
 
@@ -20,17 +20,17 @@ Nhấp đúp `Chay-Demo.cmd` trong thư mục này để mở hai ứng dụng. 
 Trong PowerShell, tại thư mục project chính:
 
 ```powershell
-& .\Experiments\BeeBloom-GAMA\Start-Demo.ps1
+& .\Experiments\LetItBee-GAMA\Start-Demo.ps1
 ```
 
 Lệnh mở **GAMA desktop riêng** (cổng 6872, workspace `Runtime/gama-view-workspace`) rồi mở Unity player. Khi GAMA khởi tạo thư viện lần đầu, nếu hiện câu hỏi cập nhật thư viện của workspace demo thì chọn Yes. Không cần đóng Unity Editor hay GAMA đang làm việc.
 
-Đợi Unity báo `LIVE` và cycle tăng. Trong GAMA xem `BeeBloomMap`, các monitor `Carried chunk`, `Hive slots / 5`, `Pollination visits`, `Unity position`.
+Đợi Unity báo `LIVE` và cycle tăng. Trong GAMA xem `LetItBeeMap`, các monitor `Carried chunk`, `Hive slots / 5`, `Pollination visits`, `Unity position`.
 
 Nếu muốn chỉ chạy bộ máy GAMA nền:
 
 ```powershell
-& .\Experiments\BeeBloom-GAMA\Start-Demo.ps1 -Headless
+& .\Experiments\LetItBee-GAMA\Start-Demo.ps1 -Headless
 ```
 
 GAMA headless ở cổng 6871, không có bản đồ IDE. Đây vẫn là mô hình GAMA thật, không phải mock.
@@ -54,18 +54,18 @@ Tắt cửa sổ Unity khi xong. Với GAMA desktop, đóng riêng cửa sổ c�
 ## Mở và sửa demo
 
 - Mở **project riêng** `UnityDemo` bằng Unity 6000.6.2f1.
-- Scene: `UnityDemo/Assets/Scenes/BeeBloomGamaDemo.unity`.
-- Script điều khiển/hiển thị: `UnityDemo/Assets/BeeBloomDemo.cs`.
+- Scene: `UnityDemo/Assets/Scenes/LetItBeeGamaDemo.unity`.
+- Script điều khiển/hiển thị: `UnityDemo/Assets/LetItBeeDemo.cs`.
 - Client kết nối: `UnityDemo/Assets/GamaClient.cs`.
-- Mô hình GAMA: `GAMA/BeeBloomDemo.gaml`, experiment `BeeBloomLink`.
-- Editor menu `Bee Bloom Lab/Create demo scene` tạo lại scene **của lab**; không dùng nếu muốn giữ chỉnh sửa thủ công trong scene lab.
-- `Build-Demo.ps1` cũng tạo lại scene lab. Không tác động scene Bee Bloom chính.
+- Mô hình GAMA: `GAMA/LetItBeeDemo.gaml`, experiment `LetItBeeLink`.
+- Editor menu `Let It Bee Lab/Create demo scene` tạo lại scene **của lab**; không dùng nếu muốn giữ chỉnh sửa thủ công trong scene lab.
+- `Build-Demo.ps1` cũng tạo lại scene lab. Không tác động scene Let It Bee chính.
 
 Build lại và kiểm thử:
 
 ```powershell
-& .\Experiments\BeeBloom-GAMA\Build-Demo.ps1
-& .\Experiments\BeeBloom-GAMA\Start-Demo.ps1 -SelfTest
+& .\Experiments\LetItBee-GAMA\Build-Demo.ps1
+& .\Experiments\LetItBee-GAMA\Start-Demo.ps1 -SelfTest
 ```
 
 Script build lấy hai DLL đã có trong project chính (`websocket-sharp`, `Newtonsoft.Json`); không đổi Packages/manifest.json chính. Các DLL copy, Library, Build, runtime caches/logs bị loại khỏi Git. Cần import project chính một lần nếu máy mới chưa có package cache. Giữ giấy phép của các thư viện khi phân phối bản build.
@@ -95,7 +95,7 @@ Actions GAMA: `set_pose(px,py,pz)`, `collect(flower_id,event_id)`, `deposit(even
 
 `probe.py` chỉ là công cụ chẩn đoán GAMA bổ sung, không thay thế kiểm thử Unity. Log: `Runtime/unity-build.log`, `unity-player.log`, `unity-self-test.log`, `gama-server.log`, `gama-desktop.log`.
 
-Chưa xác minh ở đây: APK Quest, XR, SIMPLE WebPlatform, nhiều người chơi, reconnect giữ trạng thái, mạng LAN, đồng bộ bản đồ Bee Bloom thật, số liệu sinh thái thực nghiệm.
+Chưa xác minh ở đây: APK Quest, XR, SIMPLE WebPlatform, nhiều người chơi, reconnect giữ trạng thái, mạng LAN, đồng bộ bản đồ Let It Bee thật, số liệu sinh thái thực nghiệm.
 
 ## Tài liệu đã đối chiếu
 
@@ -114,7 +114,7 @@ Gộp từ VALIDATION.md của lab; không phải kiểm thử bản VR/SIMPLE h
 
 - Windows standalone Unity 6000.6.2f1 build thành công, mã thoát 0,
   marker `DEMO_BUILD_OK`.
-- Player nối GAMA desktop `BeeBloomLink`, từng hiện LIVE. Ảnh do Unity chụp
+- Player nối GAMA desktop `LetItBeeLink`, từng hiện LIVE. Ảnh do Unity chụp
   sau sửa camera ở `Runtime/unity-demo.png` đã được xem; chữ/nút rõ, không lưu vết.
 - Đọc độc lập từ GAMA thấy 1 ong, 10 hoa, vị trí `(20,20,2)`;
   cycle 7297 → 7307 sau khoảng một giây, tương ứng 10 bước/giây.

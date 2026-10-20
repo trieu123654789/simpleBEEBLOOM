@@ -1,7 +1,7 @@
 """Real SIMPLE WebPlatform + LinkToUnity integration. Run with Unity stopped.
 
 Uses its own player, sessions and checkpoints; never spends the player's nectar.
-The configured WebPlatform must select the BeeBloomVR experiment.
+The configured WebPlatform must select the LetItBeeVR experiment.
 """
 import json
 import pathlib
@@ -37,7 +37,7 @@ class Monitor:
         players = self.state.get('player', {})
         if isinstance(players, dict):
             for player in players.values():
-                if player.get('connected') and player.get('id') != 'BeeBloomProtocolCheck':
+                if player.get('connected') and player.get('id') != 'LetItBeeProtocolCheck':
                     raise RuntimeError('Another player is connected; stop Unity before isolated checks.')
             for player in players.values():
                 self.send('remove_player_headset', id=player['id'])
@@ -61,7 +61,7 @@ class SimpleGama:
         self.config = config
         self.mon = Monitor()
         self.mon.reset()
-        self.player = 'BeeBloomProtocolCheck'
+        self.player = 'LetItBeeProtocolCheck'
         self.ws = websocket.create_connection('ws://127.0.0.1:8080', timeout=15)
         self.ws.send(json.dumps(dict(type='connection', id=self.player, set_heartbeat='false')))
         while True:

@@ -1,4 +1,4 @@
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Input intent survives server latency. Holding grip means carrying;
     // releasing means letting go, even if the pickup ACK has not arrived yet.

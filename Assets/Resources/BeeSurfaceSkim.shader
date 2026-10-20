@@ -1,4 +1,4 @@
-Shader "BeeBloom/SurfaceSkim"
+Shader "LetItBee/SurfaceSkim"
 {
     SubShader
     {

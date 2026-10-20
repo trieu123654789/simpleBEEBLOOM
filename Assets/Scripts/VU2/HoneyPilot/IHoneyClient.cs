@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     public interface IHoneyClient : IDisposable
     {

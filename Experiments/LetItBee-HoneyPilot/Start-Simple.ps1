@@ -183,4 +183,4 @@ do {
 } while ((Get-Date) -lt $deadline)
 if ($ready -ne 3) { throw "SIMPLE startup timed out. Read logs in $runtime" }
 Write-Host "SIMPLE WebPlatform: http://localhost:8000 | Quest: ws://<PC LAN IP>:8080 | GAMA port $GamaPort"
-Write-Host 'Select Bee Bloom - Honey Pilot and launch BeeBloomVR in WebPlatform. For GUI mode, open GAMA first.'
+Write-Host 'Select Let It Bee - Honey Pilot and launch LetItBeeVR in WebPlatform. For GUI mode, open GAMA first.'

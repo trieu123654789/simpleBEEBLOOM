@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -11,10 +11,10 @@ using UnityEngine;
 
 public static class BeeHoneyPilotSetup
 {
-    const string RootName = "BeeBloom Honey Pilot";
-    const string ScenePath = "Assets/Scenes/VU2/SCN_BeeBloom.unity";
-    const string AssetFolder = "Assets/Prefabs/BeeBloom/HoneyPilot";
-    const string BaselineKey = "BeeBloom.HoneyPilot.SceneBaseline";
+    const string RootName = "LetItBee Honey Pilot";
+    const string ScenePath = "Assets/Scenes/VU2/SCN_LetItBee.unity";
+    const string AssetFolder = "Assets/Prefabs/LetItBee/HoneyPilot";
+    const string BaselineKey = "LetItBee.HoneyPilot.SceneBaseline";
     static JObject CaptureOriginals()
     {
         var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
@@ -36,7 +36,7 @@ public static class BeeHoneyPilotSetup
     public static string Install()
     {
         var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        if (scene.path != ScenePath || EditorApplication.isPlaying) throw new InvalidOperationException("Open SCN_BeeBloom in Edit Mode.");
+        if (scene.path != ScenePath || EditorApplication.isPlaying) throw new InvalidOperationException("Open SCN_LetItBee in Edit Mode.");
         if (scene.isDirty) throw new InvalidOperationException("Scene has unsaved edits. Save your scene before installing the pilot.");
         if (GameObject.Find(RootName) != null) return "Pilot already installed; no settings changed.";
         var original = GameObject.Find("HoaCuc_Final");
@@ -70,8 +70,8 @@ public static class BeeHoneyPilotSetup
         var ghost = MaterialAsset("SlotGhost", new Color(1f, 0.75f, 0.15f, 0.3f), true);
         var cue = MaterialAsset("PollenCue", new Color(1f, 0.85f, 0.12f), false);
         var idle = CreateIdle();
-        Undo.IncrementCurrentGroup(); int group = Undo.GetCurrentGroup(); Undo.SetCurrentGroupName("Bee Bloom: add honey and pollination pilot");
-        var root = new GameObject(RootName); Undo.RegisterCreatedObjectUndo(root, "Add Bee Bloom honey pilot"); root.layer = 2;
+        Undo.IncrementCurrentGroup(); int group = Undo.GetCurrentGroup(); Undo.SetCurrentGroupName("Let It Bee: add honey and pollination pilot");
+        var root = new GameObject(RootName); Undo.RegisterCreatedObjectUndo(root, "Add Let It Bee honey pilot"); root.layer = 2;
         string prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(original);
         var flowerB = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath), scene);
         Undo.RegisterCreatedObjectUndo(flowerB, "Add second pilot flower");
@@ -94,8 +94,8 @@ public static class BeeHoneyPilotSetup
         pilot.trackedCamera = bee.GetComponent<BeeCameraRig>().trackedCamera;
         pilot.labelFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         string repo = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-        pilot.modelOnServer = Path.Combine(repo, "Experiments/BeeBloom-HoneyPilot/GAMA/BeeBloomHoneyPilot.gaml").Replace('\\', '/');
-        pilot.checkpointDirectoryOnServer = Path.Combine(repo, "Experiments/BeeBloom-HoneyPilot/Runtime/checkpoints").Replace('\\', '/');
+        pilot.modelOnServer = Path.Combine(repo, "Experiments/LetItBee-HoneyPilot/GAMA/LetItBeeHoneyPilot.gaml").Replace('\\', '/');
+        pilot.checkpointDirectoryOnServer = Path.Combine(repo, "Experiments/LetItBee-HoneyPilot/Runtime/checkpoints").Replace('\\', '/');
         Directory.CreateDirectory(pilot.checkpointDirectoryOnServer);
         pilot.sessionId = Guid.NewGuid().ToString("N");
         EditorUtility.SetDirty(pilot); EditorSceneManager.MarkSceneDirty(scene); Undo.CollapseUndoOperations(group);

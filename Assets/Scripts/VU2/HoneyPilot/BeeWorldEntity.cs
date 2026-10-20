@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Explicit opt-in: decorative meshes are never mistaken for simulation actors.
     [ExecuteAlways, DisallowMultipleComponent, AddComponentMenu("Bee Bloom/World Entity")]

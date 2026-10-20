@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     public sealed class HoneySimpleClient : IHoneyClient
     {
@@ -34,7 +34,7 @@ namespace BeeBloom.HoneyPilot
             while (!connection.IsConnectionState(ConnectionState.AUTHENTICATED)) {
                 if (disposed) throw new ObjectDisposedException(nameof(HoneySimpleClient));
                 if (DateTime.UtcNow >= deadline)
-                    throw new TimeoutException("SIMPLE is not ready: launch BeeBloomVR and add the player in WebPlatform.");
+                    throw new TimeoutException("SIMPLE is not ready: launch LetItBeeVR and add the player in WebPlatform.");
                 await Task.Delay(100);
             }
             JObject result = await Request("configure", new JObject {
@@ -72,7 +72,7 @@ namespace BeeBloom.HoneyPilot
             try {
                 var content = JObject.Parse(json);
                 // LinkToUnity wraps custom send_message payloads under 'message'.
-                var reply = (JObject)(content["bee_bloom"] ?? content["message"]?["bee_bloom"]);
+                var reply = (JObject)(content["let_it_bee"] ?? content["bee_bloom"] ?? content["message"]?["let_it_bee"] ?? content["message"]?["bee_bloom"]);
                 string id = (string)reply?["correlation"];
                 if (id == null || !pending.TryRemove(id, out var completion)) return;
                 string fault = (string)reply["fault"];

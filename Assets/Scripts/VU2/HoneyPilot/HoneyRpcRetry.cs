@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Each send repeats the same correlation/envelope. Transactions retain their
     // event ID, so a lost acknowledgement cannot allocate or deposit twice.

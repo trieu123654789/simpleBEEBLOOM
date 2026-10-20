@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR;
 using CommonUsages = UnityEngine.XR.CommonUsages;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     [DisallowMultipleComponent, DefaultExecutionOrder(150)]
     public sealed class BeeHoneyPilot : MonoBehaviour

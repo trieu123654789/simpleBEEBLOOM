@@ -26,7 +26,7 @@ public static class BeeSwipeFlapSetup
             EditorUtility.DisplayDialog(
                 "❌ Không tìm thấy BeeController",
                 "Không có BeeController nào trong scene đang mở.\n\n" +
-                "Hãy mở scene chứa nhân vật ong (ví dụ: SCN_BeeBloom, SCN_VU2_Level1_New) rồi chạy lại.",
+                "Hãy mở scene chứa nhân vật ong (ví dụ: SCN_LetItBee, SCN_VU2_Level1_New) rồi chạy lại.",
                 "OK");
             return;
         }

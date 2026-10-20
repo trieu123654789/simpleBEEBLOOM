@@ -1,5 +1,5 @@
-model BeeBloomSimpleVR
-import "BeeBloomHoneyPilot.gaml"
+model LetItBeeSimpleVR
+import "LetItBeeHoneyPilot.gaml"
 
 global {
     string pilot_owner <- "";
@@ -69,7 +69,12 @@ species unity_linker parent: abstract_unity_linker {
                     } else if (op != "snapshot") { fault <- "unknown_operation"; }
                 }
             }
-            do send_message players: receivers mes: ["bee_bloom"::[
+            do send_message players: receivers mes: ["let_it_bee"::[
+                "correlation"::envelope["correlation"],"fault"::fault,
+                "snapshot"::["state"::state,"response"::response,"cycle"::cycle,
+                    "flower_positions"::flower_positions,"slot_position"::slot_coordinates,
+                    "bee_position"::[bee_position.x,bee_position.y,bee_position.z],"world_sync"::world_response]],
+                "bee_bloom"::[
                 "correlation"::envelope["correlation"],"fault"::fault,
                 "snapshot"::["state"::state,"response"::response,"cycle"::cycle,
                     "flower_positions"::flower_positions,"slot_position"::slot_coordinates,
@@ -79,7 +84,7 @@ species unity_linker parent: abstract_unity_linker {
 }
 species unity_player parent: abstract_unity_player;
 
-experiment BeeBloomVR parent: HoneyPilot autorun: false type: unity {
+experiment LetItBeeVR parent: HoneyPilot autorun: false type: unity {
     float minimum_cycle_duration <- 0.1;
     string unity_linker_species <- string(unity_linker);
     list<string> displays_to_hide <- [];
@@ -91,3 +96,6 @@ experiment BeeBloomVR parent: HoneyPilot autorun: false type: unity {
         if (pilot_owner = id_input) { pilot_owner <- ""; }
     }
 }
+
+// Backward compatibility experiment alias
+experiment BeeBloomVR parent: LetItBeeVR autorun: false type: unity { }

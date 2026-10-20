@@ -1,4 +1,4 @@
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ public sealed class BeeHoneyPilotInspector : Editor
             Repaint();
         } else {
             EditorGUILayout.HelpBox(pilot.useSimpleToolchain
-                ? "Start SIMPLE WebPlatform, launch BeeBloomVR, then Play. IP can be overridden by beebloom-connection.json without editing this scene. Left trigger holds; right trigger collects; right grip picks/releases. Desktop: F / G."
+                ? "Start SIMPLE WebPlatform, launch LetItBeeVR, then Play. IP can be overridden by letitbee-connection.json without editing this scene. Left trigger holds; right trigger collects; right grip picks/releases. Desktop: F / G."
                 : "Legacy direct test: Start-GamaServer.ps1, then Play. Left trigger holds; right trigger collects; right grip picks/releases. Desktop: F / G.", MessageType.Info);
         }
         EditorGUILayout.LabelField("External connection file", BeeConnectionProfile.ConfigPath);

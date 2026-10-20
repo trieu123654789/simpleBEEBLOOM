@@ -10,4 +10,4 @@ Copy-Item -LiteralPath (Join-Path $repo 'Assets/GAMA_Resources/Plugins/websocket
 $argsBuild = @('-batchmode','-nographics','-quit','-projectPath',('"'+$PSScriptRoot+'\UnityDemo"'),'-executeMethod','DemoBuild.Build','-logFile',('"'+$PSScriptRoot+'\Runtime\unity-build.log"'))
 $process = Start-Process $UnityExe -ArgumentList $argsBuild -WindowStyle Hidden -PassThru -Wait
 if ($process.ExitCode -ne 0) { throw "Unity build failed ($($process.ExitCode)). See Runtime/unity-build.log" }
-Write-Host "Built: $PSScriptRoot\Build\BeeBloomGamaDemo.exe"
+Write-Host "Built: $PSScriptRoot\Build\LetItBeeGamaDemo.exe"

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Read the saved rig in world space. Never scale the plant or write bones.
     public sealed class BeeFlowerGeometry

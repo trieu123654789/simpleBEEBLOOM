@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // One full, replaceable observation snapshot. Gameplay state stays in GAMA.
     public sealed class BeeWorldSync

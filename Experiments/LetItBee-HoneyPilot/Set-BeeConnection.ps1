@@ -1,12 +1,13 @@
 param(
  [Parameter(Mandatory=$true)][string]$Endpoint,
- [string]$OutputPath = (Join-Path $PSScriptRoot 'Runtime/beebloom-connection.json'),
+ [string]$OutputPath,
  [switch]$PushToQuest,
  [string]$AdbPath = 'adb',
  [string]$Serial,
- [string]$PackageName = 'com.quoctrieu.beebloom'
+ [string]$PackageName = 'com.quoctrieu.letitbee'
 )
 $ErrorActionPreference='Stop'
+if (!$OutputPath) { $OutputPath = Join-Path $PSScriptRoot 'Runtime/letitbee-connection.json' }
 $address=$null
 if (![Uri]::TryCreate($Endpoint.Trim(),[UriKind]::Absolute,[ref]$address) -or $address.Scheme -ne 'ws' -or
     !$address.Host -or $address.HostNameType -eq [UriHostNameType]::IPv6 -or $address.Port -lt 1 -or
@@ -19,13 +20,13 @@ if ($PushToQuest -and $address.Host -in @('localhost','127.0.0.1','0.0.0.0')) {
 $destination=[IO.Path]::GetFullPath($OutputPath)
 [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($destination)) | Out-Null
 $normalizedEndpoint="ws://$($address.Host):$($address.Port)"
-$profile=@{schema='beebloom-connection-v1';simpleEndpoint=$normalizedEndpoint} | ConvertTo-Json
+$profile=@{schema='letitbee-connection-v1';simpleEndpoint=$normalizedEndpoint} | ConvertTo-Json
 $unchanged=$false
 if ([IO.File]::Exists($destination)) {
  try {
   $existing=[IO.File]::ReadAllText($destination) | ConvertFrom-Json
   $unchanged=($null -ne $existing -and @($existing.PSObject.Properties).Count -eq 2 -and
-   $existing.schema -ceq 'beebloom-connection-v1' -and $existing.simpleEndpoint -ceq $normalizedEndpoint)
+   $existing.schema -ceq 'letitbee-connection-v1' -and $existing.simpleEndpoint -ceq $normalizedEndpoint)
  } catch { $unchanged=$false }
 }
 if (!$unchanged) {
@@ -33,10 +34,10 @@ if (!$unchanged) {
  # with ERROR_UNABLE_TO_REMOVE_REPLACED. Rename a complete file on the same
  # volume instead; never delete/truncate the active profile as a fallback.
  if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT -and
-     !('BeeBloom.ConnectionAtomicFile' -as [type])) {
+     !('LetItBee.ConnectionAtomicFile' -as [type])) {
   Add-Type -TypeDefinition @'
 using System.Runtime.InteropServices;
-namespace BeeBloom {
+namespace LetItBee {
  public static class ConnectionAtomicFile {
   [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
   [return: MarshalAs(UnmanagedType.Bool)]
@@ -52,7 +53,7 @@ namespace BeeBloom {
    try {
     if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
      # MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH
-     if (![BeeBloom.ConnectionAtomicFile]::MoveFileEx($temporary,$destination,9)) {
+     if (![LetItBee.ConnectionAtomicFile]::MoveFileEx($temporary,$destination,9)) {
       $nativeError=[Runtime.InteropServices.Marshal]::GetLastWin32Error()
       throw [ComponentModel.Win32Exception]::new($nativeError,"Cannot atomically update connection file '$destination' (Windows error $nativeError). Close programs locking this file and retry.")
      }
@@ -82,8 +83,10 @@ if (!$Serial) {
 $target="/sdcard/Android/data/$PackageName/files"
 & $adb -s $Serial shell mkdir -p $target
 if ($LASTEXITCODE -ne 0) { throw 'Cannot create the app config directory. Install and open the app once first.' }
-& $adb -s $Serial push $destination "$target/beebloom-connection.json.tmp"
+& $adb -s $Serial push $destination "$target/letitbee-connection.json.tmp"
+ & $adb -s $Serial push $destination "$target/beebloom-connection.json.tmp"
 if ($LASTEXITCODE -ne 0) { throw 'ADB config upload failed.' }
-& $adb -s $Serial shell mv "$target/beebloom-connection.json.tmp" "$target/beebloom-connection.json"
+& $adb -s $Serial shell mv "$target/letitbee-connection.json.tmp" "$target/letitbee-connection.json"
+ & $adb -s $Serial shell mv "$target/beebloom-connection.json.tmp" "$target/beebloom-connection.json"
 if ($LASTEXITCODE -ne 0) { throw 'ADB config activation failed.' }
 Write-Host 'Quest connection updated. No APK rebuild needed; a running client reconnects automatically.'

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 public static class BeePerchChecks
 {
     const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
-    [MenuItem("Bee Bloom/Check Flower Landing")]
+    [MenuItem("Let It Bee/Check Flower Landing")]
     public static void RunMenu() => Debug.Log(Run());
     public static string Run()
     {

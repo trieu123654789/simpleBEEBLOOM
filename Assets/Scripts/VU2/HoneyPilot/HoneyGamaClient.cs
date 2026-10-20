@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Dedicated transport: does not touch SIMPLE singletons or shared InputActions.
     public sealed class HoneyGamaClient : IHoneyClient

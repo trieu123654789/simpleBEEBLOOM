@@ -1,0 +1,9 @@
+{
+  "type": "json_settings",
+  "name": "Let It Bee - Honey Pilot",
+  "model_file_path": "./GAMA/LetItBeeSimpleVR.gaml",
+  "experiment_name": "LetItBeeVR",
+  "minimal_players": "1",
+  "maximal_players": "1",
+  "selected_monitoring": "gama_screen"
+}

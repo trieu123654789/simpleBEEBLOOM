@@ -1,6 +1,6 @@
 // =============================================================================
-// BeeQuestManager - Hệ thống nhiệm vụ tuần tự cho game BeeBloom.
-// BeeQuestManager - Sequential quest system for BeeBloom game.
+// BeeQuestManager - Hệ thống nhiệm vụ tuần tự cho game Let It Bee.
+// BeeQuestManager - Sequential quest system for Let It Bee game.
 //
 // CẤU TRÚC NHIỆM VỤ / QUEST STRUCTURE
 //   Danh sách Quest[] chạy tuần tự (index 0, 1, 2, ...).

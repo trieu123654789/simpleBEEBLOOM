@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public static class BeeAudioChecks
 {
-    [MenuItem("Bee Bloom/Check Wing Audio")]
+    [MenuItem("Let It Bee/Check Wing Audio")]
     public static void RunMenu() => Debug.Log(Run());
 
     public static string Run()

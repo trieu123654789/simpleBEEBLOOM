@@ -1,6 +1,6 @@
-# Bee Bloom — Kế hoạch, tiến độ và hướng dẫn phát triển
+# Let It Bee — Kế hoạch, tiến độ và hướng dẫn phát triển
 
-Cập nhật: **20/10/2026**. Đây là tài liệu chính của Bee Bloom, hợp nhất các bản
+Cập nhật: **20/10/2026**. Đây là tài liệu chính của Let It Bee, hợp nhất các bản
 plan, checklist, tiến độ và hướng dẫn kỹ thuật đã tạo trong quá trình làm việc.
 Khi thay đổi phạm vi hoặc hoàn thành công việc, cập nhật tại đây.
 
@@ -35,7 +35,7 @@ khi phát triển gameplay chính. Chưa yêu cầu đóng gói đi thi hoặc l
 | Hoa/mật/tổ | Pilot hai hoa thuộc hai cây, một cục mật, một ô tổ; GAMA xác nhận | Luồng chính đủ 5 cục/lượt và nhiệm vụ đầy đủ |
 | Kết nối | SIMPLE WebPlatform → LinkToUnity → GAMA; IP ngoài APK, đường dẫn phía server; đã nhận GAMA ready trên Quest qua hotspot | Nghiệm thu toàn vòng tương tác trên kính và PC thứ hai |
 | GAMA | Model giao dịch, checkpoint, bản đồ pilot và vị trí ong liên tục khi kết nối | Model sinh thái đã hiệu chuẩn, bản đồ quan sát hoàn thiện |
-| NPC/cutscene | Có ý tưởng và code NPC kế thừa để khảo sát | Chưa có NPC/cutscene Bee Bloom hoàn chỉnh được nghiệm thu |
+| NPC/cutscene | Có ý tưởng và code NPC kế thừa để khảo sát | Chưa có NPC/cutscene Let It Bee hoàn chỉnh được nghiệm thu |
 | Luồng game | Chưa nghiệm thu thành game hai màn từ đầu đến cuối | Menu, pause, retry, chuyển màn, kết thúc, lưu/reset theo thiết kế chính |
 
 **Các quyết định đã chốt:**
@@ -67,17 +67,17 @@ không có nghĩa vòng chơi chính 5 cục đã hoàn tất.
 
 ## 3. Vòng chơi thử hiện tại
 
-Scene chính: `Assets/Scenes/VU2/SCN_BeeBloom.unity`, đối tượng **BeeBloom Honey Pilot**.
+Scene chính: `Assets/Scenes/VU2/SCN_LetItBee.unity`, đối tượng **LetItBee Honey Pilot**.
 Khi đã khởi chạy SIMPLE theo mục 4, bắt đầu từ Edit Mode rồi nhấn Play.
 
 **Bản thao tác 3.2 đã build và cài cập nhật lên Quest ngày 20/10 lúc 15:03.** APK:
-`Experiments/BeeBloom-HoneyPilot/Build/BeeBloom-Quest-honey-interaction-v3.2.apk`.
+`Experiments/LetItBee-HoneyPilot/Build/LetItBee-Quest-honey-interaction-v3.2.apk`.
 Build thành công, 0 lỗi, 146 cảnh báo; APK đã kiểm tra ZIP và metadata đúng 3.2.
 Quest PID 14440 nhận `GAMA ready` lúc 15:04:44; SIMPLE ghi nhận Player_62 in-game,
-experiment BeeBloomVR 49964 RUNNING. Checkpoint lúc nối là revision 0, hai hoa
+experiment LetItBeeVR 49964 RUNNING. Checkpoint lúc nối là revision 0, hai hoa
 còn mật, chưa có cục mật và ô tổ trống. Chưa nghiệm thu hoạt ảnh 3.2 bằng mắt trên kính.
 Log app thật lúc 14:26 có `Honey interaction 3` và `GAMA ready`; SIMPLE xác nhận
-Player_62 đang in-game, BeeBloomVR RUNNING. Bản cũ `branch-perch` vẫn dùng grip
+Player_62 đang in-game, LetItBeeVR RUNNING. Bản cũ `branch-perch` vẫn dùng grip
 bấm đổi cầm/thả. Sau khi cài 3.1, checkpoint thật ghi nhận `pick`, `drop`,
 `pick`, `deposit` được GAMA chấp nhận ở revision 80–83, ô tổ đạt 1/1.
 Đây là bằng chứng đường giao dịch đã hoạt động trên Quest; độ đẹp/thoải mái
@@ -142,7 +142,7 @@ phát sinh `pick`. Đợt 3.1 sau đó đã có giao dịch cầm/gắn thật n
 
 **Lượt thử hoa sinh mật từ đầu, 20/10 lúc 14:54:** dừng app và experiment trước
 khi sao lưu nguyên checkpoint revision 83 (đã gắn 1/1) tại
-`Experiments/BeeBloom-HoneyPilot/Runtime/backups/before-flower-creation-20261020-145452.json`.
+`Experiments/LetItBee-HoneyPilot/Runtime/backups/before-flower-creation-20261020-145452.json`.
 Sau đó chỉ đặt lại tiến độ runtime: hai hoa còn mật, chưa mang phấn, chưa có
 cục mật và ô tổ trống; giữ nguyên session, vị trí, bán kính và scene đã lưu.
 Để xem mật hình thành, tới hoa, giữ trigger trái để ổn định/đậu, ngắm nhụy bằng
@@ -199,7 +199,7 @@ component hoặc lưu lại scene để bật bản mặc định. Không thêm 
   hiệu chỉnh theo scale daisy vì bone Head thấp hơn bề mặt; tọa độ giao dịch GAMA
   và các bán kính tương tác đã lưu không đổi.
 
-Chỉnh tại **BeeBloom Honey Pilot → Honey presentation**:
+Chỉnh tại **LetItBee Honey Pilot → Honey presentation**:
 
 | Trường | Công dụng |
 | --- | --- |
@@ -225,17 +225,17 @@ Mật, phấn, cục đang cầm và ô tổ thuộc checkpoint **GAMA**, không
 Inspector để sửa tay trong scene. Pilot chỉ có một ô; muốn thử lại sau khi gắn
 1/1 phải bắt đầu một lượt mới. Không cần nhờ người khác sửa JSON hoặc đổi Session ID.
 
-1. Đóng Bee Bloom trên kính bằng Quit, dừng Play trong Unity nếu đang chạy;
+1. Đóng Let It Bee trên kính bằng Quit, dừng Play trong Unity nếu đang chạy;
    đợi khoảng 15 giây để SIMPLE nhận kính đã ngắt. Giữ SIMPLE/GAMA đang mở.
-2. Mở PowerShell tại `Experiments/BeeBloom-HoneyPilot`, chạy:
+2. Mở PowerShell tại `Experiments/LetItBee-HoneyPilot`, chạy:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Reset-HoneyPilot.ps1
 ```
 
-3. Script tự dừng riêng experiment BeeBloomVR, sao lưu rồi đặt lại **toàn lượt
+3. Script tự dừng riêng experiment LetItBeeVR, sao lưu rồi đặt lại **toàn lượt
    thử**: hai hoa có mật, chưa nhận/chuyển phấn, không có cục mật, ô tổ trống.
-   Trong SIMPLE chọn Bee Bloom - Honey Pilot, Launch/Play BeeBloomVR lại, mở game
+   Trong SIMPLE chọn Let It Bee - Honey Pilot, Launch/Play LetItBeeVR lại, mở game
    rồi thêm kính vào experiment. Không cần Administrator hay cài APK lại để hồi mật.
 
 Lệnh thường giữ nguyên hình học và bán kính trong checkpoint. Khi đã chủ động
@@ -251,7 +251,7 @@ Ctrl+S vẫn lưu bố trí trong Unity; muốn **Quest thấy bố trí mới**
 APK chứa bố trí đó. Lệnh reset không truyền scene mới vào một APK cũ.
 
 Có thể thêm `-Preview` để chỉ xem session và thay đổi dự kiến, không ghi dữ liệu
-và không dừng experiment. Mặc định Session được đọc từ scene SCN_BeeBloom đã lưu;
+và không dừng experiment. Mặc định Session được đọc từ scene SCN_LetItBee đã lưu;
 nếu APK cố ý dùng Session khác, truyền `-Session <ID-32-ký-tự>`.
 
 Dữ liệu mặc định: `Runtime/checkpoints/<Session Id>.json`; backup nguyên trạng:
@@ -265,7 +265,7 @@ chơi hiện tại chưa bị reset trong lúc thêm công cụ.
 
 ### Chỉnh các thông số tương tác
 
-Dừng Play, chọn **BeeBloom Honey Pilot**, chỉnh và Ctrl+S khi muốn lưu.
+Dừng Play, chọn **LetItBee Honey Pilot**, chỉnh và Ctrl+S khi muốn lưu.
 
 | Trường | Công dụng |
 | --- | --- |
@@ -295,7 +295,7 @@ mới, tạo phiên bằng **VU2 → Bee → Honey Pilot → New session (keep s
 
 ## 4. Chạy SIMPLE và cấu hình chuyển máy
 
-Các lệnh bên dưới chạy trong thư mục `Experiments/BeeBloom-HoneyPilot`.
+Các lệnh bên dưới chạy trong thư mục `Experiments/LetItBee-HoneyPilot`.
 
 ### Cấu hình PC
 
@@ -319,11 +319,11 @@ Máy hiện tại đã có file local; khi chuyển máy tạo lại cho đúng 
 1. Mở GAMA bình thường, bật server GUI cổng 1000. Đóng experiment cũ bằng X đỏ
    trước khi nạp phiên mới; không tự đóng experiment khác của người dùng.
 2. Chạy `Start-Simple.ps1`.
-3. Mở `http://localhost:8000`, chọn **Bee Bloom - Honey Pilot**, launch
-   **BeeBloomVR**, rồi Play/resume. Bấm launch một lần và đợi nạp xong.
+3. Mở `http://localhost:8000`, chọn **Let It Bee - Honey Pilot**, launch
+   **LetItBeeVR**, rồi Play/resume. Bấm launch một lần và đợi nạp xong.
 4. Mở ứng dụng trên kính (hoặc Play trong Editor khi có runtime XR phù hợp).
    Trong WebPlatform thêm headset đang kết nối vào experiment. Chỉ mở server/cổng
-   chưa đủ: **BeeBloomVR phải RUNNING và player phải được thêm vào game**. Inspector phải báo
+   chưa đủ: **LetItBeeVR phải RUNNING và player phải được thêm vào game**. Inspector phải báo
    **LIVE · SIMPLE → LinkToUnity → GAMA**.
 5. GAMA **HoneyPilotMap** hiện **UNITY SERVER**: tam giác vàng là ong đang cập nhật,
    hai chấm là hoa, hình vuông là ô tổ; hoa xanh đã nhận phấn.
@@ -365,7 +365,7 @@ hoặc build APK để chuyển kính; sau cập nhật model cần stop/launch 
 Năm kiểm tra GAMA riêng đã qua, gồm giới hạn một player, nhả quyền, kính thay thế
 nhận lại nguyên trạng checkpoint và thu hồi owner mồ côi.
 Kính mới PID 31690 đã nhận `GAMA ready` lúc **16:09:49 ngày 20/10**;
-Player_182 in-game, BeeBloomVR 56790 RUNNING. Checkpoint sau khi nối so với trước
+Player_182 in-game, LetItBeeVR 56790 RUNNING. Checkpoint sau khi nối so với trước
 sửa giữ nguyên (revision 0, chưa có cục mật, ô tổ trống); scene và ProjectSettings
 cũng giữ nguyên hash. Chưa xác nhận thao tác hoa bằng mắt trên kính ở đợt nối này.
 
@@ -380,11 +380,11 @@ Kiểm tra adapter bằng `node check-heartbeat-compat.mjs` trong thư mục pil
 .\Set-BeeConnection.ps1 -Endpoint 'ws://192.168.2.8:8080'
 ```
 
-Thay IP ví dụ bằng IPv4 LAN của PC. Lệnh tạo `Runtime/beebloom-connection.json`:
+Thay IP ví dụ bằng IPv4 LAN của PC. Lệnh tạo `Runtime/letitbee-connection.json`:
 
 ```json
 {
-  "schema": "beebloom-connection-v1",
+  "schema": "letitbee-connection-v1",
   "simpleEndpoint": "ws://192.168.2.8:8080"
 }
 ```
@@ -393,7 +393,7 @@ Editor đọc file trên. APK đọc cùng tên tại `Application.persistentDat
 package hiện tại là:
 
 ```text
-/sdcard/Android/data/com.quoctrieu.beebloom/files/beebloom-connection.json
+/sdcard/Android/data/com.quoctrieu.letitbee/files/letitbee-connection.json
 ```
 
 Để gửi vào Quest: cài/mở app một lần, cắm USB và cho phép USB debugging. Thay IP,
@@ -428,7 +428,7 @@ lỗi khóa giữ nguyên JSON cũ, dọn file tạm và ghi lại sau khi mở 
 Khi đổi Wi-Fi/IP hoặc rule cũ không khớp, chạy **PowerShell Administrator**:
 
 ```powershell
-.\Connect-Quest.ps1 -UpdateFirewall -InstallApk '.\Build\BeeBloom-Quest-branch-perch.apk'
+.\Connect-Quest.ps1 -UpdateFirewall -InstallApk '.\Build\LetItBee-Quest-branch-perch.apk'
 ```
 
 `-InstallApk` cài cập nhật giữ dữ liệu app; bỏ tham số này nếu chỉ đổi kết nối.
@@ -436,7 +436,7 @@ Khi đổi Wi-Fi/IP hoặc rule cũ không khớp, chạy **PowerShell Administr
 rule cho **đúng IP PC, đúng IP kính, TCP 8080**. Hỗ trợ Private/Public, không đổi
 loại mạng và không tắt firewall. IP kính đổi thì chạy lại. Wi-Fi khách có chế độ
 cách ly thiết bị vẫn có thể chặn ở router; khi đó dùng cùng một hotspot cho PC/Quest.
-Sau cập nhật vẫn cần SIMPLE mở **BeeBloomVR RUNNING** và thêm player vào experiment.
+Sau cập nhật vẫn cần SIMPLE mở **LetItBeeVR RUNNING** và thêm player vào experiment.
 
 ### Chiếu màn hình Quest trên SIMPLE
 
@@ -463,7 +463,7 @@ Quest ban đầu chỉ có ADB USB nên danh sách stream rỗng. Sau khi chạy
 `Connect-Quest.ps1 -EnableStreaming`, ADB mạng kết nối thành công và SIMPLE
 nhận stream `10.18.47.62`. Socket video trả về cấu hình H.265 và 23 gói khung hình,
 có keyframe. Đã xác minh dữ liệu video thực tế; chưa xác minh hình hiển thị trên
-trình duyệt của người dùng hoặc độ ổn định dài hạn. Giữ kính thức và mở Bee Bloom,
+trình duyệt của người dùng hoặc độ ổn định dài hạn. Giữ kính thức và mở Let It Bee,
 rồi tải lại trang stream bằng Ctrl+F5 nếu trang vẫn hiện hình chờ.
 
 Nếu trang báo Vite không resolve được `@yume-chan/stream-extra`, nguyên nhân đã
@@ -475,7 +475,7 @@ giữ cấu hình exclude của SIMPLE gốc. Sau áp sửa và khởi động l
 
 Chẩn đoán ngày 20/10: PC `10.18.46.146` trên Wi-Fi Public, file cũ trỏ
 `192.168.2.8`; rule Windows vẫn giới hạn Private, PC `172.20.10.2` và subnet
-`172.20.10.0/28`. Đã sửa profile Editor thành loopback, chạy BeeBloomVR headless,
+`172.20.10.0/28`. Đã sửa profile Editor thành loopback, chạy LetItBeeVR headless,
 kiểm chứng 25 kiểm tra client Unity thật qua SIMPLE/GAMA. Profile Quest mới đã
 chuẩn bị; chưa gửi vào kính hoặc áp rule mạng mới vì ADB offline và người dùng
 chọn tự test. Không coi kiểm tra PC là kết quả kết nối Quest.
@@ -488,7 +488,7 @@ Sau khi ADB trở lại đã cài thành công (`Success`, exit 0) lên Quest 3
 Kính dùng Wi-Fi `10.18.47.62`. Rule Windows vẫn là IP/mạng Private cũ; lệnh
 cập nhật bị Windows từ chối do phiên công cụ không có quyền Administrator.
 Người dùng chạy `Connect-Quest.ps1 -UpdateFirewall` từ PowerShell Administrator;
-không cần cài APK lại. SIMPLE đang BeeBloomVR RUNNING; chưa nghiệm thu kết nối Quest.
+không cần cài APK lại. SIMPLE đang LetItBeeVR RUNNING; chưa nghiệm thu kết nối Quest.
 
 Client đọc lại file khoảng mỗi giây khi vòng kết nối rảnh, đổi endpoint thì tự
 nối lại; gói đang chờ/mất mạng có thể cần thêm timeout. Giao dịch giữ event ID
@@ -498,14 +498,14 @@ không nhận thông số bay/HUD/camera. Hiện chỉ hỗ trợ `ws`, IPv4/hos
 có credentials, path, query hoặc fragment trong endpoint.
 
 APK mới có bộ đọc cấu hình ngoài đã build ở
-`Experiments/BeeBloom-HoneyPilot/Build/BeeBloom-SIMPLE.apk`. **Cần cài cập nhật một
+`Experiments/LetItBee-HoneyPilot/Build/LetItBee-SIMPLE.apk`. **Cần cài cập nhật một
 lần từ APK cũ**; các lần đổi IP/đường dẫn sau không cần build lại. Gỡ app/xóa app
 data có thể mất file cấu hình; gửi lại khi cần. Đã gửi cấu hình qua ADB cho hai
 Quest trong đợt 19/10; hiện người dùng không có kính để thử APK phục hồi mới.
 
 ### Đường dẫn model, checkpoint và chuyển tiến độ
 
-WebPlatform đọc `settings.json` rồi nạp `./GAMA/BeeBloomSimpleVR.gaml`; APK không
+WebPlatform đọc `settings.json` rồi nạp `./GAMA/LetItBeeSimpleVR.gaml`; APK không
 cần biết model nằm ở ổ nào. GAMA quyết định nơi ghi checkpoint, mặc định:
 
 ```text
@@ -516,7 +516,7 @@ Muốn đổi nơi lưu, sao chép `GAMA/server.example.json` thành `GAMA/serve
 sửa rồi dừng/launch lại experiment:
 
 ```json
-{ "checkpoint_directory": "D:/BeeBloomData/checkpoints" }
+{ "checkpoint_directory": "D:/LetItBeeData/checkpoints" }
 ```
 
 Đường dẫn tương đối trong file này tính từ model GAMA. Tài khoản chạy GAMA cần
@@ -542,7 +542,7 @@ vào Git; cần mang dữ liệu/cấu hình cần thiết riêng khi chuyển m
 
 **Xem checkpoint từ workspace:** import GAMA Project từ thư mục `GAMA` của package,
 bỏ chọn **Copy projects into workspace** để liên kết file gốc; mở
-`BeeBloomHoneyPilot.gaml` → **HoneyPilot**, chọn `Progress file`. Bản xem đọc khoảng
+`LetItBeeHoneyPilot.gaml` → **HoneyPilot**, chọn `Progress file`. Bản xem đọc khoảng
 0,5 giây/lần, không ghi tiến độ; ong là mẫu tại giao dịch gần nhất. Nếu trước đó
 copy một file lẻ vào workspace thì đó là bản sao, không tự nhận cập nhật file gốc.
 
@@ -557,7 +557,7 @@ rồi build lại APK” làm luồng phát triển hiện tại.
 Unity Editor / APK Quest
   → ConnectionManager kế thừa SIMPLE
   → WebPlatform :8080
-  → LinkToUnity / BeeBloomVR
+  → LinkToUnity / LetItBeeVR
   → luật giao dịch + checkpoint GAMA
   → snapshot xác nhận về Unity
 ```
@@ -570,11 +570,11 @@ Unity Editor / APK Quest
 | BeeHoneyPilot | Tham chiếu BeeRoot/tay phải/hai đầu hoa/ô tổ; gửi input, dựng mật/phấn/nhãn và phản hồi runtime |
 | HoneySimpleClient, HoneyRpcRetry, BeeSimpleConnection | Xác thực, gửi `ask`, ghép phản hồi và thử lại có giới hạn; dùng ConnectionManager/WebSocket hiện có |
 | BeeConnectionProfile | Đọc endpoint ngoài, loại đường dẫn PC khỏi payload SIMPLE; không nạp cấu hình vào scene |
-| BeeBloomSimpleVR.gaml | Kế thừa `abstract_unity_linker`/`abstract_unity_player`, experiment `type: unity`, đăng ký player và chuyển giao dịch |
-| BeeBloomHoneyPilot.gaml | Quản lý phấn, nectar, ID mật, cầm/thả, ô tổ, state và biên nhận checkpoint |
+| LetItBeeSimpleVR.gaml | Kế thừa `abstract_unity_linker`/`abstract_unity_player`, experiment `type: unity`, đăng ký player và chuyển giao dịch |
+| LetItBeeHoneyPilot.gaml | Quản lý phấn, nectar, ID mật, cầm/thả, ô tổ, state và biên nhận checkpoint |
 
 Map, hạ tầng XR và ConnectionManager/WebSocket kế thừa dự án SIMPLE. Logic bay
-ong, phản hồi bề mặt, vòng mật/phấn và model Bee Bloom là phần phát triển thêm.
+ong, phản hồi bề mặt, vòng mật/phấn và model Let It Bee là phần phát triển thêm.
 Unity giữ camera/tracking, input, bay, va chạm, animation, HUD, VFX/SFX/rung tay.
 GAMA là nơi xác nhận tài nguyên và giao dịch; không đồng thời cộng/trừ ở hai phía.
 Không áp geometry/spawn/giới hạn di chuyển từ SDK lên XR rig có sẵn.
@@ -587,8 +587,8 @@ giao dịch đang chờ với cùng event ID; không tự cộng tiến độ t�
 
 ### Hợp đồng dữ liệu của pilot
 
-- Schema state: `beebloom-honey-pilot-v1`; profile kết nối dùng schema riêng
-  `beebloom-connection-v1`.
+- Schema state: `letitbee-honey-pilot-v1`; profile kết nối dùng schema riêng
+  `letitbee-connection-v1`.
 - 1 đơn vị = 1 mét. Unity `(x,y,z)` → GAMA `(x,z,y)`; không áp thêm hệ số
   `precision` geometry SDK vào payload nghiệp vụ này.
 - ID hoa `flower-a`, `flower-b`; cây `plant-a`, `plant-b`; ô `slot-a`.
@@ -622,15 +622,15 @@ SIMPLE nguyên gốc hoặc server bên ngoài đều chạy ngay không cần �
 
 ### Tự đồng bộ đối tượng từ Unity — nền đầu tiên 19/10
 
-Đã thêm lớp quan sát `beebloom-world-v1` trên **cùng kết nối SIMPLE**. Unity là
+Đã thêm lớp quan sát `letitbee-world-v1` trên **cùng kết nối SIMPLE**. Unity là
 nơi bố trí đối tượng; GAMA tạo/xóa agent quan sát theo danh sách nhận được.
 Không thêm một ConnectionManager hay mô phỏng AI ong thứ hai.
 
 **Dùng trong Unity:**
 
-1. Dừng Play, mở scene Bee Bloom hiện hành để bố trí và lưu đối tượng.
+1. Dừng Play, mở scene Let It Bee hiện hành để bố trí và lưu đối tượng.
 2. Ong người chơi, hai hoa và ô tổ pilot được gửi tự động, không cần thêm component.
-3. Với đối tượng mới, chọn GameObject, vào **Bee Bloom → World Sync → Track selected
+3. Với đối tượng mới, chọn GameObject, vào **Let It Bee → World Sync → Track selected
    as Bee / Flower / Hive**. Thao tác chỉ thêm `BeeWorldEntity` vào đối tượng đã chọn.
 4. Trong component, `Anchor` có thể trỏ tới điểm cần theo dõi, ví dụ bone Head của
    hoa. Để trống thì dùng vị trí GameObject. `Species Id` là mã dữ liệu, không tự
@@ -662,8 +662,8 @@ quan sát không cộng mật, không thụ phấn và không thay thế checkpo
 Map đã căn thêm theo vị trí ong/các agent mới để không rơi ngoài khung, với Bắc
 ở trên tương ứng +Z Unity. Phép đổi dữ liệu giao dịch `(x,y,z) → (x,z,y)` giữ nguyên.
 
-- Kiểm tra Unity cô lập: **Bee Bloom → World Sync → Check world sync**.
-- Kiểm tra GAMA thật: `python Experiments/BeeBloom-HoneyPilot/validate_world_sync.py`
+- Kiểm tra Unity cô lập: **Let It Bee → World Sync → Check world sync**.
+- Kiểm tra GAMA thật: `python Experiments/LetItBee-HoneyPilot/validate_world_sync.py`
   khi headless cổng 6875 đang chạy; dùng phiên/checkpoint kiểm tra riêng.
 - [Ảnh map GAMA thật với hai ong, ba hoa và một tổ](Previews/WorldSync-2026-10-19.png).
 
@@ -674,9 +674,9 @@ Map đã căn thêm theo vị trí ong/các agent mới để không rơi ngoài
 | `Assets/Scripts/VU2/Bee/` | Bay, camera, HUD, âm thanh và script nền ong |
 | `Assets/Scripts/VU2/HoneyPilot/` | Pilot, client direct/SIMPLE, cấu hình kết nối |
 | `Assets/Editor/VU2/` | Inspector, công cụ setup/build/check; không tự chạy setup lên scene đã chỉnh |
-| `Assets/Prefabs/BeeBloom/HoneyPilot/` | Mesh/material mật, idle clip/controller riêng của pilot |
-| `Experiments/BeeBloom-HoneyPilot/GAMA/` | Model hiện tại và cấu hình server mẫu |
-| `Experiments/BeeBloom-HoneyPilot/settings.json` | Learning package **Bee Bloom - Honey Pilot**, experiment **BeeBloomVR** |
+| `Assets/Prefabs/LetItBee/HoneyPilot/` | Mesh/material mật, idle clip/controller riêng của pilot |
+| `Experiments/LetItBee-HoneyPilot/GAMA/` | Model hiện tại và cấu hình server mẫu |
+| `Experiments/LetItBee-HoneyPilot/settings.json` | Learning package **Let It Bee - Honey Pilot**, experiment **LetItBeeVR** |
 
 ## 6. Chỉnh bay, va chạm và âm thanh
 
@@ -733,7 +733,7 @@ lên/xuống và trượt dọc vật cản; dùng `bodyRadius`, `groundClearanc
 BeeMapSurfaces thêm MeshCollider thiếu cho nhóm đã nhận diện:
 `nen_dat_low:*`, `SM_Terrain_Island_01*`, `SM_dat_trong_trot_*`, `dike`,
 `SF_Water_Sea*`, `SM_House_01*`. BeeMapSurfaceBuild làm trên bản sao Play/build
-trước static batching để bake collision vào APK. Trong SCN_BeeBloom, chuyển động
+trước static batching để bake collision vào APK. Trong SCN_LetItBee, chuyển động
 ong/dò bề mặt bỏ qua proxy đi bộ `InfinityWall`, `Teleport Area*`, `Teleport Cau*`;
 không xóa/vô hiệu collider đó cho hệ thống khác.
 
@@ -826,7 +826,7 @@ từng tiếng đập trong bản ghi; không đổi camera/nhịp cánh để c
 - [ ] **Đề xuất chưa chốt:** một NPC ong hướng dẫn qua hai màn, thoại theo kịch bản;
   ba cutscene 15–30 s: giới thiệu, biến cố mặn, kết quả. Chưa làm thoại AI tự do.
 - [ ] Viết kịch bản/thoại/phụ đề, chuẩn bị rig/animation/âm thanh và điểm kích hoạt.
-  Lượt khảo sát trước chưa có PlayableDirector cho Bee Bloom; cần khảo sát lại
+  Lượt khảo sát trước chưa có PlayableDirector cho Let It Bee; cần khảo sát lại
   khi bắt đầu, không coi ý tưởng cutscene là nội dung đã có.
 - [ ] Giữ head tracking trong cutscene; có skip, khôi phục input/nhiệm vụ sau skip,
   pause và retry; cân thoại với tiếng cánh.
@@ -907,25 +907,25 @@ lại cùng bộ thành số lượng kiểm tra độc lập và không coi PC 
 | Cấu hình ngoài | 15 kiểm tra đã qua | File thiếu/sai/schema, endpoint, giữ tuning, loại đường dẫn PC |
 | Chuyển thư mục/đổi IP | Đã qua trên cùng PC | Đường dẫn có khoảng trắng/dấu nháy, thư mục checkpoint riêng, nối lại giữ tiến độ; đổi endpoint khi Play không sửa Inspector |
 | APK cấu hình ngoài | Build thành công 18/10 lúc 23:15; 0 lỗi, 492 cảnh báo; file ~114 MB | ARM64, INTERNET, có bộ đọc cấu hình; chưa cài/chạy trên Quest |
-| Khởi động Quest 19/10 | APK `BeeBloom-Quest-startup-fix.apk`: build 0 lỗi, 509 cảnh báo; cài cập nhật thành công, người dùng xác nhận đã thấy cảnh game | Đã thấy ảnh stereo, HUD và hai tay cầm; chưa nghiệm thu trọn vòng hoa/mật/tổ |
-| APK đậu hoa 19/10 | `BeeBloom-Quest-flower-landing.apk` build Succeeded và đã cài cập nhật; metadata có mã đậu hoa mới | BuildReport ghi 497 cảnh báo và 2 log lỗi ghi meta `PerformanceTestRunInfo.json.meta` ở bước prebuild; vẫn tạo/cài APK thành công. Chưa nghiệm thu tương tác Quest |
+| Khởi động Quest 19/10 | APK `LetItBee-Quest-startup-fix.apk`: build 0 lỗi, 509 cảnh báo; cài cập nhật thành công, người dùng xác nhận đã thấy cảnh game | Đã thấy ảnh stereo, HUD và hai tay cầm; chưa nghiệm thu trọn vòng hoa/mật/tổ |
+| APK đậu hoa 19/10 | `LetItBee-Quest-flower-landing.apk` build Succeeded và đã cài cập nhật; metadata có mã đậu hoa mới | BuildReport ghi 497 cảnh báo và 2 log lỗi ghi meta `PerformanceTestRunInfo.json.meta` ở bước prebuild; vẫn tạo/cài APK thành công. Chưa nghiệm thu tương tác Quest |
 | Đậu hoa 19/10 | 20 kiểm tra qua MCP trong scene thử riêng; chạy lại 55 kiểm tra Flight V2 đều qua | Có XR origin thấp hơn đầu, cùng điểm tương tác ở local/GAMA, khoảng hở mặt đất, giữ trigger trong lúc đáp, không ghi head pose hoặc đổi tuning; chưa nghiệm thu cảm giác Quest |
 | Đậu cành 20/10 | 26 kiểm tra qua MCP trên bản sửa cuối; 25 kiểm tra client Unity thật qua SIMPLE/GAMA đều qua | Dùng đầu lá thật, khoảng nhìn ngang và độ cao trên cành; anchor thủ công, cành chuyển động, đứng cao cạnh hoa thấp, giới hạn tầm lấy mật, không ghi tracking hoặc tuning. Chưa nghiệm thu trên Quest |
 | Rà soát thao tác/stream 20/10 | 23 kiểm tra grip độc lập; Runtime và Editor compile bằng Roslyn với response file của Unity đều exit 0; 32 kiểm tra cũ + 8 kiểm tra mới qua GAMA trực tiếp đạt, qua SIMPLE chạy liên tiếp hai lượt đều qua | Cầm/thả qua độ trễ, tâm mật trong ô khi tay ngoài ô, từ chối tâm giả, điểm mật động trùng hình ảnh; đã sửa timer sót khi remove/re-add player và chạy kiểm tra Node. HTTP stream 200, control socket 8082 và hash toolkit đạt. Người dùng không có kính; Unity đang đóng nên chưa chạy Play qua MCP, chưa build/cài APK mới và chưa thử hình ảnh thực tế |
 | Stream Quest trực tiếp 20/10 | Bật ADB mạng từ Quest USB thành công; SIMPLE liệt kê stream thật và trả cấu hình H.265 cùng 23 gói khung hình, có keyframe | Đã xác minh đường truyền video. Chưa xác nhận hình trên trình duyệt hoặc độ ổn định dài hạn; kiểm tra này không build/cài mã gameplay mới hay đổi scene Unity |
 | Tương tác V3 20/10 | 17 kiểm tra vòng thao tác qua MCP, 23 grip, 26 đậu cành, 31 trình bày; 44 trường hợp GAMA trực tiếp và qua SIMPLE đạt. Render asset thật thấy trọn bông, mật và nhãn gọn | Có kiểm tra chuyển mục tiêu khi vùng hai hoa chồng nhau. Lượt SIMPLE đầu timeout; harness đã đợi ACK xóa player thay sleep cố định và hỗ trợ retry giữ nguyên correlation/event ID như client Unity. Lượt chạy lại đủ 44 trường hợp không dùng retry. Các kiểm tra dùng phiên/scene riêng; chưa thay nghiệm thu thao tác bằng tay trên Quest |
 | APK tương tác V3 20/10 | Bản cuối Succeeded, 0 lỗi, 144 cảnh báo; 114.075.982 byte, ARM64, ZIP hợp lệ; thư viện native trong APK khớp bản build cuối. Cài non-streamed thành công lúc 14:25, log app có V3 và GAMA ready lúc 14:26 | Đã xác thực kết nối Quest → SIMPLE → GAMA, Player_62 in-game trên experiment mới. 36 file scene/cấu hình/checkpoint khớp baseline sau build đầu; giữ checkpoint có mật ở B để người dùng cầm tiếp. Chưa xác nhận thao tác vật lý trọn vòng |
-| APK đậu cành 20/10 | `BeeBloom-Quest-branch-perch.apk`: Succeeded, 0 lỗi, 144 cảnh báo; 114.076.047 byte, ARM64, ZIP hợp lệ. Đã cài thành công qua non-streamed install lúc 10:52 | Có mã đậu cành; scene, ProjectSettings, material hoa/mật/bầu trời và checkpoint khớp hash lúc bắt đầu. Đã gửi/đọc lại IP trên Quest; còn cập nhật firewall bằng quyền Administrator và người dùng thử thực tế |
+| APK đậu cành 20/10 | `LetItBee-Quest-branch-perch.apk`: Succeeded, 0 lỗi, 144 cảnh báo; 114.076.047 byte, ARM64, ZIP hợp lệ. Đã cài thành công qua non-streamed install lúc 10:52 | Có mã đậu cành; scene, ProjectSettings, material hoa/mật/bầu trời và checkpoint khớp hash lúc bắt đầu. Đã gửi/đọc lại IP trên Quest; còn cập nhật firewall bằng quyền Administrator và người dùng thử thực tế |
 | Server SIMPLE 19/10 | Chạy lại 32 kiểm tra qua WebPlatform → LinkToUnity → GAMA, checkpoint người chơi giữ nguyên | Dùng player/phiên kiểm tra riêng; không thay thế kiểm tra client trên kính |
 | Client Quest 19/10 | Đã xác thực Player_4, nhận GAMA ready với phiên cũ; trace có hơn 240 yêu cầu/phản hồi vị trí/snapshot liên tục | Sau bổ sung dọn timer heartbeat vẫn từng gặp một timeout snapshot rồi tự nối lại; chưa nghiệm thu dài hạn hoặc đủ vòng giao dịch bằng tay cầm |
 | Heartbeat nối lại | Kiểm tra adapter qua Node đã qua: hủy timer cũ qua nhiều lần thay socket, giữ timer hiện tại/player khác và thông báo gốc | Bộ kiểm tra timer riêng; không cộng vào 32 kiểm tra giao dịch GAMA |
 | Phục hồi phản hồi 19/10 | 6 kiểm tra C# phục hồi và 13 kiểm tra client Unity thật qua SIMPLE/LinkToUnity/GAMA headless đã qua | Proxy bỏ phản hồi configure và collect đã được chấp nhận, trì hoãn set_pose 4,5 giây; client thử lại cùng correlation, mật không nhân đôi; nối lại vẫn giữ 1 ô tổ |
 | Trình bày hoa/mật/tổ 19/10 | 31 kiểm tra qua MCP; chạy lại 20 đậu hoa, 55 Flight V2 và 6 RPC đều qua | Render asset thật; kiểm tra chờ/nhả trigger, ACK/replay, nhấc/kéo/đứt sợi mật, giới hạn độ trễ theo tay, khớp ô tổ động, same_visit sau nối lại, state GAMA và camera; scene/ProjectSettings/material mật/font cache khớp hash trước sửa. Chưa kiểm tra Quest |
 | Tự đồng bộ đối tượng 19/10 | 18 kiểm tra Unity cô lập, 25 kiểm tra client Unity thật qua SIMPLE và 28 kiểm tra GAMA thật đều qua; 32 kiểm tra giao dịch cũ cũng qua | Thêm/sao chép/di chuyển/tắt/bật/xóa, replay, ACK bị bỏ qua, nối lại, đổi stream, dữ liệu lỗi và trạng thái mật; có render map nguồn hiện hành. Chưa benchmark quần thể trên Quest; chưa mở rộng gameplay sang các hoa mới |
-| APK phục hồi 19/10 lúc 19:24 | `BeeBloom-Quest-connection-recovery.apk`: Succeeded, 0 lỗi, 497 cảnh báo; 114.072.198 byte | ARM64, INTERNET; metadata có mã retry và điểm tương tác camera; ZIP hợp lệ. Chưa cài/chạy trên kính vì người dùng hiện không có Quest |
+| APK phục hồi 19/10 lúc 19:24 | `LetItBee-Quest-connection-recovery.apk`: Succeeded, 0 lỗi, 497 cảnh báo; 114.072.198 byte | ARM64, INTERNET; metadata có mã retry và điểm tương tác camera; ZIP hợp lệ. Chưa cài/chạy trên kính vì người dùng hiện không có Quest |
 | Bảo toàn giá trị người dùng | Lượt SIMPLE đối chiếu 1.526 component; lượt cấu hình đối chiếu 21 scene/prefab không đổi | Bằng chứng của các lượt đó, không phải lý do bỏ kiểm tra file mới ở lần sửa sau |
 
-Menu Editor: **Bee Bloom → Check Flight V2 / Check Surface Flight / Check Wing Audio /
+Menu Editor: **Let It Bee → Check Flight V2 / Check Surface Flight / Check Wing Audio /
 Check Flower Landing / Check Honey Grip / Check RPC Recovery**,
 chạy khi dừng Play; các bộ dùng môi trường thử riêng. Trong kiểm tra PC từng gặp
 Oculus XR không khởi tạo vì không có phiên kính; không lấy đó làm lỗi GAMA hay
@@ -943,11 +943,11 @@ mới qua SIMPLE, cùng điều kiện không có người chơi đang dùng ser
 adapter trong dự án nay hủy timer trước khi gọi hàm xóa gốc. Không đổi giao thức
 SIMPLE. Có kiểm tra Node cho reconnect, xóa bằng ID/IP và thêm lại player.
 
-Menu **Bee Bloom → Check Flower Honey Interaction** chạy 17 kiểm tra V3 trong
+Menu **Let It Bee → Check Flower Honey Interaction** chạy 17 kiểm tra V3 trong
 preview scene riêng: ý định tiếp xúc, chờ ACK, thả sớm, nhặt không giữ cò trái,
 tâm mật khi gắn, lý do từ chối và kích thước chữ. Không vào Play hay ghi scene.
 
-Menu **Bee Bloom → Check SIMPLE without headset** chạy `BeeSimpleChecks` với cấu
+Menu **Let It Bee → Check SIMPLE without headset** chạy `BeeSimpleChecks` với cấu
 hình XR clone trong bộ nhớ, tránh khởi động Quest Link; sau kiểm tra tự dừng Play
 và khôi phục cấu hình tạm. Cần SIMPLE/GAMA đang chạy và thêm player kiểm tra vào
 experiment. Dùng khi không có người chơi đang sử dụng server. Không ghi cấu hình
@@ -955,7 +955,7 @@ XR, scene hay PlayerSettings. `BeePortableChecks.Run()` kiểm tra cấu hình n
 
 Kết quả máy đọc hiện nằm ở:
 
-- `Experiments/BeeBloom-HoneyPilot/Runtime/simple-validation.json`.
+- `Experiments/LetItBee-HoneyPilot/Runtime/simple-validation.json`.
 - `Library/HoneyPilot/unity-simple-validation.json`, `portable-validation.json`,
   `portable-relocation-validation.json`, `portable-live-validation.json`.
 - `Library/HoneyPilot/flower-landing-validation.json`, `rpc-retry-validation.json`;
@@ -994,11 +994,11 @@ trên kính, PC thứ hai, server ban tổ chức, multiplayer và mô phỏng s
 dữ liệu hiệu chuẩn. Log Quest còn có lỗi OpenGL native plugin và mesh Polybrush
 không readable; chưa xử lý trong đợt này. Bảng trên không thay thế nghiệm thu thiết bị.
 
-Lab riêng `Experiments/BeeBloom-GAMA` dùng direct WebSocket, hình khối desktop,
+Lab riêng `Experiments/LetItBee-GAMA` dùng direct WebSocket, hình khối desktop,
 10 hoa/5 cục và `stress` minh họa. Từng qua 31 kiểm tra Unity standalone, nhưng
 reconnect tạo phiên mới; không dùng giao thức/luật pollination của lab thay pilot
 chính. Giữ README tại lab, đã gộp kết quả kiểm chứng để tái hiện lịch sử, không làm
-nguồn tiến độ Bee Bloom hiện tại.
+nguồn tiến độ Let It Bee hiện tại.
 
 ## 10. Ước lượng tham khảo
 
@@ -1022,7 +1022,7 @@ cân bằng và kiểm thử đầu–cuối. Tiếp tục phát triển Unity�
 
 ## 11. Tài liệu nền và nguồn tham khảo
 
-Tài liệu này thay chín file `BeeBloom-*` trước đây: TODO, Progress, Game Design
+Tài liệu này thay chín file `LetItBee-*` trước đây: TODO, Progress, Game Design
 Draft, GAMA Display Proposal, SIMPLE, Connection Setup, FlightV2, SurfaceFlight,
 Audio. Nội dung còn dùng đã được đưa vào các mục trên; bỏ thông tin trùng và các
 khẳng định lỗi thời như “chưa có GAMA”, “chưa có hoa/tổ/mật”, “phải build lại để
@@ -1031,8 +1031,8 @@ khẳng định lỗi thời như “chưa có GAMA”, “chưa có hoa/tổ/m�
 Tài liệu `Report/`, `Docs/TreeBarrier_Mechanic.md` và
 `Assets/Scripts/VU2/Documentation/` là nền kế thừa/các hệ thống khác, được giữ
 nguyên; không dùng các cơ chế thu hoạch/công cụ/điểm mặn trong đó làm thiết kế
-Bee Bloom đã duyệt. Lab thử nghiệm cũ có
-[README và kết quả lịch sử](../Experiments/BeeBloom-GAMA/README.md).
+Let It Bee đã duyệt. Lab thử nghiệm cũ có
+[README và kết quả lịch sử](../Experiments/LetItBee-GAMA/README.md).
 
 Phiên bản đã kiểm tra: Unity **6000.6.2f1**, GAMA **2025.6.4**, LinkToUnity
 **2.0.0.v20260113-1516**, SIMPLE WebPlatform package **4.0.0**, checkout nền

@@ -3,19 +3,24 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Connection settings only. Never deserializes into scene components.
     public static class BeeConnectionProfile
     {
-        public const string FileName = "beebloom-connection.json";
+        public const string FileName = "letitbee-connection.json";
+        public const string LegacyFileName = "beebloom-connection.json";
         public static string ConfigPath {
             get {
 #if UNITY_EDITOR
                 return Path.GetFullPath(Path.Combine(Application.dataPath,
-                    "../Experiments/BeeBloom-HoneyPilot/Runtime/" + FileName));
+                    "../Experiments/LetItBee-HoneyPilot/Runtime/" + FileName));
 #else
-                return Path.Combine(Application.persistentDataPath, FileName);
+                string newPath = Path.Combine(Application.persistentDataPath, FileName);
+                if (File.Exists(newPath)) return newPath;
+                string legacyPath = Path.Combine(Application.persistentDataPath, LegacyFileName);
+                if (File.Exists(legacyPath)) return legacyPath;
+                return newPath;
 #endif
             }
         }
@@ -28,8 +33,9 @@ namespace BeeBloom.HoneyPilot
             foreach (var field in json.Properties())
                 if (field.Name != "schema" && field.Name != "simpleEndpoint")
                     throw new InvalidDataException("Unknown connection setting: " + field.Name);
-            if ((string)json["schema"] != "beebloom-connection-v1")
-                throw new InvalidDataException("Expected connection schema beebloom-connection-v1 in " + path);
+            string schema = (string)json["schema"];
+            if (schema != "letitbee-connection-v1" && schema != "beebloom-connection-v1")
+                throw new InvalidDataException("Expected connection schema letitbee-connection-v1 or beebloom-connection-v1 in " + path);
             return ValidateEndpoint((string)json["simpleEndpoint"]);
         }
 

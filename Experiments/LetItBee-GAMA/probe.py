@@ -30,7 +30,7 @@ def main():
                     raise RuntimeError(json.dumps(response, ensure_ascii=False))
                 return response.get('content')
     try:
-        experiment = command('load', model=str(ROOT/'GAMA/BeeBloomDemo.gaml'), experiment='BeeBloomLink', console=False)
+        experiment = command('load', model=str(ROOT/'GAMA/LetItBeeDemo.gaml'), experiment='LetItBeeLink', console=False)
         print('Loaded:', experiment)
         if port == 6872: time.sleep(3)  # GUI load is acknowledged before initialization completes.
         command('step', nb_step=1, sync=True)

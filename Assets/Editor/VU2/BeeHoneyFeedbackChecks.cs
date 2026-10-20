@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -16,7 +16,7 @@ public static class BeeHoneyFeedbackChecks
 {
     const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     const string Folder = "Library/HoneyPilot/HoneyFeedback";
-    [MenuItem("Bee Bloom/Check Honey Presentation")]
+    [MenuItem("Let It Bee/Check Honey Presentation")]
     public static void Menu() => Debug.Log(Run());
     public static string Run(bool renderMotion = false)
     {
@@ -28,7 +28,7 @@ public static class BeeHoneyFeedbackChecks
         var phases = new List<object>();
         void Phase(string title) { if (renderMotion) phases.Add(new {title,frame=frames}); }
         var source = UnityEngine.Object.FindFirstObjectByType<BeeHoneyPilot>();
-        if (source == null || source.flowerAAnimator == null) throw new InvalidOperationException("Keep the current Bee Bloom scene open for art references.");
+        if (source == null || source.flowerAAnimator == null) throw new InvalidOperationException("Keep the current Let It Bee scene open for art references.");
         string sourceJson = EditorJsonUtility.ToJson(source);
         var sourceScene = SceneManager.GetActiveScene(); bool wasDirty = sourceScene.isDirty;
         var scene = EditorSceneManager.NewPreviewScene();

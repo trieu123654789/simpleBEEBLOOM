@@ -1,6 +1,6 @@
 // =============================================================================
 // SceneryTransferTool - Chuyen moi truong / canh quan tu SCN_VU2_Level1_New
-// sang scene dang mo (vd: SCN_BeeBloom). BO phan gameplay / nhan vat / do vat.
+// sang scene dang mo (vd: SCN_LetItBee). BO phan gameplay / nhan vat / do vat.
 //
 // MENU
 //   VU2/Transfer/Preview Scenery From Level1   -> xem se chuyen gi (khong thay doi)
@@ -75,7 +75,7 @@ public static class SceneryTransferTool
         if (!dst.isLoaded || string.IsNullOrEmpty(dst.path))
         {
             EditorUtility.DisplayDialog("Scenery Transfer",
-                "Scene hien tai chua duoc luu.\nMo va SAVE scene dich (vd: SCN_BeeBloom) truoc khi chuyen.", "OK");
+                "Scene hien tai chua duoc luu.\nMo va SAVE scene dich (vd: SCN_LetItBee) truoc khi chuyen.", "OK");
             return;
         }
 

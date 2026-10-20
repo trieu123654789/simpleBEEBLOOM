@@ -14,7 +14,7 @@ public static class BeeMapSurfaces
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "SCN_BeeBloom") Install(scene);
+        if (scene.name == "SCN_LetItBee" || scene.name == "SCN_BeeBloom") Install(scene);
     }
 
     public static bool IsWater(string name) => name.StartsWith("SF_Water_Sea");
@@ -24,7 +24,7 @@ public static class BeeMapSurfaces
 
     public static bool IsLegacyWalkingProxy(Transform target)
     {
-        if (target.gameObject.scene.name != "SCN_BeeBloom") return false;
+        if (target.gameObject.scene.name != "SCN_LetItBee" && target.gameObject.scene.name != "SCN_BeeBloom") return false;
         for (var t = target; t != null; t = t.parent)
             if (t.name == "InfinityWall" || t.name.StartsWith("Teleport Area") || t.name.StartsWith("Teleport Cau")) return true;
         return false;

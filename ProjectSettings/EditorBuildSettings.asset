@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/VU2/SCN_VU2_Level2_New.unity
     guid: d7e818b62b730b54c922e79c83f59dec
   - enabled: 1
-    path: Assets/Scenes/VU2/SCN_BeeBloom.unity
+    path: Assets/Scenes/VU2/SCN_LetItBee.unity
     guid: ccfdca7d16e464a419c364666a11e916
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: e0be089d44b97214485d635fe5f63445, type: 2}

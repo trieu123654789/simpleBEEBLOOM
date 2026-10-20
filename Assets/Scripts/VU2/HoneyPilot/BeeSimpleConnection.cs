@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using WebSocketSharp;
 
-namespace BeeBloom.HoneyPilot
+namespace LetItBee.HoneyPilot
 {
     // Uses SIMPLE's existing protocol/handshake without changing shared defaults.
     public sealed class BeeSimpleConnection : ConnectionManager

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 
 public static class BeeWorldSyncChecks
 {
-    [MenuItem("Bee Bloom/World Sync/Check world sync")]
+    [MenuItem("Let It Bee/World Sync/Check world sync")]
     public static void Menu() => Debug.Log(Run());
     public static string Run()
     {

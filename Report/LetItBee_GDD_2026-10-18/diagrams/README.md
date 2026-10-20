@@ -1,4 +1,4 @@
-# Sơ đồ Bee Bloom cho GDD
+# Sơ đồ Let It Bee cho GDD
 
 Các sơ đồ là SVG độc lập, đã đo nhãn và kiểm tra XML. Bản PNG để dàn trang được render bằng librsvg qua Sharp.
 
@@ -6,9 +6,9 @@ Bảng màu: #17272F, #FFFFFF, #176B53, #5E6B70, #996515.
 
 Nhãn trên sơ đồ thời gian được rút gọn bằng cách bỏ chủ ngữ lặp; ngày là mốc Git, không phải lịch giao hàng.
 
-## Vòng chơi thành công của pilot Bee Bloom
+## Vòng chơi thành công của pilot Let It Bee
 
-File: beebloom-pilot-process-flow.svg. 9 phần tử; 1200 x 684.
+File: letitbee-pilot-process-flow.svg. 9 phần tử; 1200 x 684.
 
 Alt text: Người chơi ghé hoa A, nhận phấn, lấy và cầm mật, ghé hoa B để chuyển phấn, đưa mật về ô tổ và nhận xác nhận 1 trên 1 từ GAMA.
 
@@ -24,7 +24,7 @@ Alt text: Người chơi ghé hoa A, nhận phấn, lấy và cầm mật, ghé 
 
 ## Luồng xác nhận giao dịch Unity SIMPLE GAMA
 
-File: beebloom-transaction-swimlane.svg. 7 phần tử; 1200 x 524.
+File: letitbee-transaction-swimlane.svg. 7 phần tử; 1200 x 524.
 
 Alt text: Unity gửi yêu cầu qua SIMPLE tới GAMA. GAMA từ chối thao tác không hợp lệ hoặc ghi state và biên nhận trước khi trả snapshot để Unity hiển thị kết quả.
 
@@ -38,7 +38,7 @@ Alt text: Unity gửi yêu cầu qua SIMPLE tới GAMA. GAMA từ chối thao t�
 
 ## Các mốc phát triển theo Git
 
-File: beebloom-development-timeline.svg. 4 phần tử; 1200 x 232.
+File: letitbee-development-timeline.svg. 4 phần tử; 1200 x 232.
 
 Alt text: Bốn mốc trong lịch sử mã nguồn: nhập nền SIMPLE ngày 30 tháng 9, chỉnh bay ngày 6 tháng 10, sửa rig và hai ray ngày 14 tháng 10, tích hợp pilot GAMA ngày 18 tháng 10 năm 2026.
 

@@ -1,4 +1,4 @@
-Shader "BeeBloom/HoneyFeedback"
+Shader "LetItBee/HoneyFeedback"
 {
     Properties { _Ribbon ("Ribbon", Float) = 0 }
     SubShader

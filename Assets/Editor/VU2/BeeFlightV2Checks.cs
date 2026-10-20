@@ -11,7 +11,7 @@ public static class BeeFlightV2Checks
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     private static int _checks;
 
-    [MenuItem("Bee Bloom/Check Flight V2")]
+    [MenuItem("Let It Bee/Check Flight V2")]
     public static void RunMenu() => Debug.Log(Run());
 
     public static string Run()

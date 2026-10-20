@@ -1,7 +1,7 @@
 param([switch]$Headless, [switch]$SelfTest, [switch]$Capture)
 $ErrorActionPreference = 'Stop'
 $port = if ($Headless -or $SelfTest) { 6871 } else { 6872 }
-$exe = Join-Path $PSScriptRoot 'Build/BeeBloomGamaDemo.exe'
+$exe = Join-Path $PSScriptRoot 'Build/LetItBeeGamaDemo.exe'
 if (!(Test-Path -LiteralPath $exe)) { throw 'Run Build-Demo.ps1 first.' }
 if (!$SelfTest -and (Test-Path (Join-Path $PSScriptRoot 'Runtime/unity-player.pid'))) {
     $existingPid = [int](Get-Content (Join-Path $PSScriptRoot 'Runtime/unity-player.pid'))

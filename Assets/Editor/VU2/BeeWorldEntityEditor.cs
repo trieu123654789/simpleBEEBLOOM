@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using BeeBloom.HoneyPilot;
+using LetItBee.HoneyPilot;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,18 +13,18 @@ public sealed class BeeWorldEntityEditor : Editor
         EditorGUILayout.HelpBox("World sync sends this active object's type and position to GAMA. Additional flowers are observation only in the current pilot.",MessageType.Info);
         if (targets.Length == 1) EditorGUILayout.LabelField("Entity ID",((BeeWorldEntity)target).Id);
     }
-    [MenuItem("Bee Bloom/World Sync/Track selected as Bee")]
+    [MenuItem("Let It Bee/World Sync/Track selected as Bee")]
     static void Bee() => Mark(BeeWorldEntity.EntityKind.Bee);
-    [MenuItem("Bee Bloom/World Sync/Track selected as Flower")]
+    [MenuItem("Let It Bee/World Sync/Track selected as Flower")]
     static void Flower() => Mark(BeeWorldEntity.EntityKind.Flower);
-    [MenuItem("Bee Bloom/World Sync/Track selected as Hive")]
+    [MenuItem("Let It Bee/World Sync/Track selected as Hive")]
     static void Hive() => Mark(BeeWorldEntity.EntityKind.Hive);
     static void Mark(BeeWorldEntity.EntityKind kind)
     {
         foreach (var go in Selection.gameObjects.Where(x=>x.scene.IsValid())) {
             var entity = go.GetComponent<BeeWorldEntity>();
             if (entity == null) entity = Undo.AddComponent<BeeWorldEntity>(go);
-            Undo.RecordObject(entity,"Track Bee Bloom object"); entity.kind = kind;
+            Undo.RecordObject(entity,"Track Let It Bee object"); entity.kind = kind;
             PrefabUtility.RecordPrefabInstancePropertyModifications(entity);
         }
     }
