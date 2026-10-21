@@ -19,6 +19,7 @@ global {
     list flower_surfaces <- [];
     list flower_radii <- [];
     list slot_coordinates <- [0.0,0.0,0.0];
+    list live_hive_slots <- [];
     // Workspace is a read-only view of confirmed progress. configure() switches
     // the server experiment to gameplay authority before Unity starts it.
     bool workspace_readonly <- true;
@@ -154,6 +155,19 @@ global {
             }
         } catch { world_response <- ["accepted"::false,"reason"::"invalid_world","source"::world_source,"sequence"::world_sequence]; }
     }
+    // Refilling is game time, not a botanical production rate. Only the server grants nectar.
+    reflex refill_nectar when: !workspace_readonly and state contains_key "refill_remaining" {
+        list remaining <- state["refill_remaining"]; list nectar <- state["nectar"];
+        bool changed <- false;
+        loop i from: 0 to: 1 {
+            if (float(remaining[i]) > 0.0) {
+                remaining[i] <- max(0.0,float(remaining[i])-0.1);
+                if (float(remaining[i]) <= 0.0) { nectar[i] <- 1; changed <- true; }
+            }
+        }
+        state["refill_remaining"] <- remaining; state["nectar"] <- nectar;
+        if (changed) { state["revision"] <- int(state["revision"])+1; do persist; }
+    }
     action configure(string config_json) {
         if (workspace_readonly) { state <- []; receipts <- []; }
         workspace_readonly <- false;
@@ -187,6 +201,37 @@ global {
             and state["flowers"] = config["flowers"] and state["slot"] = config["slot"]
             and state["contact_radius"] = config["contact_radius"]
             and state["grab_radius"] = config["grab_radius"] and state["snap_radius"] = config["snap_radius"];
+        bool expand_hive <- config contains_key "hive_slots";
+        list requested_slots <- expand_hive ? list(config["hive_slots"]) : [];
+        if (expand_hive) {
+            list<string> ids <- [];
+            bool valid_slots <- length(requested_slots) > 0 and length(requested_slots) <= 64;
+            loop entry over: requested_slots {
+                map cell <- map(entry); string cell_id <- string(cell["id"]);
+                valid_slots <- valid_slots and cell_id != "" and !(cell_id in ids) and length(list(cell["position"])) = 3;
+                ids << cell_id;
+            }
+            if (!empty(requested_slots)) {
+                map first_cell <- requested_slots[0]; map old_cell <- state["slot"];
+                valid_slots <- valid_slots and first_cell["id"] = old_cell["id"] and first_cell["position"] = old_cell["position"];
+            }
+            matches <- matches and valid_slots;
+            if (state contains_key "hive_slots") { matches <- matches and state["hive_slots"] = requested_slots; }
+        } else if (state contains_key "hive_slots") { matches <- false; }
+        if (matches and expand_hive and !(state contains_key "hive_slots")) {
+            // The old occupied cell becomes the first occupied cell; keep all receipts and pollen.
+            string full_backup <- checkpoint + ".before-full-hive.json";
+            if (!file_exists(full_backup)) { save ["state"::state,"receipts"::receipts] to: full_backup format: "json" rewrite: true; }
+            state["hive_slots"] <- requested_slots;
+            state["hive_capacity"] <- length(requested_slots);
+            state["filled_slots"] <- int(state["stored"]) > 0 ? ["slot-a"] : [];
+            state["deposited_slot"] <- state["chunk_state"] = "stored" ? "slot-a" : "";
+            state["refill_seconds"] <- max(1.0,config contains_key "nectar_refill_seconds" ? float(config["nectar_refill_seconds"]) : 8.0);
+            list old_nectar <- state["nectar"];
+            state["refill_remaining"] <- [int(old_nectar[0]) = 0 ? state["refill_seconds"] : 0.0,int(old_nectar[1]) = 0 ? state["refill_seconds"] : 0.0];
+            last_contact <- int(state["last_contact"]);
+            do persist;
+        }
         response <- ["event_id"::"configure", "accepted"::matches,
             "reason"::(matches ? "ready" : "session_or_geometry_mismatch"), "migrated"::(matches and migration_backup != "")];
         if (matches) {
@@ -214,6 +259,7 @@ global {
         flower_surfaces <- []; flower_radii <- [];
         map configured_slot <- state["slot"];
         slot_coordinates <- configured_slot["position"];
+        live_hive_slots <- state contains_key "hive_slots" ? list(state["hive_slots"]) : [];
     }
     action persist {
         if (!workspace_readonly) {
@@ -230,6 +276,17 @@ global {
         if (pose contains_key "flower_surfaces") { flower_surfaces <- pose["flower_surfaces"]; }
         if (pose contains_key "flower_radii") { flower_radii <- pose["flower_radii"]; }
         if (pose contains_key "slot") { slot_coordinates <- pose["slot"]; }
+        if (pose contains_key "hive_slots" and pose["hive_slots"] != nil and state contains_key "hive_slots") {
+            list updated <- list(pose["hive_slots"]); list expected <- state["hive_slots"];
+            bool valid <- length(updated) = length(expected);
+            if (valid) {
+                loop i from: 0 to: length(expected)-1 {
+                    map a <- updated[i]; map b <- expected[i];
+                    valid <- valid and a["id"] = b["id"] and length(list(a["position"])) = 3;
+                }
+            }
+            if (valid) { live_hive_slots <- updated; }
+        }
         if (!empty(state) and state["chunk_state"] = "ready" and state contains_key "chunk_flower") {
             int origin_flower <- int(state["chunk_flower"]);
             if (origin_flower >= 0) { state["chunk_pos"] <- length(nectar_positions) > origin_flower ? nectar_positions[origin_flower] : flower_positions[origin_flower]; }
@@ -291,13 +348,20 @@ global {
                             }
                         } else {
                             reason <- "carrying_or_empty";
-                            if (state["chunk_state"] = "none" and int(nectar[fi]) > 0 and int(state["stored"]) = 0) {
+                            bool full_mode <- state contains_key "hive_capacity";
+                            int capacity <- full_mode ? int(state["hive_capacity"]) : 1;
+                            bool available <- state["chunk_state"] = "none" or (full_mode and state["chunk_state"] = "stored");
+                            if (available and int(nectar[fi]) > 0 and int(state["stored"]) < capacity and (!full_mode or last_contact = fi)) {
                                 nectar[fi] <- int(nectar[fi]) - 1;
                                 state["nectar"] <- nectar;
                                 state["chunk_id"] <- "nectar-" + eid;
                                 state["chunk_state"] <- "ready";
                                 state["chunk_pos"] <- length(nectar_positions) > fi ? nectar_positions[fi] : flower_positions[fi];
                                 state["chunk_flower"] <- fi;
+                                if (full_mode) {
+                                    list refill <- state["refill_remaining"]; refill[fi] <- state["refill_seconds"];
+                                    state["refill_remaining"] <- refill; state["deposited_slot"] <- "";
+                                }
                                 accepted <- true;
                                 reason <- "collected";
                             }
@@ -322,6 +386,19 @@ global {
                         and (bee_position distance_to hand_position) <= 2.0) {
                         state["chunk_state"] <- "loose";
                         state["chunk_pos"] <- [held_chunk_position.x,held_chunk_position.y,held_chunk_position.z];
+                        if (state contains_key "hive_capacity") {
+                            if (r contains_key "drop_target") {
+                                point landing <- point(r["drop_target"]);
+                                if (abs(landing.x-held_chunk_position.x)<0.1 and abs(landing.y-held_chunk_position.y)<0.1
+                                    and landing.z<=held_chunk_position.z+0.1 and landing.z>=held_chunk_position.z-2.1) {
+                                    state["chunk_pos"] <- [landing.x,landing.y,landing.z];
+                                }
+                            } else if (r contains_key "recover_drop" and bool(r["recover_drop"])) {
+                                int origin <- int(state["chunk_flower"]);
+                                state["chunk_state"] <- "ready";
+                                state["chunk_pos"] <- length(nectar_positions)>origin ? nectar_positions[origin] : flower_positions[origin];
+                            }
+                        }
                         accepted <- true;
                         reason <- "dropped";
                     }
@@ -329,14 +406,30 @@ global {
                 if (kind = "deposit") {
                     reason <- "wrong_chunk_slot_or_distance";
                     map slot <- state["slot"];
+                    point snap_point <- point(slot_coordinates);
+                    bool free_slot <- int(state["stored"]) = 0;
+                    if (state contains_key "hive_slots") {
+                        free_slot <- false;
+                        loop entry over: live_hive_slots {
+                            map cell <- map(entry);
+                            if (cell["id"] = r["slot_id"]) {
+                                slot <- cell; snap_point <- point(cell["position"]);
+                                list filled <- state["filled_slots"]; free_slot <- !(r["slot_id"] in filled);
+                            }
+                        }
+                    }
                     if (state["chunk_state"] = "held" and r["chunk_id"] = state["chunk_id"]
-                        and r["slot_id"] = slot["id"] and int(state["stored"]) = 0
+                        and r["slot_id"] = slot["id"] and free_slot
                         and held_chunk_valid
-                        and (held_chunk_position distance_to point(slot_coordinates)) <= float(state["snap_radius"])
-                        and (bee_position distance_to point(slot_coordinates)) <= 2.0) {
-                        state["stored"] <- 1;
+                        and (held_chunk_position distance_to snap_point) <= float(state["snap_radius"])
+                        and (bee_position distance_to snap_point) <= 2.0) {
+                        state["stored"] <- int(state["stored"])+1;
+                        if (state contains_key "filled_slots") {
+                            list filled <- state["filled_slots"]; filled << r["slot_id"];
+                            state["filled_slots"] <- filled; state["deposited_slot"] <- r["slot_id"];
+                        }
                         state["chunk_state"] <- "stored";
-                        state["chunk_pos"] <- slot_coordinates;
+                        state["chunk_pos"] <- [snap_point.x,snap_point.y,snap_point.z];
                         accepted <- true;
                         reason <- "deposited";
                     }
@@ -373,7 +466,7 @@ species pilot_slot {
         if (!empty(state)) {
             if (world_sequence < 0) {
                 draw square(7) at: map_slot color: (int(state["stored"]) > 0 ? #green : #orange) border: #black;
-                draw "Hive " + string(state["stored"]) + "/1" at: map_slot+{5,0} color: #black font: font("SansSerif",14);
+                draw "Hive " + string(state["stored"]) + "/" + string(state contains_key "hive_capacity" ? state["hive_capacity"] : 1) at: map_slot+{5,0} color: #black font: font("SansSerif",14);
             }
             if (state["chunk_state"] != "none" and state["chunk_state"] != "held") {
                 draw hexagon(2) at: map_chunk color: #orange border: #black;

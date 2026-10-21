@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BeeHud - HUD goc nhin con ong, dung y nhu anh mau (Bee POV HUD).
 // BeeHud - HUD góc nhìn con ong, dựng y như ảnh mẫu.
 //
@@ -280,14 +280,17 @@ public class BeeHud : MonoBehaviour
     // =========================================================================
     // UpdateValues - Day du lieu that vao HUD moi frame.
     // =========================================================================
+    private LetItBee.HoneyPilot.BeeHoneyPilot honeyPilot;
     private void UpdateValues()
     {
-        int delivered = stats != null ? stats.honeyDelivered : 0;
-        int goal = stats != null ? stats.honeyGoal : 20;
+        if (honeyPilot == null) honeyPilot = FindFirstObjectByType<LetItBee.HoneyPilot.BeeHoneyPilot>();
+        bool pilotActive = honeyPilot != null && honeyPilot.isActiveAndEnabled;
+        int delivered = pilotActive ? honeyPilot.Stored : stats != null ? stats.honeyDelivered : 0;
+        int goal = pilotActive ? honeyPilot.HiveCapacity : stats != null ? stats.honeyGoal : 20;
 
         // --- Binh mat ong (goc tren trai) ---
         if (_honeyCountText != null) _honeyCountText.text = delivered + " / " + goal;
-        if (_honeyFill != null) _honeyFill.fillAmount = stats != null ? stats.Progress01 : 0f;
+        if (_honeyFill != null) _honeyFill.fillAmount = (float)delivered / Mathf.Max(1,goal);
 
         // --- Panel nhiem vu ---
         if (_questTitleText != null && stats != null) _questTitleText.text = stats.questTitle;
@@ -295,7 +298,11 @@ public class BeeHud : MonoBehaviour
         if (_questCounterText != null) _questCounterText.text = delivered + " / " + goal;
 
         // --- Thanh mat hoa (goc duoi trai) ---
-        float nectar = nectarSource == NectarSource.Stats
+        if (pilotActive) {
+            if (_questTitleText != null) _questTitleText.text = honeyPilot.RoundComplete ? "Hoàn thành" : "Lấp đầy tổ ong";
+            if (_questSubText != null) _questSubText.text = honeyPilot.ObjectiveHint;
+        }
+        float nectar = pilotActive ? (honeyPilot.ChunkState == "held" || honeyPilot.ChunkState == "ready" || honeyPilot.ChunkState == "loose" ? 1f : honeyPilot.Charge01) : nectarSource == NectarSource.Stats
             ? (stats != null ? stats.nectar01 : 0f)
             : (bee != null ? bee.StaminaNormalized : 0f);
         if (_nectarFill != null) _nectarFill.fillAmount = Mathf.Clamp01(nectar);

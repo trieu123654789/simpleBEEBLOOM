@@ -9,7 +9,7 @@ Hiện đang chuẩn hóa nền phát triển và thử vòng hoa → mật → 
 
 - Bay bằng hai ray quẹt, nhịp nâng/lướt, trigger trái phanh/giữ vị trí;
   va chạm và phản hồi bay sát bề mặt, âm thanh cánh.
-- Pilot hai hoa, một cục mật, một ô tổ; GAMA xác nhận tài nguyên và giao dịch.
+- Hai hoa, một cục mật đang mang, bảy ô tổ; GAMA xác nhận tài nguyên, hồi mật và giao dịch.
 - Unity → SIMPLE WebPlatform → LinkToUnity → GAMA; endpoint ngoài APK,
   đường dẫn checkpoint cấu hình trên server.
 - APK có bộ đọc cấu hình ngoài; đã sửa và xác nhận mở được cảnh trên Quest,

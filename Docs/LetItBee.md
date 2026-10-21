@@ -23,6 +23,52 @@ HUD và thông số bay người dùng đã lưu được giữ nguyên; hiệu 
 
 ## 1. Trạng thái và phạm vi đã chốt
 
+### Cập nhật vòng đầy tổ — 21/10/2026
+
+Bản mới mở rộng sang **7 ô thật của tổ hiện có**, vẫn dùng hai hoa A/B và chỉ
+mang một cục mật mỗi lần. Các ghi nhận 1/1 phía dưới là lịch sử bản pilot cũ.
+
+- `Fill Whole Hive` bật mặc định. Bảy insert `Cylinder.001/.003/.005/.008/.009/.011/.013`
+  là ô mật; `Cylinder.010` là vỏ tổ, không bị ẩn. Chỉ thay hiển thị lúc chạy.
+- GAMA lưu `filled_slots`, `hive_capacity`, ID cục mật và ô đích riêng. Gắn vào
+  ô đã đầy bị từ chối; gửi lại cùng giao dịch không cộng trùng.
+- Lượt cũ nâng từ 1/1 thành 1/7 khi APK mới cấu hình thành công, giữ phấn,
+  tài nguyên và receipts. Tạo backup `.before-full-hive.json` trước khi mở rộng.
+  APK pilot cũ không được dùng lại trên session đã mở rộng; không tự hạ dữ liệu.
+- Hoa hồi một đơn vị mật sau `Nectar Refill Seconds` (mặc định 8 giây mô phỏng).
+  Đây là nhịp gameplay, không phải tốc độ sinh mật sinh học đã hiệu chuẩn.
+- HUD đọc số ô đã giao và trạng thái mật từ GAMA, không sửa giá trị `BeeGameStats`
+  hoặc bố trí HUD đã lưu. Mục tiêu mặc định: đầy tổ và thụ phấn cả hai hoa.
+- Giữ trigger trái để ổn định/đậu; trigger phải để tụ mật; grip phải để cầm,
+  thả tại ô trống phía trước tổ để gắn. Cục mật căn rồi trượt vào đúng mesh ô.
+- Khi thả ngoài tổ, mật hạ xuống bề mặt hợp lệ trong 2 m; nếu không tìm thấy
+  bề mặt hoặc gặp water collider, mật trở về hoa nguồn sau xác nhận server.
+- Đồng bộ bản đồ chạy riêng khỏi giao dịch, có `WorldSyncWarning` để chẩn đoán.
+
+**Chỉnh trong Inspector:** chọn `LetItBee Honey Pilot` → `BeeHoneyPilot` →
+`Full hive - runtime progression`: `Nectar Refill Seconds`, `Gather Grace Seconds`
+(mặc định 0.18 giây), `Require Pollination For Completion`. `Hive Cells` để trống
+sẽ dùng asset tổ hiện tại; khi đổi asset, gán các renderer insert theo thứ tự,
+ô đầu tiên là ô pilot cũ. Không gán mesh vỏ tổ vào danh sách.
+
+Nút **Validate hive cells (no scene changes)** in số ô và cảnh báo cao hơn trần
+bay. Nút **New test round (keep tuning and old checkpoint)** tạo Session ID mới,
+đánh dấu scene cần lưu nhưng không ghi đè checkpoint cũ. Sau đó Ctrl+S và khởi
+động lại experiment để dùng lượt mới. Không cần reset để lấy cục thứ hai đến thứ bảy.
+
+**Kiểm chứng:** Unity 15 kiểm tra đầy tổ, 21 tương tác, 23 grip, 53 hiệu ứng,
+26 đậu hoa; GAMA trực tiếp và SIMPLE → LinkToUnity → GAMA đều qua 37 kiểm tra
+đầy tổ trên session riêng. Chưa xác nhận cảm giác thao tác/chóng mặt trên Quest
+cho bản đầy tổ. APK `Experiments/LetItBee-HoneyPilot/Build/LetItBee-Quest-full-hive.apk`
+build thành công (0 lỗi, 499 cảnh báo; không coi tất cả cảnh báo đã được xử lý).
+SHA256: `F238B5B3935803293120433B75353470D772CBBC11BBAC2B778653C036D37579`.
+Bản Android cần đi cùng model GAMA mới: dừng experiment cũ rồi launch
+`LetItBeeVR` lại trên SIMPLE; chỉ mở lại APK không nạp lại model server.
+Chưa cài APK này vào kính. Đối chiếu sau build: scene, ProjectSettings và checkpoint
+người chơi có hash giống trước khi thực hiện thay đổi.
+
+
+
 ### Bản đổi tên đã kiểm tra ngày 21/10
 
 Thư mục hiện hành là `Experiments/LetItBee-HoneyPilot`, scene là
@@ -80,7 +126,7 @@ khi phát triển gameplay chính. Chưa yêu cầu đóng gói đi thi hoặc l
 | Map | Môi trường kế thừa SIMPLE, xử lý va chạm và phản hồi bay sát bề mặt | Kiểm tra toàn map, asset mới, hiệu năng trên kính |
 | Camera/HUD | Đã có rig, HUD và các đợt sửa trước | Nghiệm thu tracking, độ cao, la bàn, bố cục và dữ liệu gameplay trên kính |
 | Âm thanh | Chubby Bumblebee loop, nhấn âm theo pha cánh | Nghe và cân chỉnh trên thiết bị |
-| Hoa/mật/tổ | Pilot hai hoa thuộc hai cây, một cục mật, một ô tổ; GAMA xác nhận | Luồng chính đủ 5 cục/lượt và nhiệm vụ đầy đủ |
+| Hoa/mật/tổ | Hai hoa, mang một cục/lần, lấp 7 ô tổ; GAMA xác nhận | Luồng chính đủ 5 cục/lượt và nhiệm vụ đầy đủ |
 | Kết nối | SIMPLE WebPlatform → LinkToUnity → GAMA; IP ngoài APK, đường dẫn phía server; đã nhận GAMA ready trên Quest qua hotspot | Nghiệm thu toàn vòng tương tác trên kính và PC thứ hai |
 | GAMA | Model giao dịch, checkpoint, bản đồ pilot và vị trí ong liên tục khi kết nối | Model sinh thái đã hiệu chuẩn, bản đồ quan sát hoàn thiện |
 | NPC/cutscene | Có ý tưởng và code NPC kế thừa để khảo sát | Chưa có NPC/cutscene Let It Bee hoàn chỉnh được nghiệm thu |
@@ -95,7 +141,7 @@ khi phát triển gameplay chính. Chưa yêu cầu đóng gói đi thi hoặc l
 - Nhân vật là ong thợ; đây là vai trò trong đàn, chưa xác định loài ong.
 - Muốn có NPC và cutscene; số lượng/nội dung còn chờ duyệt.
 
-Pilot hiện tại chỉ nhận **một cục, một ô**. Kết quả 1/1 của pilot và demo cũ 5/5
+Pilot cũ chỉ nhận **một cục, một ô**; bản đầy tổ hiện tại nhận 7 ô. Kết quả 1/1 của pilot và demo cũ 5/5
 không có nghĩa vòng chơi chính 5 cục đã hoàn tất.
 
 ## 2. Quy tắc làm tiếp
@@ -270,8 +316,7 @@ tinh/đậu hạt. Cục mật rắn để cầm/gắn là quy ước gameplay.
 ### Hồi mật để thử lại và đổi bố trí level
 
 Mật, phấn, cục đang cầm và ô tổ thuộc checkpoint **GAMA**, không phải các giá trị
-Inspector để sửa tay trong scene. Pilot chỉ có một ô; muốn thử lại sau khi gắn
-1/1 phải bắt đầu một lượt mới. Không cần nhờ người khác sửa JSON hoặc đổi Session ID.
+Inspector để sửa tay trong scene. Bản đầy tổ tự hồi mật để tiếp tục đến 7/7. Muốn chơi lại từ đầu, tạo lượt mới bằng nút trong Inspector; quy trình reset bên dưới dành cho thử nghiệm có chủ ý. Không cần nhờ người khác sửa JSON hoặc đổi Session ID.
 
 1. Đóng Let It Bee trên kính bằng Quit, dừng Play trong Unity nếu đang chạy;
    đợi khoảng 15 giây để SIMPLE nhận kính đã ngắt. Giữ SIMPLE/GAMA đang mở.

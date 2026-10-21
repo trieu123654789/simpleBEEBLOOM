@@ -10,7 +10,7 @@ using CommonUsages = UnityEngine.XR.CommonUsages;
 namespace LetItBee.HoneyPilot
 {
     [DisallowMultipleComponent, DefaultExecutionOrder(150)]
-    public sealed class BeeHoneyPilot : MonoBehaviour
+    public sealed partial class BeeHoneyPilot : MonoBehaviour
     {
         [Header("Scene references — flight/HUD settings are never changed")]
         public Transform beeRoot, rightHand, flowerAHead, flowerBHead, slot;
@@ -102,7 +102,7 @@ namespace LetItBee.HoneyPilot
         readonly System.Collections.Generic.List<UnityEngine.XR.InputDevice> rightInputDevices = new System.Collections.Generic.List<UnityEngine.XR.InputDevice>();
         bool grabReady;
         readonly BeeFlowerGeometry[] flowerGeometry = new BeeFlowerGeometry[2];
-        public const string InteractionVersion = "Honey interaction 3.2";
+        public const string InteractionVersion = "Honey interaction 4.0 - full hive";
         BeeFlowerGeometry Geometry(int flower) => flowerGeometry[flower] ?? (flowerGeometry[flower] = new BeeFlowerGeometry(Head(flower)));
         Transform chunk, chargeVisual, ghost, pollen;
         LineRenderer tether;
@@ -144,6 +144,8 @@ namespace LetItBee.HoneyPilot
             if (beeRoot == null || rightHand == null || flowerAHead == null || flowerBHead == null || slot == null) {
                 ConnectionStatus = "Missing pilot scene references"; enabled = false; return;
             }
+            decorationWasEnabled = slotDecoration != null && slotDecoration.enabled;
+            BeginHive();
             originalA = flowerAAnimator != null ? flowerAAnimator.runtimeAnimatorController : null;
             beeController = beeRoot.GetComponent<BeeController>();
             gripIntent.Reset();
@@ -152,7 +154,7 @@ namespace LetItBee.HoneyPilot
             responseB = new FlowerResponse(flowerBHead);
             originalB = flowerBAnimator != null ? flowerBAnimator.runtimeAnimatorController : null;
             originalsCaptured = true;
-            if (slotDecoration != null) { decorationWasEnabled = slotDecoration.enabled; slotDecoration.enabled = false; }
+            if (slotDecoration != null) { if (!hivePresentationActive) slotDecoration.enabled = false; }
             // Runtime only; originals and their saved Animator settings remain intact.
             if (pilotFlowerIdle != null) {
                 if (flowerAAnimator != null) flowerAAnimator.runtimeAnimatorController = pilotFlowerIdle;
@@ -175,12 +177,18 @@ namespace LetItBee.HoneyPilot
         {
             if (!Guid.TryParse(sessionId, out _)) throw new InvalidOperationException("Pilot session ID is missing or invalid");
             string checkpoint = checkpointDirectoryOnServer.TrimEnd('/', '\\') + "/" + sessionId + ".json";
-            return new JObject {
+            var result = new JObject {
                 ["session"] = sessionId, ["checkpoint"] = checkpoint.Replace('\\', '/'), ["world_source"] = worldSync.Source,
                 ["flowers"] = new JArray(FlowerConfig("flower-a", plantAId, flowerAHead.position), FlowerConfig("flower-b", plantBId, flowerBHead.position)),
                 ["slot"] = new JObject { ["id"] = "slot-a", ["position"] = ToGama(slot.position) },
                 ["contact_radius"] = contactRadius, ["grab_radius"] = grabRadius, ["snap_radius"] = snapRadius
             };
+            if (hive != null) {
+                result["slot"] = hive.Configuration()[0].DeepClone();
+                result["hive_slots"] = hive.Configuration();
+                result["nectar_refill_seconds"] = Mathf.Max(1f,nectarRefillSeconds);
+            }
+            return result;
         }
         JObject FlowerConfig(string id, string plant, Vector3 position) => new JObject {
             ["id"] = id, ["plant_id"] = plant, ["species"] = speciesId, ["position"] = ToGama(position)
@@ -192,6 +200,7 @@ namespace LetItBee.HoneyPilot
         {
             DateTime profileCheck = DateTime.MinValue;
             DateTime nextWorldSync = DateTime.MinValue;
+            Task worldTask = Task.CompletedTask;
             while (!token.IsCancellationRequested) {
                 try {
                     if (useSimpleToolchain && DateTime.UtcNow >= profileCheck) {
@@ -208,6 +217,7 @@ namespace LetItBee.HoneyPilot
                         client = useSimpleToolchain ? new HoneySimpleClient(transform) : new HoneyGamaClient();
                         JObject first = await client.ConnectAsync(useSimpleToolchain ? EffectiveSimpleEndpoint : endpoint, modelOnServer, configuration);
                         if (token.IsCancellationRequested) break;
+                        ValidateServerHive(configuration, (JObject)first["state"]);
                         State = (JObject)first["state"]; Live = true; ConnectionStatus = useSimpleToolchain ? "LIVE · SIMPLE → LinkToUnity → GAMA" : "LIVE · direct test";
                         lastLoggedConnectionError = null;
                         Debug.Log("[BeeBloom] GAMA ready; session " + sessionId);
@@ -220,18 +230,9 @@ namespace LetItBee.HoneyPilot
                         ["nectar_positions"] = new JArray(ToGama(NectarPosition(0)), ToGama(NectarPosition(1))),
                         ["flower_surfaces"] = new JArray(ToGama(Geometry(0).Surface), ToGama(Geometry(1).Surface)),
                         ["flower_radii"] = new JArray(Geometry(0).Radius, Geometry(1).Radius),
-                        ["slot"] = ToGama(slot.position)
+                        ["slot"] = ToGama(hive != null ? hive.Position(0) : slot.position),
+                        ["hive_slots"] = hive != null ? hive.Configuration() : null
                     }.ToString(Newtonsoft.Json.Formatting.None) });
-                    if (DateTime.UtcNow >= nextWorldSync) {
-                        var world = worldSync.Prepare(worldSync.Capture(this));
-                        if (world != null) {
-                            var rawWorldReply = await client.AskAsync("sync_world",new JObject {
-                                ["world_json"] = world.ToString(Newtonsoft.Json.Formatting.None) });
-                            var worldReply = rawWorldReply as JObject ?? await client.SnapshotAsync();
-                            worldSync.Accept((JObject)worldReply["world_sync"]);
-                        }
-                        nextWorldSync = DateTime.UtcNow.AddMilliseconds(250);
-                    }
                     JObject request = pendingRequest;
                     if (request != null) await client.AskAsync("transact", new JObject { ["request_json"] = request.ToString(Newtonsoft.Json.Formatting.None) });
                     JObject snapshot = await client.SnapshotAsync();
@@ -239,6 +240,11 @@ namespace LetItBee.HoneyPilot
                     State = (JObject)snapshot["state"];
                     if (request != null && (string)snapshot["response"]?["event_id"] == (string)request["event_id"]) {
                         CompleteRequest(request,(JObject)snapshot["response"]);
+                    }
+                    if (pendingRequest == null && worldTask.IsCompleted && DateTime.UtcNow >= nextWorldSync) {
+                        try { worldTask = SyncWorld(client, worldSync.Prepare(worldSync.Capture(this)), token); }
+                        catch (Exception ex) { WorldSyncWarning = ex.Message; }
+                        nextWorldSync = DateTime.UtcNow.AddSeconds(string.IsNullOrEmpty(WorldSyncWarning) ? 0.25 : 2);
                     }
                     await Task.Delay(100, token);
                 } catch (OperationCanceledException) { break; }
@@ -272,8 +278,15 @@ namespace LetItBee.HoneyPilot
                 else if (LastReason != "same_visit") { visitedContact = -1; retryAfter = Time.time + 0.5f; }
             }
             if (!(bool)response["accepted"] && LastReason != "same_visit") {
+                if ((string)request["kind"] == "collect") {
+                    collectNeedsRelease = true;
+                    visitedContact = -1;
+                    collectTime = Charge01 = 0f;
+                    chargingFlower = -1;
+                }
                 failureKind = (string)request["kind"]; failureUntil = Time.time + 3f;
-                failureHint = LastReason == "carrying_or_empty" ? "DA CO MAT - TIM CUC MAT DANG SANG"
+                failureHint = LastReason == "carrying_or_empty" ? (ChunkState == "held" || ChunkState == "ready" || ChunkState == "loose"
+                    ? "DA CO MAT - TIM CUC MAT DANG SANG" : "GAMA CHUA CHO LAY MAT\nTHA TRIGGER PHAI ROI THU LAI")
                     : LastReason == "too_far_from_flower" ? "TOI GAN HOA HON ROI THU LAI"
                     : failureKind == "pick" ? "DUA TAY GAN MAT\nBOP LAI NUT BEN HONG PHAI"
                     : failureKind == "deposit" || failureKind == "drop" ? "CHUA DAT\nBOP LAI NUT BEN HONG PHAI"
@@ -340,10 +353,12 @@ namespace LetItBee.HoneyPilot
 
         void StepInteraction(float trigger, float grip, bool stable, bool holding, float dt)
         {
+            if (trigger < 0.45f) collectNeedsRelease = false;
             if (gripIntent.Sample(grip)) {
                 releaseHand = rightHand.position; releaseBee = InteractionPosition;
                 // A release before pickup ACK refers to the intended hand pose.
                 // Once carried, use the visible centre, not the controller pivot.
+                releaseSlotId = CurrentSlotId;
                 releaseChunk = ChunkState == "held" && (!Enhanced || !honeyFeedback.PickupAnimating)
                     ? chunk.position : HeldPoint;
             }
@@ -362,19 +377,23 @@ namespace LetItBee.HoneyPilot
             }
             // Release/pick input has priority over automatic visits and collection.
             string gripCommand = gripIntent.Choose(Live, Busy, ChunkState, grabReady,
-                Vector3.Distance(releaseChunk, slot.position) <= snapRadius);
+                SocketReachable(releaseChunk, releaseBee, selectedCell));
             if (gripCommand == "pick") Request("pick");
             else if (gripCommand != null) RequestAt(gripCommand, -1, releaseBee, releaseHand, releaseChunk);
             if (Live && !Busy && contact >= 0 && visitedContact != contact && touchDwell >= 0.4f && Time.time >= retryAfter)
                 Request("visit", contact);
-            bool canCollect = deliberateContact && visitedContact == contact && Live && !Busy && State != null && ChunkState == "none" && Stored == 0
+            bool canCollect = deliberateContact && visitedContact == contact && Live && !Busy && State != null && (ChunkState == "none" || ChunkState == "stored" && (!Enhanced || !honeyFeedback.DepositAnimating)) && !HiveFull
                 && (int)State["nectar"][contact] > 0;
-            if (trigger >= 0.65f && canCollect) {
+            if (trigger >= 0.65f && canCollect && !collectNeedsRelease) {
                 if (chargingFlower != contact) { collectTime = 0f; chargingFlower = contact; }
-                collectTime += dt;
+                gatherInterrupted = 0f; collectTime += dt;
                 Charge01 = Mathf.Clamp01(collectTime / Mathf.Max(0.2f, collectDuration));
                 if (Charge01 >= 1f) { Request("collect", contact); collectTime = 0f; Charge01 = 0f; }
-            } else { collectTime = 0f; Charge01 = 0f; chargingFlower = -1; }
+            } else {
+                gatherInterrupted += dt;
+                if (contact != chargingFlower || !Live || Busy || trigger < 0.45f || gatherInterrupted > gatherGraceSeconds)
+                    { collectTime = 0f; Charge01 = 0f; chargingFlower = -1; }
+            }
             string trace = "flower=" + contact + "; stable=" + stable + "; perched=" + IsFlowerSettled
                 + "; touched=" + deliberateContact + "; grab=" + grabReady + "; chunk=" + ChunkState
                 + "; grip=" + gripIntent.Pressed + "; trigger=" + (trigger >= 0.65f)
@@ -388,10 +407,13 @@ namespace LetItBee.HoneyPilot
             && Vector3.Distance(rightHand.position, chunk.position) <= grabRadius
             && Vector3.Distance(InteractionPosition, chunk.position) <= 2f
             && (Vector3.Distance(rightHand.position, chunk.position) <= Mathf.Min(0.35f, grabRadius) || AimedAt(chunk.position))
+            && HasLineOfSight(rightHand.position,chunk.position)
             && (!Enhanced || !honeyFeedback.CollectionAnimating);
 
         void StepFlowerPerching(float dt, bool holding)
         {
+            PerchHint = !holding ? "GIU TRIGGER TRAI DE DAU" : "TOI GAN DAU CANH HON";
+            if (holding && beeController != null && (beeController.IsPositionBraking || beeController.Speed > 0.25f)) PerchHint = "CHAM LAI DE DAU";
             if (!holding) perchArmed = true;
             if (PerchedFlower >= 0) {
                 if (!enableFlowerPerching || !holding || beeController == null || beeController.ExternalMovementLocked
@@ -411,9 +433,10 @@ namespace LetItBee.HoneyPilot
             if (!enableFlowerPerching || !perchArmed || !holding || contact < 0 || beeController == null
                 || beeController.ExternalMovementLocked || beeController.IsPositionBraking || beeController.Speed > 0.25f
                 || contactDwell < perchDwell) return;
-            if (!TryGetPerchView(contact, out Vector3 support, out Vector3 eyeTarget)) return;
+            if (!TryGetPerchView(contact, out Vector3 support, out Vector3 eyeTarget)) { PerchHint = "CANH CHUA CO CHO DAU AN TOAN"; return; }
             if (Mathf.Min(Vector3.Distance(InteractionPosition, eyeTarget),
                 Vector3.Distance(InteractionPosition, support)) > perchApproachRadius) return;
+            if (Vector3.Distance(InteractionPosition,eyeTarget) > perchApproachRadius) { PerchHint = "TOI GAN DIEM DAU HON"; return; }
             Vector3 target = beeRoot.position + eyeTarget - InteractionPosition;
             if (beeController.groundCollision) {
                 Vector3 safe = beeController.ResolveGroundCollision(target, Vector3.zero);
@@ -530,11 +553,12 @@ namespace LetItBee.HoneyPilot
             responseB?.Apply(PerchedFlower == 1 ? perchTime : 0f, contact == 1 ? Charge01 : 0f,
                 Enhanced ? honeyFeedback.FlowerBloom(1) : 0f, Enhanced ? honeyFeedback.FlowerRebound(1) : 0f);
             if (landingRing == null) return;
-            landingRing.enabled = enableFlowerPerching && contact >= 0 && ChunkState == "none" && PerchedFlower < 0
+            landingRing.enabled = enableFlowerPerching && contact >= 0 && (ChunkState == "none" || ChunkState == "stored") && PerchedFlower < 0
                 && beeController != null && beeController.IsPositionHolding;
             if (!landingRing.enabled) return;
             if (!TryGetPerchView(contact, out Vector3 support, out _)) { landingRing.enabled = false; return; }
-            Vector3 centre = support + Vector3.up * 0.025f;
+            TryGetPerchView(contact, out _, out Vector3 view);
+            Vector3 centre = view - Vector3.up * 0.18f;
             float radius = 0.08f + 0.004f * Mathf.Sin(Time.time * 3f);
             for (int i = 0; i < landingRing.positionCount; i++) {
                 float angle = i * Mathf.PI * 2f / landingRing.positionCount;
@@ -594,6 +618,7 @@ namespace LetItBee.HoneyPilot
 
         void UpdateSlotPose()
         {
+            if (hive != null) { StepHive(); return; }
             if (slotMount == null || slot == null) return;
             slot.position = slotMount.TransformPoint(slotMountLocalPoint);
             slot.rotation = Quaternion.LookRotation(slotMount.forward, Vector3.up);
@@ -634,9 +659,13 @@ namespace LetItBee.HoneyPilot
             if (kind == "visit") pendingVisitPollinates = flower >= 0 && (int?)State?["pollen_source"] >= 0
                 && (int?)State?["pollen_source"] != flower && (PollinationMask() & (1 << flower)) == 0;
             pendingRequest = new JObject { ["event_id"] = Guid.NewGuid().ToString("N"), ["session"] = sessionId,
-                ["kind"] = kind, ["flower"] = flower, ["chunk_id"] = (string)State?["chunk_id"] ?? "", ["slot_id"] = "slot-a",
+                ["kind"] = kind, ["flower"] = flower, ["chunk_id"] = (string)State?["chunk_id"] ?? "", ["slot_id"] = kind == "deposit" || kind == "drop" ? releaseSlotId : CurrentSlotId,
                 ["bee"] = ToGama(bee), ["hand"] = ToGama(hand) };
             if (kind == "deposit" || kind == "drop") pendingRequest["held_chunk"] = ToGama(heldChunk);
+            if (kind == "drop" && hive != null) {
+                if (TryDropSurface(heldChunk,out Vector3 landing)) pendingRequest["drop_target"] = ToGama(landing);
+                else pendingRequest["recover_drop"] = true;
+            }
         }
         void Accepted(string kind, int flower)
         {
@@ -713,6 +742,8 @@ namespace LetItBee.HoneyPilot
             var chunkMaterial = Enhanced && honeyFeedback.NectarMaterial != null ? honeyFeedback.NectarMaterial : honeyMaterial;
             if (chunkRenderer.sharedMaterial != chunkMaterial) chunkRenderer.sharedMaterial = chunkMaterial;
             bool wasVisible = chunk.gameObject.activeSelf;
+            string visibleIdentity = (string)State?["chunk_id"];
+            if (visibleIdentity != renderedChunkId) { wasVisible = false; renderedChunkId = visibleIdentity; }
             chunk.gameObject.SetActive(exists);
             chunk.localScale = Enhanced ? honeyFeedback.NectarScale(ChunkState) : Vector3.one;
             if (exists && State != null) {
@@ -739,6 +770,7 @@ namespace LetItBee.HoneyPilot
                     chunk.SetPositionAndRotation(snapped,snappedRotation);
                 } else {
                     if (!wasVisible || lastChunkPosition == Vector3.zero) chunk.position = target;
+                    else if (ChunkState == "loose") chunk.position = Vector3.MoveTowards(chunk.position,target,1.5f*Time.deltaTime);
                     else chunk.position = Vector3.Lerp(chunk.position,target,1f-Mathf.Exp(-(Enhanced && ChunkState == "held" ? 14f : 25f)*Time.deltaTime));
                     chunk.rotation = Quaternion.Slerp(chunk.rotation,rotation,1f-Mathf.Exp(-25f*Time.deltaTime));
                 }
@@ -752,7 +784,7 @@ namespace LetItBee.HoneyPilot
             if (ChunkState == "held" && Time.time < threadUntil && Vector3.Distance(threadSource, chunk.position) < 0.5f) {
                 tether.enabled = true; tether.SetPosition(0, threadSource); tether.SetPosition(1, chunk.position);
             }
-            ghost.gameObject.SetActive(Stored == 0 && !Enhanced);
+            ghost.gameObject.SetActive(!HiveFull && !Enhanced);
             ghost.localScale = Vector3.one * ((ChunkState == "held" && Vector3.Distance(chunk.position, slot.position) <= snapRadius) ? 1.12f : 1f);
             pollen.gameObject.SetActive(!Enhanced && State != null && (int)State["pollen_source"] >= 0);
             pollen.position = rightHand.TransformPoint(new Vector3(-0.07f, 0.015f, 0.02f)); pollen.rotation = rightHand.rotation;
@@ -760,9 +792,8 @@ namespace LetItBee.HoneyPilot
             labelB.text = FlowerHint(1);
             string networkHint = client is HoneySimpleClient simple && simple.WaitingForAdmission
                 ? "CHO THEM KINH VAO SIMPLE" : "CHO SIMPLE/GAMA TREN PC";
-            bool socketReady = ChunkState == "held" && Vector3.Distance(chunk.position, slot.position) <= snapRadius
-                && Vector3.Distance(InteractionPosition, slot.position) <= 2f;
-            labelSlot.text = Stored > 0 ? Enhanced && honeyFeedback.DepositAnimating ? "DANG LAP MAT..." : "DA GAN MAT  1/1" : !Live ? networkHint
+            bool socketReady = Live && ChunkState == "held" && SocketReachable(chunk.position,InteractionPosition,selectedCell);
+            labelSlot.text = !Live ? ConnectionHint : HiveFull ? RoundComplete ? "TO DA DAY " + Stored + "/" + HiveCapacity : "TO DA DAY - TIEP TUC THU PHAN" : ChunkState == "stored" && Enhanced && honeyFeedback.DepositAnimating ? "DANG LAP MAT..." : !Live ? networkHint
                 : ChunkState == "held" ? Busy ? "DANG XAC NHAN..." : socketReady ? "DA KHOP O\nTHA NUT BEN HONG DE GAN" : "DUA CUC MAT VAO O TO" : "";
             labelChunk.text = ChunkState == "ready" || ChunkState == "loose"
                 ? Busy ? "DANG XAC NHAN CAM..." : grabReady ? "GIU NUT BEN HONG TAY PHAI\nDE CAM MAT" : "MAT O DAY\nDUA TAY GAN HOAC NGAM VAO MAT"
@@ -772,6 +803,10 @@ namespace LetItBee.HoneyPilot
                 else if (failureKind == "deposit" || failureKind == "drop") labelSlot.text = failureHint;
                 else if (contact == 0) labelA.text = failureHint;
                 else if (contact == 1) labelB.text = failureHint;
+            }
+            if (!Live && (ChunkState == "ready" || ChunkState == "loose" || ChunkState == "held")) labelChunk.text = ConnectionHint;
+            if (ChunkState == "held" && Vector3.Distance(InteractionPosition,slot.position) <= 2.8f) {
+                labelChunk.text = ""; labelA.text = ""; labelB.text = "";
             }
             PlaceLabel(labelA, Geometry(0).Surface + Vector3.up * 0.25f);
             PlaceLabel(labelB, Geometry(1).Surface + Vector3.up * 0.25f);
@@ -784,18 +819,19 @@ namespace LetItBee.HoneyPilot
         {
             string name = index == 0 ? "A" : "B";
             if (contact != index) return "";
-            if (!Live) return "CHO KET NOI SIMPLE/GAMA";
+            if (!Live) return ConnectionHint;
             if (ChunkState == "ready" || ChunkState == "loose") return "";
             if (ChunkState == "held") return !(bool)State["pollinated"][index] && visitedContact != index ? "DAU HOAC CHAM NHUY\nDE CHUYEN PHAN" : "";
             if (Busy && (string)pendingRequest?["kind"] == "visit") return "DANG NHAN / CHUYEN PHAN...";
             if (Busy && (string)pendingRequest?["kind"] == "collect") return "DANG TAO CUC MAT...";
             if (Charge01 > 0f) return name + " - LAY MAT " + Mathf.RoundToInt(Charge01 * 100f) + "%";
-            if (Stored > 0) return "DA HOAN THANH  1/1";
-            if ((int)State["nectar"][index] == 0) return "HOA DA LAY MAT";
+            if (RoundComplete) return "HOAN THANH - TO DA DAY";
+            if (HiveFull) return (bool)State["pollinated"][index] ? "HOA DA NHAN PHAN" : "DAU DE CHUYEN PHAN";
+            if ((int)State["nectar"][index] == 0) return "HOA DANG HOI MAT";
             if (PerchedFlower == index) return IsFlowerSettled
                 ? visitedContact == index ? "DA DAU CANH\nGIU TRIGGER PHAI DE LAY MAT" : "GIU YEN DE NHAN / CHUYEN PHAN"
                 : "DANG DAU LEN CANH...";
-            return "GIU TRIGGER TRAI DE ON DINH\nDAU CANH HOAC CHAM NHUY";
+            return visitedContact == index ? "DA NHAN / CHUYEN PHAN\nGIU TRIGGER PHAI DE LAY MAT" : PerchHint;
         }
         void PlaceLabel(TextMesh label, Vector3 position)
         {
@@ -829,6 +865,7 @@ namespace LetItBee.HoneyPilot
             LeaveFlower();
             if (beeController != null) beeController.RightHandInteractionOwnsInput = false;
             gripIntent.Reset();
+            EndHive();
             honeyFeedback?.Dispose(); honeyFeedback = null;
             responseA?.Restore(); responseB?.Restore();
             lifetime?.Cancel(); client?.Dispose(); Live = false;
@@ -836,7 +873,7 @@ namespace LetItBee.HoneyPilot
             if (originalsCaptured) {
                 if (flowerAAnimator != null) flowerAAnimator.runtimeAnimatorController = originalA;
                 if (flowerBAnimator != null) flowerBAnimator.runtimeAnimatorController = originalB;
-                if (slotDecoration != null) slotDecoration.enabled = decorationWasEnabled;
+                if (slotDecoration != null && !hivePresentationActive) slotDecoration.enabled = decorationWasEnabled;
                 originalsCaptured = false;
             }
             foreach (var t in new Transform[] { chunk, chargeVisual, ghost, pollen, tether != null ? tether.transform : null,

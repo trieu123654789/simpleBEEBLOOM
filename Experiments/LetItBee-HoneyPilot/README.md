@@ -1,6 +1,6 @@
 # Let It Bee — Honey Pilot
 
-Package thử hai hoa, một cục mật, một ô tổ trong scene SCN_LetItBee.
+Package hai hoa, một cục mật đang mang và bảy ô tổ trong scene SCN_LetItBee.
 Luồng hiện hành: Unity → SIMPLE WebPlatform → LinkToUnity → LetItBeeVR.
 
 Kế hoạch, tiến độ và hướng dẫn được hợp nhất tại **[Docs/LetItBee.md](../../Docs/LetItBee.md)**:

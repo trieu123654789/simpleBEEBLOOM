@@ -17,7 +17,8 @@ namespace LetItBee.HoneyPilot
         readonly GameObject root;
         readonly Transform flowerA, flowerB, slot;
         readonly Transform visualParent;
-        readonly Renderer socketArt;
+        Renderer socketArt;
+        public void SetSocket(Renderer value) { socketArt = value; }
         readonly Bounds nectarBounds;
         const float AlignDuration = 0.36f, InsertDuration = 0.6f;
         const float SeatTime = AlignDuration + InsertDuration;
@@ -271,7 +272,7 @@ namespace LetItBee.HoneyPilot
             }
             for (int i = 0; i < 2; i++) {
                 Vector3 centre = FlowerSurface(i);
-                float near = live && contact == i && chunkState == "none"
+                float near = live && contact == i
                     ? Mathf.Clamp01(1f - Vector3.Distance(camera != null ? camera.transform.position : hand.position, centre) / 2.8f) : 0f;
                 float bloom = FlowerBloom(i), warmth = contact == i ? amount : 0f;
                 Ring(flowerRings[i], centre + Vector3.up * 0.012f, Quaternion.Euler(90f,0f,0f),
@@ -290,7 +291,7 @@ namespace LetItBee.HoneyPilot
             if (flowing) {
                 Vector3 centre = FlowerSurface(gatheringFlower) + Vector3.up * 0.015f;
                 for (int i = 0; i < gatherProgress.positionCount; i++) {
-                    float angle = i / (float)(gatherProgress.positionCount - 1) * Mathf.PI * 2f * Mathf.Clamp01(charge);
+                    float angle = i / (float)(gatherProgress.positionCount - 1) * Mathf.PI * 2f * Mathf.Clamp01(waitingCollect ? 0.98f : charge);
                     gatherProgress.SetPosition(i, centre + new Vector3(Mathf.Cos(angle),0f,Mathf.Sin(angle)) * 0.095f);
                 }
                 Style(gatherProgress,0.004f,Cream,0.9f);
@@ -308,7 +309,7 @@ namespace LetItBee.HoneyPilot
             }
             for (int i = 0; i < liquidDrops.Length; i++) {
                 if (liquidDrops[i] == null) continue;
-                bool showing = flowing && chunkState == "none" && amount > 0.08f && intensity > 0f;
+                bool showing = flowing && (chunkState == "none" || chunkState == "stored") && amount > 0.08f && intensity > 0f;
                 liquidDrops[i].gameObject.SetActive(showing);
                 if (!showing) continue;
                 float angle = i*2.094f+flowTime;
@@ -366,7 +367,8 @@ namespace LetItBee.HoneyPilot
             }
             bool socketReady = live && chunkState == "held"
                 && Vector3.Distance(chunkPosition, slot.position) <= snapRadius
-                && (camera == null || Vector3.Distance(camera.transform.position,slot.position) <= 2f);
+                && (camera == null || Vector3.Distance(camera.transform.position,slot.position) <= 2f
+                    && Vector3.Dot(camera.transform.position-slot.position,slot.forward) >= -0.05f);
             float snap = clock - depositAt;
             if (!depositChimed && snap >= SeatTime && snap < SeatTime+0.85f) {
                 depositChimed = true; Play(snapSound,slot.position,0.85f); Pulse(XRNode.RightHand,0.2f,0.1f);

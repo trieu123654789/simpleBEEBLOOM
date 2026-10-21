@@ -23,7 +23,7 @@ public static class BeeInteractionV3Checks
         var checks = new List<string>();
         void Check(bool value, string message) { if (!value) throw new Exception(message); checks.Add(message); }
         GameObject Obj(string name) { var go = new GameObject(name); SceneManager.MoveGameObjectToScene(go, scene); return go; }
-        var root = Obj("Isolated honey interaction"); root.SetActive(false);
+          var root = Obj("Isolated honey interaction"); root.SetActive(false);
         try {
             var pilot = root.AddComponent<BeeHoneyPilot>(); pilot.beeRoot = root.transform;
             pilot.rightHand = Obj("Hand").transform;
