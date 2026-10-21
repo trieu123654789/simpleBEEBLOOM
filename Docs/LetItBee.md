@@ -594,6 +594,21 @@ bỏ chọn **Copy projects into workspace** để liên kết file gốc; mở
 0,5 giây/lần, không ghi tiến độ; ong là mẫu tại giao dịch gần nhất. Nếu trước đó
 copy một file lẻ vào workspace thì đó là bản sao, không tự nhận cập nhật file gốc.
 
+Nếu cây User models vẫn hiện `BeeBloom/BeeBloomHoneyPilot.gaml`, đó là project
+bản sao cũ trong `Gama_Workspace`, không phải project nguồn mới. Dừng experiment
+của bản xem cũ, đóng project BeeBloom (không xóa nội dung), rồi import project từ:
+
+```text
+C:\Projects\Unity\simple.CTU.VU2\Experiments\LetItBee-HoneyPilot\GAMA
+```
+
+Bỏ chọn **Copy projects into workspace**. Project mới phải hiện
+`LetItBee-HoneyPilot`, file `LetItBeeHoneyPilot.gaml`; mở experiment `HoneyPilot`
+để xem checkpoint. Tên `HoneyPilot` được giữ vì là tên experiment dùng trong mã,
+không phải tên game. Giao diện GAMA xem checkpoint này tách biệt với experiment
+`LetItBeeVR` mà SIMPLE chạy để nối Unity/Quest. Không sửa metadata workspace đang
+mở hoặc chép đè bản model cũ để đổi tên.
+
 **Direct legacy:** `Start-GamaServer.ps1`/cổng 6873 và `HoneyGamaClient` còn phục
 vụ chẩn đoán cũ. `Endpoint`, `Model On Server`, `Checkpoint Directory On Server`
 trong Inspector chỉ dùng cho chế độ này. Không dùng hướng dẫn “sửa IP cổng 6873
