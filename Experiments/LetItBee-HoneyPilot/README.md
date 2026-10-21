@@ -3,6 +3,12 @@
 Package hai hoa, một cục mật đang mang và bảy ô tổ trong scene SCN_LetItBee.
 Luồng hiện hành: Unity → SIMPLE WebPlatform → LinkToUnity → LetItBeeVR.
 
+Mã Unity được chia thành `Gameplay`, `Presentation`, `Integration` và
+`Compatibility` trong `Assets/Scripts/VU2/HoneyPilot/`. Xem
+[kiến trúc dự án](../../Docs/Architecture.md) để tra trách nhiệm từng phần.
+Các script khởi chạy vẫn nằm tại thư mục này; đường dẫn model và checkpoint
+không thay đổi theo việc sắp xếp mã Unity.
+
 Kế hoạch, tiến độ và hướng dẫn được hợp nhất tại **[Docs/LetItBee.md](../../Docs/LetItBee.md)**:
 
 - [Chạy, đổi IP và đường dẫn](../../Docs/LetItBee.md#4-chạy-simple-và-cấu-hình-chuyển-máy).

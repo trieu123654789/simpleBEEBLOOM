@@ -44,12 +44,12 @@ public static class BeeInteractionV3Checks
             var state = new JObject { ["chunk_state"]="none", ["chunk_id"]="", ["chunk_pos"]=new JArray(0,0,0),
                 ["chunk_flower"]=0,["stored"]=0,["nectar"]=new JArray(1,1),["pollinated"]=new JArray(false,false),["pollen_source"]=-1 };
             Set("State",state); Set("Live",true);
-            var step = typeof(BeeHoneyPilot).GetMethod("StepInteraction",Private);
+            var step = typeof(BeeHoneyPilot).GetMethod("UpdateInteraction",Private);
             void Step(float trigger=0f,float grip=0f,bool stable=true,float dt=0.1f) => step.Invoke(pilot,new object[]{trigger,grip,stable,false,dt});
             JObject Pending() => (JObject)Field("pendingRequest");
             void Ack(bool accepted=true,string reason="visited") {
                 var request=Pending();
-                typeof(BeeHoneyPilot).GetMethod("CompleteRequest",Private).Invoke(pilot,new object[]{request,new JObject{["accepted"]=accepted,["reason"]=reason}});
+                typeof(BeeHoneyPilot).GetMethod("CompleteInteractionRequest",Private).Invoke(pilot,new object[]{request,new JObject{["accepted"]=accepted,["reason"]=reason}});
             }
             pilot.rightHand.position = new Vector3(0f,1.5f,-1f);
             Step();Step();Step();Step();Step();

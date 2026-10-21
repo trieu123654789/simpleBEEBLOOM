@@ -777,11 +777,13 @@ Map đã căn thêm theo vị trí ong/các agent mới để không rơi ngoài
 
 ### Tệp cần tìm khi phát triển
 
+Xem [kiến trúc và quy ước mã nguồn](Architecture.md) để tra trách nhiệm từng thư mục.
+
 | Đường dẫn từ gốc project | Nội dung |
 | --- | --- |
-| `Assets/Scripts/VU2/Bee/` | Bay, camera, HUD, âm thanh và script nền ong |
-| `Assets/Scripts/VU2/HoneyPilot/` | Pilot, client direct/SIMPLE, cấu hình kết nối |
-| `Assets/Editor/VU2/` | Inspector, công cụ setup/build/check; không tự chạy setup lên scene đã chỉnh |
+| `Assets/Scripts/VU2/Bee/` | `Flight/`, `Input/`, `Presentation/` và script nền ong |
+| `Assets/Scripts/VU2/HoneyPilot/` | `Gameplay/`, `Presentation/`, `Integration/`, `Compatibility/` |
+| `Assets/Editor/VU2/` | `Checks/` và `Tools/`; không tự chạy setup lên scene đã chỉnh |
 | `Assets/Prefabs/LetItBee/HoneyPilot/` | Mesh/material mật, idle clip/controller riêng của pilot |
 | `Experiments/LetItBee-HoneyPilot/GAMA/` | Model hiện tại và cấu hình server mẫu |
 | `Experiments/LetItBee-HoneyPilot/settings.json` | Learning package **Let It Bee - Honey Pilot**, experiment **LetItBeeVR** |

@@ -1,39 +1,85 @@
-# Let It Bee VR
+# Let It Bee
 
-Dự án game ong VR trên Unity, kế thừa môi trường và hạ tầng SIMPLE.
-Hiện đang chuẩn hóa nền phát triển và thử vòng hoa → mật → tổ với GAMA.
+A VR bee game for Meta Quest, built with Unity and connected to GAMA through the SIMPLE toolchain.
 
-**[Tài liệu chính: kế hoạch, tiến độ, cấu hình và hướng dẫn](Docs/LetItBee.md)**
+Players fly between flowers, transfer pollen, collect nectar chunks and carry them back to a hive. The current prototype focuses on making this loop work reliably in VR. Its environment and connection infrastructure build on the original SIMPLE/VU2 project.
 
-## Hiện đang có
+## Current gameplay
 
-- Bay bằng hai ray quẹt, nhịp nâng/lướt, trigger trái phanh/giữ vị trí;
-  va chạm và phản hồi bay sát bề mặt, âm thanh cánh.
-- Hai hoa, một cục mật đang mang, bảy ô tổ; GAMA xác nhận tài nguyên, hồi mật và giao dịch.
-- Unity → SIMPLE WebPlatform → LinkToUnity → GAMA; endpoint ngoài APK,
-  đường dẫn checkpoint cấu hình trên server.
-- APK có bộ đọc cấu hình ngoài; đã sửa và xác nhận mở được cảnh trên Quest,
-  còn kiểm thử vòng tương tác và đậu hoa trên kính.
+- Flight controlled by two controller rays, with position hold, collision handling, surface feedback and wing audio.
+- Two flowers with perching, pollen transfer and nectar collection.
+- One carried nectar chunk at a time and seven fillable hive cells.
+- GAMA validates collection and deposits, replenishes nectar and saves progress to JSON checkpoints.
+- Connection settings outside the APK allow the PC address to change without rebuilding the game.
 
-Mục tiêu chính 5 cục/lượt, màn 2 xâm nhập mặn, NPC và cutscene còn trong kế hoạch.
-Không coi mô hình pilot là dữ liệu sinh thái đã hiệu chuẩn.
+The seven-cell prototype is the current implementation. The earlier five-chunk objective is a design proposal, not the current completion rule. NPCs, cutscenes and the salinity scenario are planned work. The ecological model is not yet calibrated against field data.
 
-## Bắt đầu
+## Requirements
 
-1. Dùng Unity **6000.6.2f1**, mở `Assets/Scenes/VU2/SCN_LetItBee.unity`.
-2. Theo [hướng dẫn chạy và cấu hình](Docs/LetItBee.md#4-chạy-simple-và-cấu-hình-chuyển-máy)
-   để mở SIMPLE/GAMA trước khi Play.
-3. Xem [thao tác lấy/gắn mật](Docs/LetItBee.md#3-vòng-chơi-thử-hiện-tại),
-   [chỗ chỉnh bay/âm thanh](Docs/LetItBee.md#6-chỉnh-bay-va-chạm-và-âm-thanh)
-   và [backlog](Docs/LetItBee.md#7-backlog-và-asset).
+- Unity **6000.6.2f1** with Android build support for Quest builds.
+- A Meta Quest with tracked controllers for device testing.
+- GAMA and the official [SIMPLE WebPlatform](https://github.com/project-SIMPLE/simple.toolchain), configured on the host PC.
+- PC and Quest on a network that permits communication between them. USB debugging is required for the setup script to update the headset.
 
-Giữ nguyên dữ liệu người dùng vừa Ctrl+S; không áp lại scene/preset cũ.
-Trạng thái, kết quả kiểm tra và giới hạn được theo dõi tại tài liệu chính.
-Lab direct WebSocket cũ ở `Experiments/LetItBee-GAMA` là thử nghiệm riêng.
+Unity package versions are recorded in `Packages/manifest.json` and `Packages/packages-lock.json`.
 
-## Dự án
+## Getting started
 
-- Đơn vị thực hiện đã ghi trong dự án: nhóm nghiên cứu và phát triển VR,
-  Trường Đại học Cần Thơ (CTU).
-- Kho lưu trữ: [simpleBEEBLOOM](https://github.com/trieu123654789/simpleBEEBLOOM).
-- Hạ tầng tham khảo: [project-SIMPLE](https://github.com/project-SIMPLE/simple.toolchain).
+1. Open the project in Unity and load `Assets/Scenes/VU2/SCN_LetItBee.unity`.
+2. Follow the [PC setup guide](Docs/LetItBee.md#4-chạy-simple-và-cấu-hình-chuyển-máy). On a new machine, copy `machine.example.json` to `machine.local.json` in the experiment folder and set the local paths.
+3. From the project root, start SIMPLE and headless GAMA:
+
+   ```powershell
+   cd Experiments/LetItBee-HoneyPilot
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Start-Simple.ps1 -Headless
+   ```
+
+4. With one authorized Quest connected by USB, update its endpoint:
+
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Connect-Quest.ps1 -UpdateFirewall -EnableStreaming
+   ```
+
+   Firewall changes require an elevated PowerShell window. Install the desired APK separately or use the script's `-InstallApk` option.
+5. Open Let It Bee on the headset. The SIMPLE dashboard runs at `http://localhost:8000`; its screen-streaming page is `/streamPlayerScreen`.
+
+`Start-Simple.ps1` leaves an already running service in place. After changing a GAMA model, restart the experiment so it loads the new code. See the [troubleshooting guide](Docs/LetItBee.md#lỗi-thường-gặp-và-chế-độ-cũ) in the main document's **Lỗi thường gặp và chế độ cũ** section.
+
+## Controls
+
+| Input | Action |
+| --- | --- |
+| Controller rays across the flight bar | Generate lift |
+| Left trigger | Hold position; perch when close to a flower |
+| Right trigger | Collect nectar after flower contact is confirmed |
+| Right grip | Pick up and carry a chunk; release near an empty cell to deposit |
+
+Pollen transfer and nectar collection are separate steps. A collection effect is not a confirmed reward until GAMA accepts the transaction.
+
+## Project structure
+
+| Location | Responsibility |
+| --- | --- |
+| `Assets/Scripts/VU2/Bee/` | Flight, input, presentation and existing bee systems |
+| `Assets/Scripts/VU2/HoneyPilot/` | Flower–nectar–hive loop and GAMA integration |
+| `Assets/Editor/VU2/Checks/` | Editor regression checks |
+| `Assets/Editor/VU2/Tools/` | Scene setup tools, inspectors and diagnostics |
+| `Experiments/LetItBee-HoneyPilot/` | GAMA models, launch scripts and integration checks |
+| `Docs/` | Design notes, operating guide and development status |
+
+Read [Architecture and code organization](Docs/Architecture.md) for folder responsibilities and naming rules. The existing VU2 and SIMPLE code is retained alongside the game-specific code.
+
+## Validation and known limits
+
+Editor checks are available under the **Let It Bee** menu. GAMA integration checks use separate test sessions; they must not reset a player's active experiment. See the [validation notes](Docs/LetItBee.md#9-kiểm-chứng-và-giới-hạn) for setup and results.
+
+The latest collection safeguards still need a fresh APK test on Quest. A connected SIMPLE dashboard alone does not confirm that the gameplay experiment is ready. Local machine configuration, runtime checkpoints, logs and APK builds are kept out of Git.
+
+## Development notes
+
+- Treat the latest saved Unity scene and Inspector values as the source of truth.
+- Move Unity assets with their `.meta` files; preserve GUIDs and serialized field names.
+- Keep protocol keys and session IDs stable so existing checkpoints remain readable.
+- Do not run scene setup tools over an authored scene without reviewing their changes.
+
+The [main project guide](Docs/LetItBee.md) contains configuration details, gameplay plans and the backlog. Project infrastructure is based on [project-SIMPLE](https://github.com/project-SIMPLE/simple.toolchain), with development in the CTU VR project context.

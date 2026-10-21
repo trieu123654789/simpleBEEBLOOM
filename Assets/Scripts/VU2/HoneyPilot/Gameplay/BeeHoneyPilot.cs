@@ -93,8 +93,8 @@ namespace LetItBee.HoneyPilot
         InputAction rightTrigger, rightGrip;
         readonly BeeHoneyGrip gripIntent = new BeeHoneyGrip();
         Vector3 releaseHand, releaseBee, releaseChunk;
-        int contact = -1, visitedContact = -1, chargingFlower = -1;
-        float contactDwell, collectTime;
+        int contact = -1, visitedFlowerIndex = -1, collectingFlowerIndex = -1;
+        float contactDwell, collectionElapsedSeconds;
         float touchDwell, retryAfter, failureUntil, nextHoverHaptic;
         string failureKind, failureHint;
         string lastInteractionTrace;
@@ -170,7 +170,7 @@ namespace LetItBee.HoneyPilot
             try { configuration = BuildConfiguration(); }
             catch (Exception ex) { ConnectionStatus = ex.Message; enabled = false; return; }
             lifetime = new CancellationTokenSource();
-            _ = Pump(lifetime.Token);
+            _ = RunConnectionLoopAsync(lifetime.Token);
         }
 
         public JObject BuildConfiguration()
@@ -196,7 +196,7 @@ namespace LetItBee.HoneyPilot
         public static JArray ToGama(Vector3 value) => new JArray(Math.Round(value.x, 4), Math.Round(value.z, 4), Math.Round(value.y, 4));
         public static Vector3 FromGama(JToken value) => new((float)value[0], (float)value[2], (float)value[1]);
 
-        async Task Pump(CancellationToken token)
+        async Task RunConnectionLoopAsync(CancellationToken token)
         {
             DateTime profileCheck = DateTime.MinValue;
             DateTime nextWorldSync = DateTime.MinValue;
@@ -239,7 +239,7 @@ namespace LetItBee.HoneyPilot
                     if (token.IsCancellationRequested) break;
                     State = (JObject)snapshot["state"];
                     if (request != null && (string)snapshot["response"]?["event_id"] == (string)request["event_id"]) {
-                        CompleteRequest(request,(JObject)snapshot["response"]);
+                        CompleteInteractionRequest(request,(JObject)snapshot["response"]);
                     }
                     if (pendingRequest == null && worldTask.IsCompleted && DateTime.UtcNow >= nextWorldSync) {
                         try { worldTask = SyncWorld(client, worldSync.Prepare(worldSync.Capture(this)), token); }
@@ -264,7 +264,7 @@ namespace LetItBee.HoneyPilot
             client?.Dispose(); client = null;
         }
 
-        void CompleteRequest(JObject request, JObject response)
+        void CompleteInteractionRequest(JObject request, JObject response)
         {
             LastReason = (string)response["reason"];
             gripIntent.Complete((string)request["kind"], (bool)response["accepted"]);
@@ -274,15 +274,15 @@ namespace LetItBee.HoneyPilot
             // that benign visit every frame prevents collection from getting a turn.
             if ((string)request["kind"] == "visit") {
                 if (((bool)response["accepted"] || LastReason == "same_visit") && (int)request["flower"] == contact)
-                    visitedContact = contact;
-                else if (LastReason != "same_visit") { visitedContact = -1; retryAfter = Time.time + 0.5f; }
+                    visitedFlowerIndex = contact;
+                else if (LastReason != "same_visit") { visitedFlowerIndex = -1; retryAfter = Time.time + 0.5f; }
             }
             if (!(bool)response["accepted"] && LastReason != "same_visit") {
                 if ((string)request["kind"] == "collect") {
                     collectNeedsRelease = true;
-                    visitedContact = -1;
-                    collectTime = Charge01 = 0f;
-                    chargingFlower = -1;
+                    visitedFlowerIndex = -1;
+                    collectionElapsedSeconds = Charge01 = 0f;
+                    collectingFlowerIndex = -1;
                 }
                 failureKind = (string)request["kind"]; failureUntil = Time.time + 3f;
                 failureHint = LastReason == "carrying_or_empty" ? (ChunkState == "held" || ChunkState == "ready" || ChunkState == "loose"
@@ -309,7 +309,7 @@ namespace LetItBee.HoneyPilot
             }
             bool xrActive = XRSettings.isDeviceActive || device.isValid || rightTrigger?.activeControl != null;
             bool stable = !requirePositionHoldInVr || !xrActive || desktopInteraction || (beeController != null && beeController.IsPositionHolding);
-            StepInteraction(trigger, grip, stable, (beeController != null && beeController.IsPositionHolding)
+            UpdateInteraction(trigger, grip, stable, (beeController != null && beeController.IsPositionHolding)
                 || (enableDesktopKeys && Keyboard.current != null && Keyboard.current.hKey.isPressed), Time.deltaTime);
         }
 
@@ -351,7 +351,7 @@ namespace LetItBee.HoneyPilot
             return value;
         }
 
-        void StepInteraction(float trigger, float grip, bool stable, bool holding, float dt)
+        void UpdateInteraction(float trigger, float grip, bool stable, bool holding, float dt)
         {
             if (trigger < 0.45f) collectNeedsRelease = false;
             if (gripIntent.Sample(grip)) {
@@ -363,7 +363,7 @@ namespace LetItBee.HoneyPilot
                     ? chunk.position : HeldPoint;
             }
             int near = NearestContact();
-            if (near != contact) { contact = near; visitedContact = -1; contactDwell = touchDwell = 0f; }
+            if (near != contact) { contact = near; visitedFlowerIndex = -1; contactDwell = touchDwell = 0f; }
             contactDwell += dt;
             StepFlowerPerching(dt, holding);
             bool deliberateContact = contact >= 0 && Geometry(contact).Distance(InteractionPosition) <= contactRadius && stable && ((IsFlowerSettled && PerchedFlower == contact)
@@ -380,19 +380,19 @@ namespace LetItBee.HoneyPilot
                 SocketReachable(releaseChunk, releaseBee, selectedCell));
             if (gripCommand == "pick") Request("pick");
             else if (gripCommand != null) RequestAt(gripCommand, -1, releaseBee, releaseHand, releaseChunk);
-            if (Live && !Busy && contact >= 0 && visitedContact != contact && touchDwell >= 0.4f && Time.time >= retryAfter)
+            if (Live && !Busy && contact >= 0 && visitedFlowerIndex != contact && touchDwell >= 0.4f && Time.time >= retryAfter)
                 Request("visit", contact);
-            bool canCollect = deliberateContact && visitedContact == contact && Live && !Busy && State != null && (ChunkState == "none" || ChunkState == "stored" && (!Enhanced || !honeyFeedback.DepositAnimating)) && !HiveFull
+            bool canCollect = deliberateContact && visitedFlowerIndex == contact && Live && !Busy && State != null && (ChunkState == "none" || ChunkState == "stored" && (!Enhanced || !honeyFeedback.DepositAnimating)) && !HiveFull
                 && (int)State["nectar"][contact] > 0;
             if (trigger >= 0.65f && canCollect && !collectNeedsRelease) {
-                if (chargingFlower != contact) { collectTime = 0f; chargingFlower = contact; }
-                gatherInterrupted = 0f; collectTime += dt;
-                Charge01 = Mathf.Clamp01(collectTime / Mathf.Max(0.2f, collectDuration));
-                if (Charge01 >= 1f) { Request("collect", contact); collectTime = 0f; Charge01 = 0f; }
+                if (collectingFlowerIndex != contact) { collectionElapsedSeconds = 0f; collectingFlowerIndex = contact; }
+                gatherInterrupted = 0f; collectionElapsedSeconds += dt;
+                Charge01 = Mathf.Clamp01(collectionElapsedSeconds / Mathf.Max(0.2f, collectDuration));
+                if (Charge01 >= 1f) { Request("collect", contact); collectionElapsedSeconds = 0f; Charge01 = 0f; }
             } else {
                 gatherInterrupted += dt;
-                if (contact != chargingFlower || !Live || Busy || trigger < 0.45f || gatherInterrupted > gatherGraceSeconds)
-                    { collectTime = 0f; Charge01 = 0f; chargingFlower = -1; }
+                if (contact != collectingFlowerIndex || !Live || Busy || trigger < 0.45f || gatherInterrupted > gatherGraceSeconds)
+                    { collectionElapsedSeconds = 0f; Charge01 = 0f; collectingFlowerIndex = -1; }
             }
             string trace = "flower=" + contact + "; stable=" + stable + "; perched=" + IsFlowerSettled
                 + "; touched=" + deliberateContact + "; grab=" + grabReady + "; chunk=" + ChunkState
@@ -821,7 +821,7 @@ namespace LetItBee.HoneyPilot
             if (contact != index) return "";
             if (!Live) return ConnectionHint;
             if (ChunkState == "ready" || ChunkState == "loose") return "";
-            if (ChunkState == "held") return !(bool)State["pollinated"][index] && visitedContact != index ? "DAU HOAC CHAM NHUY\nDE CHUYEN PHAN" : "";
+            if (ChunkState == "held") return !(bool)State["pollinated"][index] && visitedFlowerIndex != index ? "DAU HOAC CHAM NHUY\nDE CHUYEN PHAN" : "";
             if (Busy && (string)pendingRequest?["kind"] == "visit") return "DANG NHAN / CHUYEN PHAN...";
             if (Busy && (string)pendingRequest?["kind"] == "collect") return "DANG TAO CUC MAT...";
             if (Charge01 > 0f) return name + " - LAY MAT " + Mathf.RoundToInt(Charge01 * 100f) + "%";
@@ -829,9 +829,9 @@ namespace LetItBee.HoneyPilot
             if (HiveFull) return (bool)State["pollinated"][index] ? "HOA DA NHAN PHAN" : "DAU DE CHUYEN PHAN";
             if ((int)State["nectar"][index] == 0) return "HOA DANG HOI MAT";
             if (PerchedFlower == index) return IsFlowerSettled
-                ? visitedContact == index ? "DA DAU CANH\nGIU TRIGGER PHAI DE LAY MAT" : "GIU YEN DE NHAN / CHUYEN PHAN"
+                ? visitedFlowerIndex == index ? "DA DAU CANH\nGIU TRIGGER PHAI DE LAY MAT" : "GIU YEN DE NHAN / CHUYEN PHAN"
                 : "DANG DAU LEN CANH...";
-            return visitedContact == index ? "DA NHAN / CHUYEN PHAN\nGIU TRIGGER PHAI DE LAY MAT" : PerchHint;
+            return visitedFlowerIndex == index ? "DA NHAN / CHUYEN PHAN\nGIU TRIGGER PHAI DE LAY MAT" : PerchHint;
         }
         void PlaceLabel(TextMesh label, Vector3 position)
         {

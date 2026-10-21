@@ -232,15 +232,15 @@ public static class BeeHoneyFeedbackChecks
             string stateBefore = confirmed.ToString(Formatting.None);
             typeof(BeeHoneyPilot).GetMethod("Accepted",Private).Invoke(pilot,new object[]{"deposit",-1});
             Check(fx.DepositAnimating && confirmed.ToString(Formatting.None)==stateBefore, "real pilot accepted route starts presentation without changing GAMA state");
-            typeof(BeeHoneyPilot).GetField("visitedContact",Private).SetValue(pilot,0);
+            typeof(BeeHoneyPilot).GetField("visitedFlowerIndex",Private).SetValue(pilot,0);
             var visit = new JObject { ["event_id"]="already-visited",["kind"]="visit",["flower"]=0 };
             typeof(BeeHoneyPilot).GetField("pendingRequest",Private).SetValue(pilot,visit);
-            typeof(BeeHoneyPilot).GetMethod("CompleteRequest",Private).Invoke(pilot,new object[]{visit,new JObject { ["accepted"]=false,["reason"]="same_visit" }});
-            Check(!pilot.Busy && (int)typeof(BeeHoneyPilot).GetField("visitedContact",Private).GetValue(pilot)==0,
+            typeof(BeeHoneyPilot).GetMethod("CompleteInteractionRequest",Private).Invoke(pilot,new object[]{visit,new JObject { ["accepted"]=false,["reason"]="same_visit" }});
+            Check(!pilot.Busy && (int)typeof(BeeHoneyPilot).GetField("visitedFlowerIndex",Private).GetValue(pilot)==0,
                 "restored same_visit response releases the queue without repeatedly rearming the visit");
             typeof(BeeHoneyPilot).GetField("pendingRequest",Private).SetValue(pilot,visit);
-            typeof(BeeHoneyPilot).GetMethod("CompleteRequest",Private).Invoke(pilot,new object[]{visit,new JObject { ["accepted"]=false,["reason"]="too_far_from_flower" }});
-            Check(!pilot.Busy && (int)typeof(BeeHoneyPilot).GetField("visitedContact",Private).GetValue(pilot)==-1
+            typeof(BeeHoneyPilot).GetMethod("CompleteInteractionRequest",Private).Invoke(pilot,new object[]{visit,new JObject { ["accepted"]=false,["reason"]="too_far_from_flower" }});
+            Check(!pilot.Busy && (int)typeof(BeeHoneyPilot).GetField("visitedFlowerIndex",Private).GetValue(pilot)==-1
                 && confirmed.ToString(Formatting.None)==stateBefore,
                 "genuine rejected visit can still retry and never grants pollen");
             // Prevent the inactive fixture from owning the shared feedback during cleanup.
