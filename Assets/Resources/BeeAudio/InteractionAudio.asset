@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7abf97a8f7ea7ea41b53e892011db0a5, type: 3}
+  m_Name: InteractionAudio
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeeInteractionAudio
+  pollenPop: {fileID: 8300000, guid: fa9dd1c5a3d0ec247ba817ae021d69b2, type: 3}
+  nectarSip: {fileID: 8300000, guid: 120596bd3c208cb48ad9342a44282e75, type: 3}
+  honeyFormation: {fileID: 8300000, guid: f386fe207e769b843b4d09bae85dc04b, type: 3}
+  honeyPickup: {fileID: 8300000, guid: 43a0cada135ab214489a50e14f377dae, type: 3}
+  hiveDeposit: {fileID: 8300000, guid: be389188d7d235543a36cd718cc67295, type: 3}
+  landingClip: {fileID: 8300000, guid: 5257e4b0200c3164a83d5e3642d2f7dd, type: 3}
+  landingVolume: 0.6
+  formationImpactSeconds: 0.76
+  pickupImpactSeconds: 0.42
+  landingHapticIntensity: 0.07
+  pollenParticleCount: 8
+  pollenVolume: 0.7
+  sipVolume: 0.45
+  formationVolume: 0.7
+  pickupVolume: 0.45
+  depositVolume: 0.8
+  fadeSeconds: 0.12
+  depositImpactSeconds: 0.5

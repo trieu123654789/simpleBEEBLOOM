@@ -47,7 +47,7 @@ namespace LetItBee.HoneyPilot
         [Tooltip("Require left-trigger hold for flower contact and nectar collection. Grip pickup/release remains available while carrying or flying.")]
         public bool requirePositionHoldInVr = true;
 
-        [Header("Flower landing — hold left trigger, release to leave")]
+        [Header("Flower Landing")]
         public bool enableFlowerPerching = true;
         [Range(0.2f, 0.9f)] public float perchApproachRadius = 0.65f;
         [Tooltip("Eye height above the branch/leaf perch, in metres.")]
@@ -58,13 +58,18 @@ namespace LetItBee.HoneyPilot
         public Transform flowerAPerch, flowerBPerch;
         [Tooltip("Preferred minimum viewing distance in metres. Larger blossoms automatically add clearance without changing this saved value.")]
         [Min(0.2f)] public float perchViewDistance = 0.75f;
+        [Min(0.1f)] public float perchApproachSpeed = 0.65f;
+        [Min(0.1f)] public float perchSmoothTime = 0.4f;
+        [Min(0.1f)] public float perchReleaseDuration = 0.45f;
         [Header("Honey presentation — runtime only, no bee body parts")]
         public bool enhancedFeedback = true;
+        public BeeInteractionAudio interactionAudio;
         [Range(0f, 1.5f)] public float feedbackIntensity = 1f;
         [Range(0f, 1f)] public float feedbackVolume = 0.45f;
         [Range(0f, 1f)] public float feedbackHaptics = 0.6f;
         public int PerchedFlower { get; private set; } = -1;
-        public bool IsFlowerSettled => PerchedFlower >= 0 && Vector3.Distance(beeRoot.position, perchAnchor) < 0.04f;
+        public bool IsFlowerSettled => PerchedFlower >= 0 && (surfaceWalking || Vector3.Distance(beeRoot.position, perchAnchor) < 0.04f
+            && (!bodyPerch || (perchRig != null && Vector3.Distance(perchRig.PerchViewOffset, perchViewTarget) < 0.005f)));
         // A separate XR rig can place the tracked view away from BeeRoot. Use
         // the perceived player position for both local interaction and GAMA.
         public Vector3 InteractionPosition {
@@ -119,6 +124,13 @@ namespace LetItBee.HoneyPilot
         bool originalsCaptured;
         BeeController beeController;
         Vector3 perchAnchor;
+        Vector3 perchVelocity, perchExitStart;
+        BeeCameraRig perchRig;
+        bool bodyPerch;
+        Vector3 perchStart, perchViewStart, perchViewTarget, perchExitView, perchSupport;
+        float perchProgress, perchProgressVelocity, perchTravelLength;
+        float perchExitElapsed;
+        bool leavingPerch;
         float perchTime, perchBlockedTime, previousPerchDistance;
         bool perchArmed = true;
         readonly Transform[][] perchSupports = new Transform[2][];
@@ -149,7 +161,8 @@ namespace LetItBee.HoneyPilot
             originalA = flowerAAnimator != null ? flowerAAnimator.runtimeAnimatorController : null;
             beeController = beeRoot.GetComponent<BeeController>();
             gripIntent.Reset();
-            if (beeController != null) beeController.RightHandInteractionOwnsInput = true;
+            landingRequested = false; landingButtonDown = true;
+            if (beeController != null) { beeController.RightHandInteractionOwnsInput = true; beeController.LeftHandLandingOwnsInput = togglePetalLanding; }
             responseA = new FlowerResponse(flowerAHead);
             responseB = new FlowerResponse(flowerBHead);
             originalB = flowerBAnimator != null ? flowerBAnimator.runtimeAnimatorController : null;
@@ -308,8 +321,8 @@ namespace LetItBee.HoneyPilot
                 if (Keyboard.current.gKey.isPressed) { grip = 1f; desktopInteraction = true; }
             }
             bool xrActive = XRSettings.isDeviceActive || device.isValid || rightTrigger?.activeControl != null;
-            bool stable = !requirePositionHoldInVr || !xrActive || desktopInteraction || (beeController != null && beeController.IsPositionHolding);
-            UpdateInteraction(trigger, grip, stable, (beeController != null && beeController.IsPositionHolding)
+            bool stable = !requirePositionHoldInVr || !xrActive || desktopInteraction || (beeController != null && (beeController.IsPositionHolding || IsFlowerSettled));
+            UpdateInteraction(trigger, grip, stable, (beeController != null && (togglePetalLanding ? beeController.LeftLandingTriggerPressed : beeController.IsPositionHolding))
                 || (enableDesktopKeys && Keyboard.current != null && Keyboard.current.hKey.isPressed), Time.deltaTime);
         }
 
@@ -366,7 +379,8 @@ namespace LetItBee.HoneyPilot
             if (near != contact) { contact = near; visitedFlowerIndex = -1; contactDwell = touchDwell = 0f; }
             contactDwell += dt;
             StepFlowerPerching(dt, holding);
-            bool deliberateContact = contact >= 0 && Geometry(contact).Distance(InteractionPosition) <= contactRadius && stable && ((IsFlowerSettled && PerchedFlower == contact)
+            if (togglePetalLanding && PerchedFlower < 0) { landingRequested = false; selectedLandingPoint = null; }
+            bool deliberateContact = !IsWalkingOnFlower && contact >= 0 && Geometry(contact).Distance(InteractionPosition) <= contactRadius && stable && ((IsFlowerSettled && PerchedFlower == contact)
                 || Vector3.Distance(rightHand.position, NectarPosition(contact)) <= Mathf.Min(0.25f, grabRadius)
                 || trigger >= 0.65f && AimedAt(NectarPosition(contact)));
             touchDwell = deliberateContact ? touchDwell + dt : 0f;
@@ -412,32 +426,96 @@ namespace LetItBee.HoneyPilot
 
         void StepFlowerPerching(float dt, bool holding)
         {
-            PerchHint = !holding ? "GIU TRIGGER TRAI DE DAU" : "TOI GAN DAU CANH HON";
+            RefreshFlowerSurfaces(0f);
+            if (togglePetalLanding) holding = SampleLandingInput(holding);
+            PerchHint = togglePetalLanding ? (PerchedFlower >= 0 ? "BAM TRIGGER TRAI DE ROI HOA" : "BAM TRIGGER TRAI GAN HOA DE DAU") : (!holding ? "GIU TRIGGER TRAI DE DAU" : "TOI GAN DAU CANH HON");
             if (holding && beeController != null && (beeController.IsPositionBraking || beeController.Speed > 0.25f)) PerchHint = "CHAM LAI DE DAU";
             if (!holding) perchArmed = true;
+            if (leavingPerch) {
+                if (beeController.ExternalMovementLocked || Vector3.Distance(beeRoot.position, perchExitStart) > perchExitView.magnitude + 0.5f) { LeaveFlower(); return; }
+                perchExitElapsed += Mathf.Max(0f, dt);
+                float t = Mathf.Clamp01(perchExitElapsed / Mathf.Max(0.1f, perchReleaseDuration));
+                var embodiment = beeRoot.GetComponent<BeeEmbodiment>();
+                float lift = 0.06f * (embodiment != null ? embodiment.Scale : 1f);
+                float ease = Mathf.SmoothStep(0f, 1f, t);
+                // Transfer the temporary eye offset to the airborne body. The view does not drop on release.
+                Vector3 exit = perchExitStart + perchExitView * ease + Vector3.up * (lift * ease);
+                if (beeController.groundCollision) exit = beeController.ResolveGroundCollision(exit, Vector3.zero);
+                beeRoot.position = exit;
+                if (bodyPerch && perchRig != null) perchRig.PerchViewOffset = perchExitView * (1f - ease);
+                if (t >= 1f) { LeaveFlower(); beeController.BeginPetalTakeoff(); }
+                return;
+            }
             if (PerchedFlower >= 0) {
+                var anchor = PerchedFlower == 0 ? flowerAPerch : flowerBPerch;
+                if (!holding && IsFlowerSettled && anchor != null && anchor.GetComponent<BeePerchPoint>() != null
+                    && beeController != null && !beeController.ExternalMovementLocked) {
+                    leavingPerch = true; perchExitElapsed = 0f; perchExitStart = beeRoot.position;
+                    perchExitView = bodyPerch && perchRig != null ? perchRig.PerchViewOffset : Vector3.zero;
+                    return;
+                }
                 if (!enableFlowerPerching || !holding || beeController == null || beeController.ExternalMovementLocked
-                    || Vector3.Distance(beeRoot.position, perchAnchor) > Mathf.Max(1f, contactRadius + 0.2f)) {
+                    || Vector3.Distance(beeRoot.position, perchAnchor) > Mathf.Max(bodyPerch ? perchTravelLength + 0.5f : 1f, contactRadius + 0.2f)) {
                     LeaveFlower(); return;
                 }
-                Vector3 next = Vector3.MoveTowards(beeRoot.position, perchAnchor, Mathf.Max(0.05f, perchSettleSpeed) * dt);
+                if (StepSurfaceWalking(dt, beeController.ReadSurfaceDirection())) return;
+                var point = LandingPoint(PerchedFlower);
+                if (bodyPerch && point != null) {
+                    Vector3 bodyTarget = point.BodyPosition(beeController.BodyRadius, beeController.groundClearance);
+                    Vector3 movement = bodyTarget - perchSupport;
+                    perchSupport = bodyTarget;
+                    perchAnchor += movement;
+                    // Body follows the loaded branch; cancel only that artificial motion at the eye.
+                    perchViewTarget -= movement;
+                }
+                float maxSpeed = Mathf.Max(0.05f, point != null ? perchApproachSpeed : perchSettleSpeed);
+                Vector3 next;
+                if (bodyPerch) {
+                    perchProgress = Mathf.SmoothDamp(perchProgress, 1f, ref perchProgressVelocity,
+                        Mathf.Max(0.1f, perchSmoothTime), maxSpeed / Mathf.Max(0.001f, perchTravelLength), Mathf.Max(0f, dt));
+                    if (perchProgress > 0.999f) perchProgress = 1f;
+                    next = Vector3.Lerp(perchStart, perchAnchor, perchProgress);
+                    if (perchRig != null) perchRig.PerchViewOffset = Vector3.Lerp(perchViewStart, perchViewTarget, perchProgress);
+                } else next = Vector3.SmoothDamp(beeRoot.position, perchAnchor, ref perchVelocity,
+                    Mathf.Max(0.1f, perchSmoothTime), maxSpeed, Mathf.Max(0f, dt));
+                if (Vector3.Distance(next, perchAnchor) < 0.002f) next = perchAnchor;
                 if (beeController.groundCollision) next = beeController.ResolveGroundCollision(next, Vector3.zero);
                 if (beeController.maxFlightAltitude > 0f) next.y = Mathf.Min(next.y, beeController.maxFlightAltitude);
                 beeRoot.position = next;
                 float distance = Vector3.Distance(next, perchAnchor);
+                if (bodyPerch && perchRig != null) distance += Vector3.Distance(perchRig.PerchViewOffset, perchViewTarget);
                 perchBlockedTime = distance > 0.04f && previousPerchDistance - distance < 0.0001f ? perchBlockedTime + dt : 0f;
                 previousPerchDistance = distance;
-                if (perchBlockedTime > 0.5f) LeaveFlower();
+                if (perchBlockedTime > 1.2f) { PerchHint = "DIEM DAU BI CAN - THU LAI"; LeaveFlower(); }
                 return;
             }
-            if (!enableFlowerPerching || !perchArmed || !holding || contact < 0 || beeController == null
-                || beeController.ExternalMovementLocked || beeController.IsPositionBraking || beeController.Speed > 0.25f
-                || contactDwell < perchDwell) return;
-            if (!TryGetPerchView(contact, out Vector3 support, out Vector3 eyeTarget)) { PerchHint = "CANH CHUA CO CHO DAU AN TOAN"; return; }
+            int candidate = contact;
+            if (togglePetalLanding && holding) SelectPetalLanding(ref candidate);
+            if (candidate < 0) {
+                float nearest = float.PositiveInfinity;
+                for (int i = 0; i < 2; i++) {
+                    var a = i == 0 ? flowerAPerch : flowerBPerch;
+                    var point = a != null ? a.GetComponent<BeePerchPoint>() : null;
+                    if (point == null) continue;
+                    float distance = Vector3.Distance(InteractionPosition, point.ViewPosition);
+                    if (distance <= point.approachRadius && distance < nearest) { candidate = i; nearest = distance; }
+                }
+            }
+            var authored = candidate == 0 ? flowerAPerch : flowerBPerch;
+            var perchPoint = togglePetalLanding ? LandingPoint(candidate) : (authored != null ? authored.GetComponent<BeePerchPoint>() : null);
+            if (!enableFlowerPerching || !perchArmed || !holding || candidate < 0 || beeController == null
+                || beeController.ExternalMovementLocked || (!togglePetalLanding && (beeController.IsPositionBraking || beeController.Speed > 0.25f))
+                || (perchPoint == null && contactDwell < perchDwell)) return;
+            if (!TryGetPerchView(candidate, out Vector3 support, out Vector3 eyeTarget)) { PerchHint = "CANH CHUA CO CHO DAU AN TOAN"; return; }
+            float approach = perchPoint != null ? perchPoint.approachRadius : perchApproachRadius;
+            if (perchPoint != null && !HasLineOfSight(InteractionPosition, eyeTarget)) return;
             if (Mathf.Min(Vector3.Distance(InteractionPosition, eyeTarget),
-                Vector3.Distance(InteractionPosition, support)) > perchApproachRadius) return;
-            if (Vector3.Distance(InteractionPosition,eyeTarget) > perchApproachRadius) { PerchHint = "TOI GAN DIEM DAU HON"; return; }
+                Vector3.Distance(InteractionPosition, support)) > approach) return;
+            if (Vector3.Distance(InteractionPosition,eyeTarget) > approach) { PerchHint = "TOI GAN DIEM DAU HON"; return; }
             Vector3 target = beeRoot.position + eyeTarget - InteractionPosition;
+            var cameraRig = beeRoot.GetComponent<BeeCameraRig>();
+            bool useBranchBody = perchPoint != null && perchPoint.standOnBranch && cameraRig != null;
+            if (useBranchBody) target = perchPoint.BodyPosition(beeController.BodyRadius, beeController.groundClearance);
             if (beeController.groundCollision) {
                 Vector3 safe = beeController.ResolveGroundCollision(target, Vector3.zero);
                 // Allow the ground to raise the resting point, without pulling
@@ -446,9 +524,9 @@ namespace LetItBee.HoneyPilot
                 // A standing XR user can have a low body origin. If the ground
                 // raises it, shorten the horizontal offset rather than losing
                 // the perch or putting the tracked view outside server reach.
-                Vector3 safeView = InteractionPosition + safe - beeRoot.position;
-                Vector3 fromHead = safeView - Head(contact).position;
-                float reach = (contactRadius + Geometry(contact).Radius) * 0.9f;
+                Vector3 safeView = useBranchBody ? eyeTarget + safe - target : InteractionPosition + safe - beeRoot.position;
+                Vector3 fromHead = safeView - Head(candidate).position;
+                float reach = (contactRadius + Geometry(candidate).Radius) * 0.9f;
                 if (Mathf.Abs(fromHead.y) >= reach) return;
                 Vector3 horizontal = Vector3.ProjectOnPlane(fromHead, Vector3.up);
                 float available = Mathf.Sqrt(reach * reach - fromHead.y * fromHead.y);
@@ -458,26 +536,40 @@ namespace LetItBee.HoneyPilot
                     safe = beeController.ResolveGroundCollision(adjusted, Vector3.zero);
                     if (Vector3.ProjectOnPlane(safe - adjusted, Vector3.up).magnitude > 0.04f || safe.y < adjusted.y - 0.04f) return;
                 }
-                if (Geometry(contact).Distance(InteractionPosition + safe - beeRoot.position) > contactRadius * 0.95f) return;
+                if (Geometry(candidate).Distance(useBranchBody ? eyeTarget + safe - target : InteractionPosition + safe - beeRoot.position) > contactRadius * 0.95f) return;
                 target = safe;
             }
             if (beeController.maxFlightAltitude > 0f && target.y > beeController.maxFlightAltitude) return;
-            PerchedFlower = contact;
+            PerchedFlower = candidate;
+            bodyPerch = useBranchBody; perchRig = cameraRig;
+            perchSupport = useBranchBody ? perchPoint.BodyPosition(beeController.BodyRadius, beeController.groundClearance) : support;
+            perchStart = beeRoot.position;
+            perchViewStart = perchRig != null ? perchRig.PerchViewOffset : Vector3.zero;
+            perchViewTarget = useBranchBody ? perchViewStart + eyeTarget - (InteractionPosition + target - beeRoot.position) : Vector3.zero;
+            perchProgress = perchProgressVelocity = 0f;
+            perchTravelLength = Vector3.Distance(perchStart, target) + Vector3.Distance(perchViewStart, perchViewTarget);
             perchArmed = false;
             perchAnchor = target; // Stable in world space; flower animation never drives the camera.
+            perchVelocity = Vector3.zero;
             previousPerchDistance = Vector3.Distance(beeRoot.position, target);
+            if (bodyPerch) previousPerchDistance += Vector3.Distance(perchViewStart, perchViewTarget);
             perchBlockedTime = 0f;
             beeController.SetFlowerPerched(true);
             if (!Enhanced) PlayFeedback(collectSound, 0.08f);
         }
 
-        // Only move the bee root. Freeze this world-space pose when landing begins;
-        // an animated leaf or a physical head movement must never drag the camera.
+        // Freeze the authored support/view pose at entry; physical head movement stays free.
         public bool TryGetPerchView(int flower, out Vector3 support, out Vector3 eyeTarget)
         {
             Transform head = Head(flower);
             support = eyeTarget = head.position;
             Transform anchor = flower == 0 ? flowerAPerch : flowerBPerch;
+            var point = LandingPoint(flower);
+            if (point != null) {
+                support = point.SupportPosition; eyeTarget = point.ViewPosition;
+                return Geometry(flower).Distance(eyeTarget) <= contactRadius * 0.95f
+                    && Vector3.Distance(eyeTarget, Geometry(flower).Nectar) > 0.25f;
+            }
             if (anchor == null) {
                 if (perchSupports[flower] == null) {
                     Transform rig = head;
@@ -528,18 +620,34 @@ namespace LetItBee.HoneyPilot
 
         void LeaveFlower()
         {
+            if (bodyPerch && perchRig != null) {
+                // Cancel a partial approach without snapping the tracked view back.
+                if (beeController != null && !beeController.ExternalMovementLocked
+                    && Vector3.Distance(beeRoot.position, perchAnchor) <= Mathf.Max(perchTravelLength + 0.5f, contactRadius + 0.2f)) {
+                    Vector3 release = beeRoot.position + perchRig.PerchViewOffset;
+                    beeRoot.position = beeController.groundCollision ? beeController.ResolveGroundCollision(release, Vector3.zero) : release;
+                }
+                perchRig.PerchViewOffset = Vector3.zero;
+            }
+            StopSurfaceWalking();
+            bodyPerch = false; perchRig = null; landingRequested = false; selectedLandingPoint = null;
             if (PerchedFlower >= 0 && beeController != null) beeController.SetFlowerPerched(false);
             PerchedFlower = -1;
             perchBlockedTime = 0f;
+            perchVelocity = Vector3.zero; leavingPerch = false;
         }
 
         void LateUpdate()
         {
             if (enhancedFeedback && honeyFeedback == null && chunk != null)
-                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh);
+                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh, interactionAudio, beeRoot.GetComponent<BeeEmbodiment>()?.Scale ?? 1f);
             honeyFeedback?.SetActive(enhancedFeedback);
+            if (beeController != null) beeController.InteractionAudioFocus = Charge01 > 0f
+                || (string)pendingRequest?["kind"] == "collect" || (Enhanced && honeyFeedback.DepositAnimating) ? 1f : 0f;
             if (Enhanced) {
                 honeyFeedback.Configure(feedbackIntensity, feedbackVolume, feedbackHaptics);
+                var loadedPoint = PerchedFlower >= 0 ? LandingPoint(PerchedFlower) : null;
+                if (loadedPoint != null) honeyFeedback.SetLandingSurface(loadedPoint.SupportPosition);
                 bool waitingCollect = (string)pendingRequest?["kind"] == "collect";
                 bool waitingVisit = (string)pendingRequest?["kind"] == "visit";
                 int visualContact = waitingCollect ? (int)pendingRequest["flower"] : contact;
@@ -548,18 +656,35 @@ namespace LetItBee.HoneyPilot
                     ChunkState, chunk.position, rightHand, snapRadius);
             }
             perchTime = Mathf.MoveTowards(perchTime, IsFlowerSettled ? 1f : 0f, Time.deltaTime * 3f);
+
             responseA?.Apply(PerchedFlower == 0 ? perchTime : 0f, contact == 0 ? Charge01 : 0f,
                 Enhanced ? honeyFeedback.FlowerBloom(0) : 0f, Enhanced ? honeyFeedback.FlowerRebound(0) : 0f);
             responseB?.Apply(PerchedFlower == 1 ? perchTime : 0f, contact == 1 ? Charge01 : 0f,
                 Enhanced ? honeyFeedback.FlowerBloom(1) : 0f, Enhanced ? honeyFeedback.FlowerRebound(1) : 0f);
+            StepPetalResponses();
+            RefreshFlowerSurfaces(Time.deltaTime);
             if (landingRing == null) return;
-            landingRing.enabled = enableFlowerPerching && contact >= 0 && (ChunkState == "none" || ChunkState == "stored") && PerchedFlower < 0
-                && beeController != null && beeController.IsPositionHolding;
+            int cue = contact;
+            if (cue < 0) {
+                float nearest = float.PositiveInfinity;
+                for (int i = 0; i < 2; i++) {
+                    var anchor = i == 0 ? flowerAPerch : flowerBPerch;
+                    var point = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
+                    if (point == null) continue;
+                    float d = Vector3.Distance(InteractionPosition, point.ViewPosition);
+                    if (d < point.approachRadius + 0.4f && d < nearest) { cue = i; nearest = d; }
+                }
+            }
+            landingRing.enabled = !togglePetalLanding && enableFlowerPerching && cue >= 0 && PerchedFlower < 0;
             if (!landingRing.enabled) return;
-            if (!TryGetPerchView(contact, out Vector3 support, out _)) { landingRing.enabled = false; return; }
-            TryGetPerchView(contact, out _, out Vector3 view);
-            Vector3 centre = view - Vector3.up * 0.18f;
-            float radius = 0.08f + 0.004f * Mathf.Sin(Time.time * 3f);
+            if (!TryGetPerchView(cue, out Vector3 support, out Vector3 view)) { landingRing.enabled = false; return; }
+            var authored = cue == 0 ? flowerAPerch : flowerBPerch;
+            var authoredPoint = authored != null ? authored.GetComponent<BeePerchPoint>() : null;
+            Vector3 centre = authoredPoint != null ? support + Vector3.up * 0.015f : view - Vector3.up * 0.18f;
+            bool reachable = Vector3.Distance(InteractionPosition, view) <= (authoredPoint != null ? authoredPoint.approachRadius : perchApproachRadius);
+            var color = reachable ? new Color(1f, 0.78f, 0.15f, 0.55f) : new Color(1f, 1f, 1f, 0.2f);
+            landingRing.startColor = landingRing.endColor = color;
+            float radius = 0.06f + 0.003f * Mathf.Sin(Time.time * 3f);
             for (int i = 0; i < landingRing.positionCount; i++) {
                 float angle = i * Mathf.PI * 2f / landingRing.positionCount;
                 landingRing.SetPosition(i, centre + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius);
@@ -731,7 +856,7 @@ namespace LetItBee.HoneyPilot
             feedback = gameObject.AddComponent<AudioSource>(); feedback.playOnAwake = false; feedback.spatialBlend = 0.7f; feedback.volume = 0.22f;
             collectSound = Tone("Nectar pickup", 650, 0.1f); pollinateSound = Tone("Pollen transfer", 950, 0.18f); depositSound = Tone("Hive snap", 480, 0.22f);
             if (enhancedFeedback) {
-                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh);
+                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh, interactionAudio, beeRoot.GetComponent<BeeEmbodiment>()?.Scale ?? 1f);
                 honeyFeedback.Configure(feedbackIntensity,feedbackVolume,feedbackHaptics);
             }
         }
@@ -829,8 +954,8 @@ namespace LetItBee.HoneyPilot
             if (HiveFull) return (bool)State["pollinated"][index] ? "HOA DA NHAN PHAN" : "DAU DE CHUYEN PHAN";
             if ((int)State["nectar"][index] == 0) return "HOA DANG HOI MAT";
             if (PerchedFlower == index) return IsFlowerSettled
-                ? visitedFlowerIndex == index ? "DA DAU CANH\nGIU TRIGGER PHAI DE LAY MAT" : "GIU YEN DE NHAN / CHUYEN PHAN"
-                : "DANG DAU LEN CANH...";
+                ? visitedFlowerIndex == index ? "DA DAU TREN CANH HOA\nGIU TRIGGER PHAI DE LAY MAT" : "GIU YEN DE NHAN / CHUYEN PHAN"
+                : "DANG DAP LEN CANH HOA...";
             return visitedFlowerIndex == index ? "DA NHAN / CHUYEN PHAN\nGIU TRIGGER PHAI DE LAY MAT" : PerchHint;
         }
         void PlaceLabel(TextMesh label, Vector3 position)
@@ -863,11 +988,13 @@ namespace LetItBee.HoneyPilot
         void OnDisable()
         {
             LeaveFlower();
-            if (beeController != null) beeController.RightHandInteractionOwnsInput = false;
+            if (beeController != null) { beeController.RightHandInteractionOwnsInput = false; beeController.LeftHandLandingOwnsInput = false; }
+            if (beeController != null) beeController.InteractionAudioFocus = 0f;
             gripIntent.Reset();
             EndHive();
             honeyFeedback?.Dispose(); honeyFeedback = null;
             responseA?.Restore(); responseB?.Restore();
+            RestorePetals();
             lifetime?.Cancel(); client?.Dispose(); Live = false;
             rightTrigger?.Dispose(); rightGrip?.Dispose();
             if (originalsCaptured) {

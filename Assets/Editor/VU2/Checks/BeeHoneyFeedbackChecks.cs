@@ -34,12 +34,13 @@ public static class BeeHoneyFeedbackChecks
         var scene = EditorSceneManager.NewPreviewScene();
         BeeHoneyFeedback fx = null;
         RenderTexture target = null;
+        Camera camera = null;
         var checks = new List<string>();
         void Check(bool valid, string name) { if (!valid) throw new Exception(name); checks.Add(name); }
         GameObject Obj(string name) { var go = new GameObject(name); SceneManager.MoveGameObjectToScene(go,scene); return go; }
         try {
             var owner = Obj("Feedback test owner");
-            var camera = Obj("Preview camera").AddComponent<Camera>();
+            camera = Obj("Preview camera").AddComponent<Camera>();
             camera.transform.position = new Vector3(0.08f,0.65f,-0.42f);
             camera.transform.LookAt(new Vector3(0.055f,0.12f,0f));
             camera.nearClipPlane = 0.04f; camera.farClipPlane = 10f; camera.fieldOfView = 58f;
@@ -255,6 +256,7 @@ public static class BeeHoneyFeedbackChecks
             File.WriteAllText(Folder+"/validation.json",JsonConvert.SerializeObject(new {passed=false,count=checks.Count,checks,error=ex.ToString()},Formatting.Indented)); throw;
         } finally {
             fx?.Dispose();
+            if (camera != null) camera.targetTexture = null;
             if (target != null) { target.Release(); UnityEngine.Object.DestroyImmediate(target); }
             EditorSceneManager.ClosePreviewScene(scene);
         }

@@ -411,6 +411,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 10670255}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &29217992
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 29217993}
+  - component: {fileID: 29217994}
+  m_Layer: 0
+  m_Name: Petal Landing 07
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &29217993
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29217992}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00034856662, y: 0.021932716, z: 0.004578324}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1377748589}
+  m_Father: {fileID: 1879744171}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &29217994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29217992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.02983598, y: 0.18, z: -0.0031327638}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1879744171}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1377748590}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &30129898
 GameObject:
   m_ObjectHideFlags: 0
@@ -2902,6 +2960,64 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1 &41690630
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 41690631}
+  - component: {fileID: 41690632}
+  m_Layer: 0
+  m_Name: Petal Landing 13
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &41690631
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41690630}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00034221914, y: 0.021568224, z: 0.004633595}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 692993071}
+  m_Father: {fileID: 1183603355}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &41690632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41690630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.029999988, y: 0.18, z: 0.00002441121}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1183603355}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 692993072}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!43 &46128720
 Mesh:
   m_ObjectHideFlags: 0
@@ -3305,6 +3421,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 47153619}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &51490401 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8669317635058611393, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &56471501
 GameObject:
   m_ObjectHideFlags: 0
@@ -3575,6 +3696,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 59782901}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &70226123
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 70226124}
+  - component: {fileID: 70226125}
+  m_Layer: 0
+  m_Name: Petal Landing 06
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &70226124
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70226123}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00026518817, y: 0.022193773, z: 0.004538703}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1844236454}
+  m_Father: {fileID: 1977949102}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &70226125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70226123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.027686557, y: 0.18, z: 0.011552254}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1977949102}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1844236455}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &76447253
 GameObject:
   m_ObjectHideFlags: 0
@@ -5566,6 +5745,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111895872}
   m_Mesh: {fileID: -2842624408850581284, guid: ce1089dbfc9f8e644993fccf6741033c, type: 3}
+--- !u!1 &114083180
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 114083181}
+  - component: {fileID: 114083182}
+  m_Layer: 0
+  m_Name: Petal Landing 11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &114083181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114083180}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00008028815, y: 0.021339, z: 0.0046682656}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1709413313}
+  m_Father: {fileID: 768364725}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114083182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 114083180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.015838275, y: 0.18, z: -0.025478402}
+  approachRadius: 1.15
+  branchVisual: {fileID: 768364725}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1709413314}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &123454920
 GameObject:
   m_ObjectHideFlags: 0
@@ -7058,6 +7295,59 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &159114243
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 159114244}
+  - component: {fileID: 159114245}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &159114244
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 159114243}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5621346, y: 0.38400534, z: 0.33031222, w: 0.65378773}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762841, y: 0.19762836, z: 0.19762844}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1033135889}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &159114245
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 159114243}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &161350682
 GameObject:
   m_ObjectHideFlags: 0
@@ -7417,6 +7707,122 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &181670921
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 181670922}
+  - component: {fileID: 181670923}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &181670922
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181670921}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.086204685, y: -0.7515823, z: -0.6462748, w: 0.100107595}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762848, y: 0.19762845, z: 0.19762848}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1515633239}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &181670923
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181670921}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
+--- !u!1 &184262533
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 184262534}
+  - component: {fileID: 184262535}
+  m_Layer: 0
+  m_Name: Petal Landing 07
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &184262534
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184262533}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00034855917, y: 0.02193266, z: 0.0045783273}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1554202524}
+  m_Father: {fileID: 514118868}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &184262535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184262533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.02983598, y: 0.18, z: -0.0031327663}
+  approachRadius: 1.15
+  branchVisual: {fileID: 514118868}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1554202525}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!4 &193634781 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -247799739591779009, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &194051743
 GameObject:
   m_ObjectHideFlags: 0
@@ -8240,6 +8646,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &206283012
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 206283013}
+  - component: {fileID: 206283014}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &206283013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206283012}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.076004036, y: -0.7530349, z: -0.6475534, w: -0.08852362}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1976285, y: 0.19762848, z: 0.19762848}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1067316492}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &206283014
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206283012}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &207780627
 GameObject:
   m_ObjectHideFlags: 0
@@ -8510,6 +8969,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 217312742}
   m_Mesh: {fileID: -5624908662403005212, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &217639833
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 217639834}
+  - component: {fileID: 217639835}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &217639834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217639833}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5769993, y: -0.3531923, z: -0.3036021, w: 0.6709344}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762853, y: 0.19762848, z: 0.1976285}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1539383081}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &217639835
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217639833}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &232902164
 GameObject:
   m_ObjectHideFlags: 0
@@ -8982,6 +9494,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 271317418}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &273788361 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8347406758853246214, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &278088120
 GameObject:
   m_ObjectHideFlags: 0
@@ -9072,6 +9589,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 278088120}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!4 &289260113 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5477547292129832229, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &294631621
 GameObject:
   m_ObjectHideFlags: 0
@@ -9252,6 +9774,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 296253777}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &296634096
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 296634097}
+  - component: {fileID: 296634098}
+  m_Layer: 0
+  m_Name: Petal Landing 03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &296634097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296634096}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00019572736, y: 0.021594426, z: 0.004629609}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1651646613}
+  m_Father: {fileID: 2030981921}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &296634098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 296634096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.0070865788, y: 0.18, z: 0.029150993}
+  approachRadius: 1.15
+  branchVisual: {fileID: 2030981921}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1651646614}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &302709894
 GameObject:
   m_ObjectHideFlags: 0
@@ -9342,6 +9922,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 302709894}
   m_Mesh: {fileID: -1750599886793731291, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!4 &313935824 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8669317635058611393, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &314074212
 GameObject:
   m_ObjectHideFlags: 0
@@ -12151,6 +12736,59 @@ Transform:
   - {fileID: 1237109085}
   m_Father: {fileID: 1236028346}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &329991124
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 329991125}
+  - component: {fileID: 329991126}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &329991125
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329991124}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.20625456, y: -0.71923745, z: -0.61851555, w: -0.23998992}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762848, y: 0.19762848, z: 0.19762851}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1286295413}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &329991126
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329991124}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &332272794
 GameObject:
   m_ObjectHideFlags: 0
@@ -12369,6 +13007,91 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &340851374
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340851375}
+  - component: {fileID: 340851376}
+  - component: {fileID: 340851377}
+  m_Layer: 0
+  m_Name: Bee Perch A
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &340851375
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340851374}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.2631312, y: 14.223059, z: 0.61260104}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1072888312}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &340851376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340851374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.309103, y: 0.52225804, z: 0.69780874}
+  approachRadius: 1.15
+  branchVisual: {fileID: 0}
+  standOnBranch: 0
+  supportSize: {x: 0.035, y: 0.035}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.0045
+  landingSurface: {fileID: 0}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints:
+  - {fileID: 1297878887}
+  - {fileID: 1286295414}
+  - {fileID: 1067316493}
+  - {fileID: 1691836694}
+  - {fileID: 392466472}
+  - {fileID: 70226125}
+  - {fileID: 184262535}
+  - {fileID: 1939031862}
+  - {fileID: 1281580465}
+  - {fileID: 1755953976}
+  - {fileID: 660494280}
+  - {fileID: 1180709658}
+  - {fileID: 2012610128}
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!114 &340851377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340851374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82cc1a1ad6f615542ad185ddac98f6b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeeFlowerSurface
+  flowerMesh: {fileID: 441591519}
+  collisionRefreshRate: 15
 --- !u!1 &345828146
 GameObject:
   m_ObjectHideFlags: 0
@@ -12588,6 +13311,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 354291159}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &365649013 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7616685064472658516, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &370764997
 GameObject:
   m_ObjectHideFlags: 0
@@ -12857,6 +13585,11 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!137 &378343394 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6468507547678250914, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &389715258
 GameObject:
   m_ObjectHideFlags: 0
@@ -13008,6 +13741,64 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &392466470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 392466471}
+  - component: {fileID: 392466472}
+  m_Layer: 0
+  m_Name: Petal Landing 05
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &392466471
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392466470}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00011710563, y: 0.022316355, z: 0.0045201057}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1094002739}
+  m_Father: {fileID: 1516168223}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &392466472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392466470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.01865932, y: 0.18, z: 0.023491057}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1516168223}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1094002740}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &396601073
 GameObject:
   m_ObjectHideFlags: 0
@@ -13735,6 +14526,117 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 416068047}
   m_Mesh: {fileID: -2842624408850581284, guid: ce1089dbfc9f8e644993fccf6741033c, type: 3}
+--- !u!1 &425122084
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 425122085}
+  - component: {fileID: 425122086}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &425122085
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425122084}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.6314724, y: -0.18888567, z: -0.16230834, w: 0.73431665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762848, y: 0.19762844, z: 0.19762848}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1281580464}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &425122086
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425122084}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
+--- !u!1 &431566184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 431566185}
+  - component: {fileID: 431566186}
+  m_Layer: 0
+  m_Name: Petal Landing 06
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &431566185
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431566184}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0002651863, y: 0.022193775, z: 0.004538732}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1255297862}
+  m_Father: {fileID: 1578988859}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &431566186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431566184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.027686562, y: 0.18, z: 0.011552244}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1578988859}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1255297863}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &432115509
 GameObject:
   m_ObjectHideFlags: 0
@@ -14004,6 +14906,11 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!137 &441591519 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6468507547678250914, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &443540722
 GameObject:
   m_ObjectHideFlags: 0
@@ -24892,6 +25799,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 469449054}
   m_Mesh: {fileID: 737389886}
+--- !u!1 &470156183
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 470156184}
+  - component: {fileID: 470156185}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &470156184
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470156183}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.086204685, y: -0.7515823, z: -0.6462748, w: 0.100107595}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762848, y: 0.19762845, z: 0.19762848}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1691836693}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &470156185
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470156183}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &470914490
 GameObject:
   m_ObjectHideFlags: 0
@@ -25132,6 +26092,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 490089670}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &490308708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 490308709}
+  - component: {fileID: 490308710}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &490308709
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490308708}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.35365278, y: -0.6369118, z: -0.54775256, w: -0.41138807}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762851, y: 0.19762845, z: 0.19762851}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1297878886}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &490308710
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490308708}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &495070921
 GameObject:
   m_ObjectHideFlags: 0
@@ -25254,6 +26267,11 @@ Transform:
   - {fileID: 1195122770}
   m_Father: {fileID: 817060417}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!4 &514118868 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6927234145434113239, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &516636175
 GameObject:
   m_ObjectHideFlags: 0
@@ -25610,6 +26628,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 542592800}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!4 &542900402 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8347406758853246214, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &547187612
 GameObject:
   m_ObjectHideFlags: 0
@@ -25924,6 +26947,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &552933044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 552933045}
+  - component: {fileID: 552933046}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &552933045
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552933044}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5621346, y: 0.38400534, z: 0.33031222, w: 0.65378773}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762841, y: 0.19762836, z: 0.19762844}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1180709657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &552933046
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552933044}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &558228811
 GameObject:
   m_ObjectHideFlags: 0
@@ -28404,6 +29480,122 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 651017392}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &660494278
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 660494279}
+  - component: {fileID: 660494280}
+  m_Layer: 0
+  m_Name: Petal Landing 11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &660494279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 660494278}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00008033285, y: 0.021339025, z: 0.004668266}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2130825703}
+  m_Father: {fileID: 289260113}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &660494280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 660494278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.015838295, y: 0.18, z: -0.025478391}
+  approachRadius: 1.15
+  branchVisual: {fileID: 289260113}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 2130825704}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!1 &664668453
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 664668454}
+  - component: {fileID: 664668455}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &664668454
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664668453}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.35365278, y: -0.6369118, z: -0.54775256, w: -0.41138807}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762851, y: 0.19762845, z: 0.19762851}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1155814113}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &664668455
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664668453}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
+--- !u!4 &676947940 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5696923974924637311, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &678079289
 GameObject:
   m_ObjectHideFlags: 0
@@ -30102,6 +31294,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 692255102}
   m_Mesh: {fileID: 2075962485}
+--- !u!1 &692993070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 692993071}
+  - component: {fileID: 692993072}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &692993071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 692993070}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.45952287, y: 0.53779227, z: 0.4625368, w: 0.53448856}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762856, y: 0.19762842, z: 0.19762856}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 41690631}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &692993072
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 692993070}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &702131070
 GameObject:
   m_ObjectHideFlags: 0
@@ -30304,6 +31549,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 722928716}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &727495555 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5169208553481127402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &733608885
 GameObject:
   m_ObjectHideFlags: 0
@@ -31224,6 +32474,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 766797987}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!4 &768364725 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5477547292129832229, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &782677920
 GameObject:
   m_ObjectHideFlags: 0
@@ -31404,6 +32659,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 788187525}
   m_Mesh: {fileID: 3616978748275084757, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &798401839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 798401840}
+  - component: {fileID: 798401841}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &798401840
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798401839}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.6519979, y: 0.00023995999, z: 0.0003262744, w: 0.7582207}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762845, y: 0.19762841, z: 0.1976285}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1755953975}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &798401841
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798401839}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &802715391
 GameObject:
   m_ObjectHideFlags: 0
@@ -34372,6 +35680,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 929319859}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &938984504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 938984505}
+  - component: {fileID: 938984506}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &938984505
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938984504}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.6314724, y: -0.18888567, z: -0.16230834, w: 0.73431665}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762848, y: 0.19762844, z: 0.19762848}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1466994704}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &938984506
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938984504}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &950046428
 GameObject:
   m_ObjectHideFlags: 0
@@ -35068,6 +36429,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 985618138}
   m_Mesh: {fileID: -5624908662403005212, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1005616272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1005616273}
+  - component: {fileID: 1005616274}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1005616273
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005616272}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.20625456, y: -0.71923745, z: -0.61851555, w: -0.23998992}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762848, y: 0.19762848, z: 0.19762851}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1411114419}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1005616274
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005616272}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1007217015
 GameObject:
   m_ObjectHideFlags: 0
@@ -35965,15 +37379,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.08
+      value: 0.09199999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.08
+      value: 0.09199999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.08
+      value: 0.09199999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -36021,7 +37435,49 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1165401541}
+    - targetCorrespondingSourceObject: {fileID: -5696923974924637311, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1155814113}
+    - targetCorrespondingSourceObject: {fileID: 8669317635058611393, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1411114419}
+    - targetCorrespondingSourceObject: {fileID: -5726927129313694544, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 296634097}
+    - targetCorrespondingSourceObject: {fileID: 3153901927732202878, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1515633239}
+    - targetCorrespondingSourceObject: {fileID: 5410610649299238888, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1388592496}
+    - targetCorrespondingSourceObject: {fileID: 1156115675130836541, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 431566185}
+    - targetCorrespondingSourceObject: {fileID: 6927234145434113239, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 29217993}
+    - targetCorrespondingSourceObject: {fileID: 7616685064472658516, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1539383081}
+    - targetCorrespondingSourceObject: {fileID: -247799739591779009, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1466994704}
+    - targetCorrespondingSourceObject: {fileID: 5169208553481127402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1324561334}
+    - targetCorrespondingSourceObject: {fileID: -5477547292129832229, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 114083181}
+    - targetCorrespondingSourceObject: {fileID: -8347406758853246214, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1033135889}
+    - targetCorrespondingSourceObject: {fileID: -8364095643253074402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 41690631}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       insertIndex: -1
@@ -36266,6 +37722,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1022621023}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1026602389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1026602390}
+  - component: {fileID: 1026602391}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1026602390
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026602389}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.21398824, y: -0.7162666, z: -0.6158822, w: 0.24871765}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762836, y: 0.19762833, z: 0.19762841}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1388592496}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1026602391
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026602389}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1032996760
 GameObject:
   m_ObjectHideFlags: 0
@@ -36356,6 +37865,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032996760}
   m_Mesh: {fileID: 5302568919011541938, guid: 3b7dd693e0fac104bbc874a43effaa49, type: 3}
+--- !u!1 &1033135888
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1033135889}
+  - component: {fileID: 1033135890}
+  m_Layer: 0
+  m_Name: Petal Landing 12
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1033135889
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033135888}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00023956502, y: 0.021620126, z: 0.004625741}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 159114244}
+  m_Father: {fileID: 273788361}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1033135890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033135888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.026157556, y: 0.18, z: -0.014689528}
+  approachRadius: 1.15
+  branchVisual: {fileID: 273788361}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 159114245}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1037039472
 GameObject:
   m_ObjectHideFlags: 0
@@ -36536,6 +38103,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1040752234}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!4 &1046423756 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8364095643253074402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1054436978
 GameObject:
   m_ObjectHideFlags: 0
@@ -37251,6 +38823,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067094605}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &1067316491
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1067316492}
+  - component: {fileID: 1067316493}
+  m_Layer: 0
+  m_Name: Petal Landing 03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1067316492
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067316491}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00019571619, y: 0.021594372, z: 0.004629639}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 206283013}
+  m_Father: {fileID: 1074281385}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1067316493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067316491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.007086611, y: 0.18, z: 0.029150985}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1074281385}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 206283014}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1072179311
 GameObject:
   m_ObjectHideFlags: 0
@@ -37368,6 +38998,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &1072888312 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1073810582
 GameObject:
   m_ObjectHideFlags: 0
@@ -37399,6 +39034,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1104693559}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1074281385 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5726927129313694544, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1080400081
 GameObject:
   m_ObjectHideFlags: 0
@@ -39258,15 +40898,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.08
+      value: 0.09199999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.08
+      value: 0.09199999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.08
+      value: 0.09199999
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -39322,7 +40962,49 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 340851375}
+    - targetCorrespondingSourceObject: {fileID: -5696923974924637311, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1297878886}
+    - targetCorrespondingSourceObject: {fileID: 8669317635058611393, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1286295413}
+    - targetCorrespondingSourceObject: {fileID: -5726927129313694544, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1067316492}
+    - targetCorrespondingSourceObject: {fileID: 3153901927732202878, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1691836693}
+    - targetCorrespondingSourceObject: {fileID: 5410610649299238888, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 392466471}
+    - targetCorrespondingSourceObject: {fileID: 1156115675130836541, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 70226124}
+    - targetCorrespondingSourceObject: {fileID: 6927234145434113239, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 184262534}
+    - targetCorrespondingSourceObject: {fileID: 7616685064472658516, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1939031861}
+    - targetCorrespondingSourceObject: {fileID: -247799739591779009, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1281580464}
+    - targetCorrespondingSourceObject: {fileID: 5169208553481127402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1755953975}
+    - targetCorrespondingSourceObject: {fileID: -5477547292129832229, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 660494279}
+    - targetCorrespondingSourceObject: {fileID: -8347406758853246214, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1180709657}
+    - targetCorrespondingSourceObject: {fileID: -8364095643253074402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2012610127}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
       insertIndex: -1
@@ -39423,6 +41105,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1093573409}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &1094002738
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1094002739}
+  - component: {fileID: 1094002740}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1094002739
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094002738}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.21398824, y: -0.7162666, z: -0.6158822, w: 0.24871765}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762836, y: 0.19762833, z: 0.19762841}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 392466471}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1094002740
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094002738}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1100074443
 GameObject:
   m_ObjectHideFlags: 0
@@ -40274,6 +42009,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1151120861}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1155814112
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1155814113}
+  - component: {fileID: 1155814114}
+  m_Layer: 0
+  m_Name: Petal Landing 01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1155814113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155814112}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00035646226, y: 0.021982478, z: 0.0045708804}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 664668454}
+  m_Father: {fileID: 676947940}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1155814114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155814112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.027418712, y: 0.18, z: 0.012174324}
+  approachRadius: 1.15
+  branchVisual: {fileID: 676947940}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 664668455}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1163485331
 GameObject:
   m_ObjectHideFlags: 0
@@ -40454,6 +42247,91 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1163618826}
   m_Mesh: {fileID: -5624908662403005212, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1165401540
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1165401541}
+  - component: {fileID: 1165401542}
+  - component: {fileID: 1165401543}
+  m_Layer: 0
+  m_Name: Bee Perch B
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1165401541
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165401540}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.2631312, y: 14.223059, z: 0.61260104}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1009508691}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1165401542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165401540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.3091035, y: 0.52225804, z: 0.69780874}
+  approachRadius: 1.15
+  branchVisual: {fileID: 0}
+  standOnBranch: 0
+  supportSize: {x: 0.035, y: 0.035}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.0045
+  landingSurface: {fileID: 0}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints:
+  - {fileID: 1155814114}
+  - {fileID: 1411114420}
+  - {fileID: 296634098}
+  - {fileID: 1515633240}
+  - {fileID: 1388592497}
+  - {fileID: 431566186}
+  - {fileID: 29217994}
+  - {fileID: 1539383082}
+  - {fileID: 1466994705}
+  - {fileID: 1324561335}
+  - {fileID: 114083182}
+  - {fileID: 1033135890}
+  - {fileID: 41690632}
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!114 &1165401543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165401540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82cc1a1ad6f615542ad185ddac98f6b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeeFlowerSurface
+  flowerMesh: {fileID: 378343394}
+  collisionRefreshRate: 15
 --- !u!43 &1176172352
 Mesh:
   m_ObjectHideFlags: 0
@@ -40745,6 +42623,69 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176327853}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1180709656
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1180709657}
+  - component: {fileID: 1180709658}
+  m_Layer: 0
+  m_Name: Petal Landing 12
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1180709657
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180709656}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00023958924, y: 0.021620164, z: 0.004625724}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 552933045}
+  m_Father: {fileID: 542900402}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1180709658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180709656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.026157556, y: 0.18, z: -0.014689528}
+  approachRadius: 1.15
+  branchVisual: {fileID: 542900402}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 552933046}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!4 &1183603355 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8364095643253074402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1184076755
 GameObject:
   m_ObjectHideFlags: 0
@@ -52311,6 +54252,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6577671517430406493, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: flapClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 05edddd2c762d344780eafc297787637, type: 3}
+    - target: {fileID: 6577671517430406493, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: ExternalFlapBoost
       value: 0
       objectReference: {fileID: 0}
@@ -52367,12 +54312,32 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: moveSpeed
+      value: 7.7999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: strafeSpeed
+      value: 3.8999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: maxBankAngle
       value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: reverseSpeed
+      value: 4.5499997
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: comfortDescent
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: maxAscendSpeed
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: useWorldGravity
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: moveDeceleration
@@ -52391,12 +54356,24 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: maxFlightAltitude
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: enableDirectXrFlap
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: enableVrGazeFlight
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: strokeLiftDuration
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: comfortMaxFallSpeed
+      value: 2.8
       objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: enableDirectXrInput
@@ -52410,6 +54387,10 @@ PrefabInstance:
       propertyPath: turnAction.m_Reference
       value: 
       objectReference: {fileID: -5667865268735103806, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      propertyPath: comfortFallAcceleration
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 7681252487176283209, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       propertyPath: steerAction.m_Reference
       value: 
@@ -52483,6 +54464,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3328753508023534985, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1852311440}
+    - targetCorrespondingSourceObject: {fileID: 3328753508023534985, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1852311443}
   m_SourcePrefab: {fileID: 100100000, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
 --- !u!4 &1236083359 stripped
 Transform:
@@ -52713,6 +54697,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1241478723}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1251182487 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5410610649299238888, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1255297861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1255297862}
+  - component: {fileID: 1255297863}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1255297862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255297861}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.36027092, y: -0.63203335, z: -0.5434219, w: 0.41884524}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762853, y: 0.19762851, z: 0.1976285}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 431566185}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1255297863
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255297861}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1256481565
 GameObject:
   m_ObjectHideFlags: 0
@@ -53414,6 +55456,122 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1275355093}
   m_Mesh: {fileID: 5533132466022808054, guid: b0eefe834028ba54c8ac375653df9cc7, type: 3}
+--- !u!1 &1281580463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1281580464}
+  - component: {fileID: 1281580465}
+  m_Layer: 0
+  m_Name: Petal Landing 09
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1281580464
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281580463}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0002671462, y: 0.021648772, z: 0.004621325}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 425122085}
+  m_Father: {fileID: 1354523670}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1281580465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281580463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.014427761, y: 0.18, z: -0.026302848}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1354523670}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 425122086}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!1 &1286295412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1286295413}
+  - component: {fileID: 1286295414}
+  m_Layer: 0
+  m_Name: Petal Landing 02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1286295413
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286295412}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000296124, y: 0.02217691, z: 0.004541445}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 329991125}
+  m_Father: {fileID: 313935824}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1286295414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286295412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.018137824, y: 0.18, z: 0.023896009}
+  approachRadius: 1.15
+  branchVisual: {fileID: 313935824}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 329991126}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1288675427
 GameObject:
   m_ObjectHideFlags: 0
@@ -54297,6 +56455,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1290265042}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1297878885
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1297878886}
+  - component: {fileID: 1297878887}
+  m_Layer: 0
+  m_Name: Petal Landing 01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1297878886
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297878885}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00035646226, y: 0.021982478, z: 0.0045708804}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 490308709}
+  m_Father: {fileID: 1809924428}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1297878887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297878885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.027418712, y: 0.18, z: 0.012174324}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1809924428}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 490308710}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1299647498
 GameObject:
   m_ObjectHideFlags: 0
@@ -54509,15 +56725,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 8421f909895705f41893b870abb489ab, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2.7
+      value: 2.9160001
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8421f909895705f41893b870abb489ab, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2.7
+      value: 2.9160001
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8421f909895705f41893b870abb489ab, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2.7
+      value: 2.9160001
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8421f909895705f41893b870abb489ab, type: 3}
       propertyPath: m_LocalPosition.x
@@ -55027,6 +57243,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323690668}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1324561333
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1324561334}
+  - component: {fileID: 1324561335}
+  m_Layer: 0
+  m_Name: Petal Landing 10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1324561334
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324561333}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.000120282355, y: 0.021050852, z: 0.00471194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1346462283}
+  m_Father: {fileID: 2054159070}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1324561335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324561333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.0000439286, y: 0.18, z: -0.02999997}
+  approachRadius: 1.15
+  branchVisual: {fileID: 2054159070}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1346462284}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1328911726
 GameObject:
   m_ObjectHideFlags: 0
@@ -55207,6 +57481,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1345507746}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1346462282
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1346462283}
+  - component: {fileID: 1346462284}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1346462283
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1346462282}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.6519979, y: 0.00023995999, z: 0.0003262744, w: 0.7582207}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762845, y: 0.19762841, z: 0.1976285}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1324561334}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1346462284
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1346462282}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1352900365
 GameObject:
   m_ObjectHideFlags: 0
@@ -63253,6 +65580,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1352900365}
   m_Mesh: {fileID: 435372900}
+--- !u!4 &1354523670 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -247799739591779009, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1373462478
 GameObject:
   m_ObjectHideFlags: 0
@@ -63890,6 +66222,59 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1 &1377748588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1377748589}
+  - component: {fileID: 1377748590}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1377748589
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377748588}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.48288673, y: -0.50956696, z: -0.43808973, w: 0.5614618}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762845, y: 0.19762836, z: 0.1976286}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 29217993}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1377748590
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377748588}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1378227578
 GameObject:
   m_ObjectHideFlags: 0
@@ -64070,6 +66455,69 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1378537888}
   m_Mesh: {fileID: 5303923085450066343, guid: 27beca5e2d41bd4478c6a4f6a875118f, type: 3}
+--- !u!1 &1388592495
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1388592496}
+  - component: {fileID: 1388592497}
+  m_Layer: 0
+  m_Name: Petal Landing 05
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1388592496
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388592495}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00011710563, y: 0.022316355, z: 0.0045201057}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1026602390}
+  m_Father: {fileID: 1251182487}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1388592497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388592495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.01865932, y: 0.18, z: 0.023491057}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1251182487}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1026602391}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!4 &1389077465 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7616685064472658516, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1392246790
 GameObject:
   m_ObjectHideFlags: 0
@@ -64192,6 +66640,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1409765416}
   m_Mesh: {fileID: 5302568919011541938, guid: 3b7dd693e0fac104bbc874a43effaa49, type: 3}
+--- !u!1 &1411114418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1411114419}
+  - component: {fileID: 1411114420}
+  m_Layer: 0
+  m_Name: Petal Landing 02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1411114419
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411114418}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0002962041, y: 0.02217684, z: 0.0045414804}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1005616273}
+  m_Father: {fileID: 51490401}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1411114420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411114418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.018137805, y: 0.18, z: 0.023896024}
+  approachRadius: 1.15
+  branchVisual: {fileID: 51490401}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1005616274}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1425250427
 GameObject:
   m_ObjectHideFlags: 0
@@ -75296,6 +77802,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1454737794}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1455826641
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1455826642}
+  - component: {fileID: 1455826643}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1455826642
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455826641}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5769993, y: -0.3531923, z: -0.3036021, w: 0.6709344}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762853, y: 0.19762848, z: 0.1976285}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1939031861}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1455826643
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455826641}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1456743322
 GameObject:
   m_ObjectHideFlags: 0
@@ -75768,6 +78327,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1465046967}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &1466994703
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1466994704}
+  - component: {fileID: 1466994705}
+  m_Layer: 0
+  m_Name: Petal Landing 09
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1466994704
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466994703}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0002671015, y: 0.021648746, z: 0.0046213227}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 938984505}
+  m_Father: {fileID: 193634781}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1466994705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466994703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.014427761, y: 0.18, z: -0.026302848}
+  approachRadius: 1.15
+  branchVisual: {fileID: 193634781}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 938984506}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1471343049
 GameObject:
   m_ObjectHideFlags: 0
@@ -91718,6 +94335,69 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512797028}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1515633238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1515633239}
+  - component: {fileID: 1515633240}
+  m_Layer: 0
+  m_Name: Petal Landing 04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1515633239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515633238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000024548004, y: 0.022313058, z: 0.0045207203}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 181670922}
+  m_Father: {fileID: 1942974083}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1515633240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515633238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.007839629, y: 0.18, z: 0.028957557}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1942974083}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 181670923}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!4 &1516168223 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5410610649299238888, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1523754791
 GameObject:
   m_ObjectHideFlags: 0
@@ -92157,6 +94837,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1537827861}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1539383080
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1539383081}
+  - component: {fileID: 1539383082}
+  m_Layer: 0
+  m_Name: Petal Landing 08
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1539383081
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539383080}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.00034542222, y: 0.02188899, z: 0.0045848554}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 217639834}
+  m_Father: {fileID: 1389077465}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1539383082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539383080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.024656981, y: 0.18, z: -0.017088978}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1389077465}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 217639835}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1547885848
 GameObject:
   m_ObjectHideFlags: 0
@@ -92307,6 +95045,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1550440641}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1554202523
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1554202524}
+  - component: {fileID: 1554202525}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1554202524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554202523}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.48288673, y: -0.50956696, z: -0.43808973, w: 0.5614618}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762845, y: 0.19762836, z: 0.1976286}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 184262534}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1554202525
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554202523}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1559613599
 GameObject:
   m_ObjectHideFlags: 0
@@ -92689,6 +95480,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1576148474}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!4 &1578988859 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1156115675130836541, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1583574575
 GameObject:
   m_ObjectHideFlags: 0
@@ -93972,6 +96768,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1651282653}
   m_Mesh: {fileID: -2641300157494921674, guid: ec7a51f415ed780419028570343abb5b, type: 3}
+--- !u!1 &1651646612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1651646613}
+  - component: {fileID: 1651646614}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1651646613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1651646612}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.076004036, y: -0.7530349, z: -0.6475534, w: -0.08852362}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.1976285, y: 0.19762848, z: 0.19762848}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 296634097}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1651646614
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1651646612}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1654203789
 GameObject:
   m_ObjectHideFlags: 0
@@ -97010,6 +99859,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1690261054}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1691836692
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1691836693}
+  - component: {fileID: 1691836694}
+  m_Layer: 0
+  m_Name: Petal Landing 04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1691836693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691836692}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000024598296, y: 0.022313073, z: 0.0045207194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 470156184}
+  m_Father: {fileID: 2067504104}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1691836694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691836692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.00783968, y: 0.18, z: 0.028957544}
+  approachRadius: 1.15
+  branchVisual: {fileID: 2067504104}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 470156185}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1695386724
 GameObject:
   m_ObjectHideFlags: 0
@@ -97190,6 +100097,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1702633223}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &1709413312
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1709413313}
+  - component: {fileID: 1709413314}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1709413313
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1709413312}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.62685615, y: 0.20839247, z: 0.17931478, w: 0.72902006}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762851, y: 0.19762845, z: 0.19762853}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 114083181}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1709413314
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1709413312}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1711291435
 GameObject:
   m_ObjectHideFlags: 0
@@ -100597,6 +103557,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1755521381}
   m_Mesh: {fileID: 6790290955317075800, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &1755953974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1755953975}
+  - component: {fileID: 1755953976}
+  m_Layer: 0
+  m_Name: Petal Landing 10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1755953975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755953974}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.000120282355, y: 0.021050852, z: 0.00471194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 798401840}
+  m_Father: {fileID: 727495555}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1755953976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1755953974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.000043956035, y: 0.18, z: -0.02999997}
+  approachRadius: 1.15
+  branchVisual: {fileID: 727495555}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 798401841}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &1784747835
 GameObject:
   m_ObjectHideFlags: 0
@@ -101782,6 +104800,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03566f31c3834e34ab329145cbec9542, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeeHoneyPilot
+  togglePetalLanding: 1
+  enablePetalWalking: 1
+  petalWalkSpeed: 0.22
+  walkAcceleration: 0.8
+  surfaceProbeDistance: 0.35
+  edgeMargin: 0.008
+  maxSurfaceStepHeight: 0.04
   beeRoot: {fileID: 1236083359}
   rightHand: {fileID: 1085840207}
   flowerAHead: {fileID: 1090905783}
@@ -101804,7 +104829,7 @@ MonoBehaviour:
   endpoint: ws://127.0.0.1:6873
   modelOnServer: C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/GAMA/LetItBeeHoneyPilot.gaml
   checkpointDirectoryOnServer: C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/Runtime/checkpoints
-  sessionId: 1f28f796590a4f208226a1de2dfda7c2
+  sessionId: 46c5af5b854947f49d64c9c6dacef12f
   speciesId: chrysanthemum-pilot
   plantAId: plant-a
   plantBId: plant-b
@@ -101816,6 +104841,27 @@ MonoBehaviour:
   labelScale: 0.35
   enableDesktopKeys: 1
   requirePositionHoldInVr: 1
+  enableFlowerPerching: 1
+  perchApproachRadius: 0.65
+  perchHeight: 0.36
+  perchSettleSpeed: 0.25
+  perchDwell: 0.4
+  flowerAPerch: {fileID: 340851375}
+  flowerBPerch: {fileID: 1165401541}
+  perchViewDistance: 0.75
+  perchApproachSpeed: 0.22
+  perchSmoothTime: 0.55
+  perchReleaseDuration: 0.45
+  enhancedFeedback: 1
+  interactionAudio: {fileID: 11400000, guid: a337c66457483034cb551cdc95182558, type: 2}
+  feedbackIntensity: 1
+  feedbackVolume: 0.45
+  feedbackHaptics: 0.6
+  fillWholeHive: 1
+  hiveCells: []
+  nectarRefillSeconds: 8
+  gatherGraceSeconds: 0.18
+  requirePollinationForCompletion: 1
 --- !u!4 &1806865663
 Transform:
   m_ObjectHideFlags: 0
@@ -101945,6 +104991,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1809092259}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1809924428 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5696923974924637311, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1812776871
 GameObject:
   m_ObjectHideFlags: 0
@@ -102439,6 +105490,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1839679249}
   m_Mesh: {fileID: 6790290955317075800, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &1844236453
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1844236454}
+  - component: {fileID: 1844236455}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1844236454
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844236453}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.36027092, y: -0.63203335, z: -0.5434219, w: 0.41884524}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762853, y: 0.19762851, z: 0.1976285}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 70226124}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1844236455
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844236453}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &1852311431 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3328753508023534985, guid: 1b16a7dc81fb9c44c89ab951de0a385f, type: 3}
@@ -102582,6 +105686,23 @@ MonoBehaviour:
   flashColor: {r: 1, g: 0.98, b: 0.65, a: 1}
   rayColor: {r: 1, g: 0.82, b: 0.18, a: 0.95}
   debugLog: 1
+--- !u!114 &1852311443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852311431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dfa8a1bd71aa014e831f9323739578f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeeEmbodiment
+  playerScale: 0.15
+  alignFloorAtFirstTracking: 1
+  hoverViewStrength: 0.35
+  reducedMotion: 0
+  continuousFlightEnduranceMultiplier: 3
 --- !u!1 &1855545857
 GameObject:
   m_ObjectHideFlags: 0
@@ -103489,6 +106610,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1806865663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1879744171 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6927234145434113239, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1883749538
 GameObject:
   m_ObjectHideFlags: 0
@@ -105938,6 +109064,69 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1935163446}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &1939031860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1939031861}
+  - component: {fileID: 1939031862}
+  m_Layer: 0
+  m_Name: Petal Landing 08
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1939031861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939031860}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0003454427, y: 0.02188904, z: 0.0045848787}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1455826642}
+  m_Father: {fileID: 365649013}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1939031862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939031860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: -0.024656992, y: 0.18, z: -0.017088966}
+  approachRadius: 1.15
+  branchVisual: {fileID: 365649013}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 1455826643}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
+--- !u!4 &1942974083 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3153901927732202878, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1944127654
 GameObject:
   m_ObjectHideFlags: 0
@@ -106617,6 +109806,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1974735367}
   m_Mesh: {fileID: 5303923085450066343, guid: 27beca5e2d41bd4478c6a4f6a875118f, type: 3}
+--- !u!4 &1977949102 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1156115675130836541, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1980279314
 GameObject:
   m_ObjectHideFlags: 0
@@ -107447,6 +110641,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2010756083}
   m_Mesh: {fileID: 3616978748275084757, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!1 &2012610126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2012610127}
+  - component: {fileID: 2012610128}
+  m_Layer: 0
+  m_Name: Petal Landing 13
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2012610127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012610126}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00034221914, y: 0.021568224, z: 0.004633595}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2093523473}
+  m_Father: {fileID: 1046423756}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2012610128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012610126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65da448f06f5184da15c7aa912355bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeePerchPoint
+  viewOffset: {x: 0.029999988, y: 0.18, z: 0.000024411189}
+  approachRadius: 1.15
+  branchVisual: {fileID: 1046423756}
+  standOnBranch: 1
+  supportSize: {x: 0.09, y: 0.1}
+  landingBendDegrees: 2
+  branchColliderRadius: 0.012
+  landingSurface: {fileID: 2093523474}
+  branchSurface: {fileID: 0}
+  isPetalSurface: 1
+  landingPoints: []
+  springFrequency: 1.6
+  dampingRatio: 0.6
 --- !u!1 &2015993104
 GameObject:
   m_ObjectHideFlags: 0
@@ -108188,6 +111440,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2028222089}
   m_Mesh: {fileID: 5302568919011541938, guid: 3b7dd693e0fac104bbc874a43effaa49, type: 3}
+--- !u!4 &2030981921 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5726927129313694544, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2031566535
 GameObject:
   m_ObjectHideFlags: 0
@@ -108706,6 +111963,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2052768379}
   m_Mesh: {fileID: -7847907052922495609, guid: 75bd828e95c81c749a9cf55a8a431355, type: 3}
+--- !u!4 &2054159070 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5169208553481127402, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1009508689}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2055071933
 GameObject:
   m_ObjectHideFlags: 0
@@ -109290,6 +112552,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2067068698}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!4 &2067504104 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3153901927732202878, guid: 4f688ce31bbdc5443bcf3362ab5abe0e, type: 3}
+  m_PrefabInstance: {fileID: 1090905782}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2070790014
 GameObject:
   m_ObjectHideFlags: 0
@@ -109919,6 +113186,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2090726700}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &2093523472
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2093523473}
+  - component: {fileID: 2093523474}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2093523473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093523472}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.45952287, y: 0.53779227, z: 0.4625368, w: 0.53448856}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762856, y: 0.19762842, z: 0.19762856}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2012610127}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2093523474
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093523472}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &2093782320
 GameObject:
   m_ObjectHideFlags: 0
@@ -111342,6 +114662,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125814764}
   m_Mesh: {fileID: 1657308365730962604, guid: 9c76a679487fe5446b5fd44d1473c0de, type: 3}
+--- !u!1 &2130825702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2130825703}
+  - component: {fileID: 2130825704}
+  m_Layer: 0
+  m_Name: Petal landing surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2130825703
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130825702}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.62685615, y: 0.20839247, z: 0.17931478, w: 0.72902006}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.19762851, y: 0.19762845, z: 0.19762853}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 660494279}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2130825704
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130825702}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.09, y: 0.008, z: 0.1}
+  m_Center: {x: 0, y: -0.004, z: 0}
 --- !u!1 &2139097664
 GameObject:
   m_ObjectHideFlags: 0

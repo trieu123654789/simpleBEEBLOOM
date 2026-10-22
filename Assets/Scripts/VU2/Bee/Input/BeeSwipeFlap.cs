@@ -651,9 +651,10 @@ public class BeeSwipeFlap : MonoBehaviour
         }
 
         Vector3 local = _canvas != null ? _canvas.transform.InverseTransformPoint(barHitPoint) : transform.InverseTransformPoint(barHitPoint);
-        // Canvas XY coordinates are pixels (scale 0.001); thresholds are metres.
-        if (_canvas != null)
-            local = Vector3.Scale(local, _canvas.transform.localScale);
+        // InverseTransformPoint already removes the complete XR hierarchy scale.
+        // Convert canvas pixels to authored metres exactly once.
+        if (_canvas != null) local *= 0.001f;
+        var embodiment = GetComponent<BeeEmbodiment>();
         float targetY = useSingleBar ? 0f : hand.barOffset.y;
         float targetX = useSingleBar ? 0f : hand.barOffset.x;
 
@@ -736,7 +737,8 @@ public class BeeSwipeFlap : MonoBehaviour
 
                     // Tự động scale kích thước vòng vàng theo khoảng cách để luôn rõ nét
                     float dist = Vector3.Distance(trackedCamera.transform.position, endPoint);
-                    float reticleScale = Mathf.Clamp(dist * 0.035f, 0.07f, 0.28f);
+                    float playerScale = embodiment != null ? embodiment.Scale : 1f;
+                    float reticleScale = Mathf.Clamp(dist / playerScale * 0.035f, 0.07f, 0.28f) * playerScale;
                     hand.reticle.transform.localScale = new Vector3(reticleScale, reticleScale, reticleScale);
                 }
             }
@@ -823,14 +825,16 @@ public class BeeSwipeFlap : MonoBehaviour
         if (_canvasRect == null) return;
         if (trackedCamera != null)
         {
-            float distance = Mathf.Max(0.75f, barDepth, trackedCamera.nearClipPlane + 0.2f);
+            float cameraScale = Mathf.Max(0.0001f, trackedCamera.transform.lossyScale.z);
+            float distance = Mathf.Max(0.75f, barDepth, trackedCamera.nearClipPlane / cameraScale + 0.2f);
             _canvasRect.localPosition = useSingleBar
                 ? new Vector3(barCenterOffset.x, barCenterOffset.y, distance)
                 : new Vector3(0f, 0f, distance);
         }
 
         const float scale = 0.001f;
-        _canvasRect.localScale = new Vector3(scale, scale, 1f);
+        // The camera is already below the scaled XR origin.
+        _canvasRect.localScale = new Vector3(scale, scale, scale);
 
         float canvasWorldW = 1920f * scale;
         float canvasWorldH = 1080f * scale;
@@ -967,11 +971,14 @@ public class BeeSwipeFlap : MonoBehaviour
     private LineRenderer CreateRayLine(string name)
     {
         GameObject go = new GameObject(name);
+        go.transform.SetParent(transform, false);
         LineRenderer lr = go.AddComponent<LineRenderer>();
         lr.useWorldSpace = true;
         lr.positionCount = 2;
         lr.startWidth = 0.009f;
         lr.endWidth = 0.005f;
+        var embodiment = GetComponent<BeeEmbodiment>();
+        if (embodiment != null) { lr.startWidth *= embodiment.Scale; lr.endWidth *= embodiment.Scale; }
         lr.textureMode = LineTextureMode.Stretch;
         lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         lr.receiveShadows = false;
@@ -1005,6 +1012,7 @@ public class BeeSwipeFlap : MonoBehaviour
     private GameObject CreateGoldenReticle(string name)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        go.transform.SetParent(transform, false);
         go.name = name;
         Collider col = go.GetComponent<Collider>();
         if (col != null) SafeDestroy(col);

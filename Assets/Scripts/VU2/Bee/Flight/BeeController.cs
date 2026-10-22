@@ -1,21 +1,13 @@
-﻿// =============================================================================
-// BeeController - Core flight for the bee avatar (single bee).
-// BeeController - Điều khiển bay cốt lõi cho nhân vật ong.
-//
-// CONTROL MODEL / MÔ HÌNH ĐIỀU KHIỂN CHUẨN VR & PC
-//   - Nhấn bay (Trigger / Button VR hoặc phím Space/Shift PC) -> BAY LÊN (Vertical Lift).
-//   - Thả bay                                                -> Trọng lực hạ độ cao từ từ / lơ lửng / đáp đất.
-//   - Joystick Y / Phím W, S (Đẩy tới / Kéo lui)             -> ĐI TỚI / ĐI LUI theo hướng ong đang quay.
-//   - Joystick X / Phím A, D (Gạt trái / Gạt phải)           -> RẼ HƯỚNG (Yaw) + Nghiêng thân (Bank) + Strafe lách nhẹ.
-//   - Thả cần / Thả phím                                     -> Dừng lại tại chỗ, KHÔNG tự động trôi một hướng!
-// =============================================================================
+// Bee avatar movement: left stick translates, right stick turns, accepted swipes add lift.
+// Balanced flight preserves world momentum while looking around and blends into a limited descent.
+// Petal walking owns translation while latched; the camera keeps tracked head motion.
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR;
 using XRInputDevice = UnityEngine.XR.InputDevice;
 using XRCommonUsages = UnityEngine.XR.CommonUsages;
 
-public class BeeController : MonoBehaviour
+public partial class BeeController : MonoBehaviour
 {
     // =========================================================================
     // INPUT / ĐIỀU KHIỂN
@@ -119,16 +111,23 @@ public class BeeController : MonoBehaviour
     [Range(0f, 0.05f)] public float holdBobAmplitude = 0.015f;
     [Tooltip("Hover oscillations per second while holding left trigger.")]
     [Range(0.1f, 3f)] public float holdBobFrequency = 1.2f;
+    [Min(0.05f)] public float holdBobBlendDuration = 0.7f;
     public bool IsPositionHolding { get; private set; }
     public bool IsFlowerPerched { get; private set; }
     // Runtime ownership only; does not alter any serialized flight binding.
     public bool RightHandInteractionOwnsInput { get; set; }
+    public bool LeftHandLandingOwnsInput { get; set; }
+    private bool _leftLandingTriggerPressed;
+    public bool LeftLandingTriggerPressed {
+        get { _leftLandingTriggerPressed = ReadLeftTrigger(_leftLandingTriggerPressed); return _leftLandingTriggerPressed; }
+    }
+    public float InteractionAudioFocus { get; set; }
 
     public void SetFlowerPerched(bool perched)
     {
         IsFlowerPerched = perched;
         ClearStrokeLift();
-        _brakeStartVelocity = _lastFlightVelocity = Vector3.zero;
+        _brakeStartVelocity = _lastFlightVelocity = worldHorizontalVelocity = Vector3.zero;
         _currentForwardSpeed = _currentStrafeSpeed = _verticalVelocity = 0f;
         Speed = HoldVisualBob = 0f;
         IsFlapping = false;
@@ -140,8 +139,11 @@ public class BeeController : MonoBehaviour
 
     private bool ReadLeftHoldTrigger()
     {
-        if (!enableLeftTriggerHold) return false;
-        float threshold = IsPositionHolding ? 0.45f : 0.65f;
+        return !LeftHandLandingOwnsInput && enableLeftTriggerHold && ReadLeftTrigger(IsPositionHolding);
+    }
+    private bool ReadLeftTrigger(bool releaseThreshold)
+    {
+        float threshold = releaseThreshold ? 0.45f : 0.65f;
         var device = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         if (device.isValid)
         {
@@ -155,8 +157,39 @@ public class BeeController : MonoBehaviour
             if (!left) continue;
             var trigger = input.TryGetChildControl<UnityEngine.InputSystem.Controls.AxisControl>("trigger");
             if (trigger != null && trigger.ReadValue() >= threshold) return true;
+            var button = input.TryGetChildControl<UnityEngine.InputSystem.Controls.ButtonControl>("triggerPressed");
+            if (button != null && button.isPressed) return true;
         }
         return false;
+    }
+
+    [Header("Balanced Flight")]
+    [Tooltip("Use balanced world-space descent, stroke lift and momentum independently of XR scale.")]
+    [InspectorName("Balanced World Flight")] public bool useWorldGravity;
+    [Min(0f), InspectorName("Descent Acceleration")] public float gravityAcceleration = 1.4f;
+    [Min(0f), Tooltip("Linear vertical air resistance per second. Zero gives ballistic free fall.")]
+    public float fallAirDrag = 0.12f;
+    [Min(0.1f), InspectorName("Max Descent Speed"), Tooltip("World metres per second; independent of miniature player scale.")]
+    public float terminalFallSpeed = 0.9f;
+    [Min(0f), Tooltip("Upward acceleration available to arrest a fall, in world metres per second squared.")]
+    public float flapRecoveryAcceleration = 1.6f;
+    [Min(0f), InspectorName("Stroke Lift Strength"), Tooltip("World velocity gain per accepted swipe strength, spread over Stroke Lift Duration.")]
+    public float strokeRecoveryScale = 0.95f;
+    float FallSpeedLimit => useWorldGravity ? terminalFallSpeed : maxFallSpeed;
+
+    public Vector3 ReadSurfaceDirection()
+    {
+        Vector2 stick = ReadCombinedMovementInput();
+        return GetMovementRotation() * new Vector3(stick.x, 0f, stick.y);
+    }
+
+    float StepWorldGravity(float velocity, float deltaTime)
+    {
+        float dt = Mathf.Max(0f, deltaTime);
+        float g = gravityAcceleration * Mathf.Max(0f, ExternalGravityScale);
+        if (fallAirDrag <= 0.00001f) return velocity - g * dt;
+        float terminal = g / fallAirDrag;
+        return -terminal + (velocity + terminal) * Mathf.Exp(-fallAirDrag * dt);
     }
 
     private static float IntegrateDescent(float velocity, float acceleration, float terminalSpeed, float deltaTime)
@@ -194,7 +227,8 @@ public class BeeController : MonoBehaviour
             ExternalVerticalThrust = 0f;
         }
         IsPositionHolding = pressed;
-        if (!pressed) { HoldVisualBob = 0f; return; }
+        if (!pressed) { HoldVisualBob = Mathf.MoveTowards(HoldVisualBob, 0f,
+            Mathf.Max(0.001f, holdBobAmplitude) * deltaTime / Mathf.Max(0.05f, holdBobBlendDuration)); return; }
 
         Vector3 next = _holdPosition;
         Vector3 brakeVelocity = Vector3.zero;
@@ -218,19 +252,21 @@ public class BeeController : MonoBehaviour
         _currentStrafeSpeed = localVelocity.x;
         _verticalVelocity = brakeVelocity.y;
         _lastFlightVelocity = brakeVelocity;
+        worldHorizontalVelocity = Vector3.ProjectOnPlane(brakeVelocity, Vector3.up);
         Speed = new Vector2(brakeVelocity.x, brakeVelocity.z).magnitude;
         _holdElapsed += deltaTime;
         HoldVisualBob = Mathf.Sin(_holdElapsed * holdBobFrequency * Mathf.PI * 2f)
-            * holdBobAmplitude * Mathf.Clamp01(_holdElapsed * 2f);
+            * holdBobAmplitude * Mathf.SmoothStep(0f, 1f, Mathf.Max(0f, _holdElapsed - holdBrakeDuration) / Mathf.Max(0.05f, holdBobBlendDuration));
     }
 
     public bool TryQueueRhythmStroke(float strength)
     {
         if (!enableRhythmFlight || IsPositionHolding || IsFlowerPerched || ExternalMovementLocked || IsExhausted) return false;
         float cost = Mathf.Max(0f, strokeStaminaCost);
-        if (_stamina < cost || !_strokeLift.Add(strength * strokeLiftScale, strokeLiftDuration)) return false;
+        float amount = strength * (useWorldGravity ? strokeRecoveryScale : strokeLiftScale);
+        if (_stamina < cost || !_strokeLift.Add(amount, strokeLiftDuration)) return false;
         _stamina = Mathf.Max(0f, _stamina - cost);
-        _restGlideRemaining = Mathf.Max(0.01f, strokeLiftDuration) + Mathf.Max(0f, restGlideDuration);
+        _restGlideRemaining = Mathf.Max(0.01f, strokeLiftDuration) + Mathf.Max(0f, useWorldGravity ? glideTransitionTime : restGlideDuration);
         return true;
     }
 
@@ -238,17 +274,19 @@ public class BeeController : MonoBehaviour
     public void QueueRhythmPairBonus(float strength)
     {
         if (!enableRhythmFlight || IsPositionHolding || IsFlowerPerched || ExternalMovementLocked) return;
-        _strokeLift.Add(strength * strokeLiftScale, strokeLiftDuration);
+        _strokeLift.Add(strength * (useWorldGravity ? strokeRecoveryScale * 2f * pairedLiftBonus : strokeLiftScale), strokeLiftDuration);
     }
 
     public void ClearStrokeLift()
     {
         _strokeLift.Clear();
         _restGlideRemaining = 0f;
+        glideReleaseElapsed = glideTransitionTime;
     }
 
     private float StepRhythmVertical(float deltaTime, bool continuousFlap)
     {
+        if (useWorldGravity) return StepBalancedVertical(deltaTime, continuousFlap);
         bool pulsing = _strokeLift.Active;
         float lift = _strokeLift.Step(deltaTime);
         float velocity = _verticalVelocity;
@@ -277,7 +315,7 @@ public class BeeController : MonoBehaviour
         IsFlowerPerched = false;
         IsPositionHolding = false;
         HoldVisualBob = 0f;
-        _brakeStartVelocity = _lastFlightVelocity = Vector3.zero;
+        _brakeStartVelocity = _lastFlightVelocity = worldHorizontalVelocity = Vector3.zero;
         _brakeElapsed = _holdElapsed = 0f;
     }
 
@@ -449,7 +487,7 @@ public class BeeController : MonoBehaviour
                 && !(RightHandInteractionOwnsInput && flapAction.action.activeControl != null
                     && (flapAction.action.activeControl.path.Contains("grip") || flapAction.action.activeControl.path.Contains("trigger"))
                     && System.Linq.Enumerable.Any(flapAction.action.activeControl.device.usages, usage => usage.ToString() == "RightHand"))
-                && !(enableLeftTriggerHold && flapAction.action.activeControl != null
+                && !((enableLeftTriggerHold || LeftHandLandingOwnsInput) && flapAction.action.activeControl != null
                     && flapAction.action.activeControl.path.Contains("trigger")
                     && System.Linq.Enumerable.Any(flapAction.action.activeControl.device.usages, usage => usage.ToString() == "LeftHand")))
                 return true;
@@ -458,7 +496,7 @@ public class BeeController : MonoBehaviour
             if (enableDirectXrInput && enableDirectXrFlap)
             {
                 UpdateXrDevices();
-                if (CheckXrFlapInput(_rightHand, !RightHandInteractionOwnsInput, !RightHandInteractionOwnsInput) || CheckXrFlapInput(_leftHand, !enableLeftTriggerHold))
+                if (CheckXrFlapInput(_rightHand, !RightHandInteractionOwnsInput, !RightHandInteractionOwnsInput) || CheckXrFlapInput(_leftHand, !enableLeftTriggerHold && !LeftHandLandingOwnsInput))
                     return true;
 
                 // 3. Vung tay / Lắc tay đập cánh (Shake Flapping)
@@ -852,7 +890,8 @@ public class BeeController : MonoBehaviour
         if (ExternalMovementLocked)
         {
             ClearStrokeLift();
-            _lastFlightVelocity = Vector3.zero;
+            _lastFlightVelocity = worldHorizontalVelocity = Vector3.zero;
+            _currentForwardSpeed = _currentStrafeSpeed = _verticalVelocity = 0f;
         }
         UpdatePositionHold(!ExternalMovementLocked && ReadLeftHoldTrigger());
         UpdateSteering();
@@ -911,14 +950,19 @@ public class BeeController : MonoBehaviour
     private void UpdateStamina()
     {
         bool flapPressed = ReadCombinedFlapInput();
+        StepStamina(Time.deltaTime, flapPressed, RawHardwareFlapPressed);
+    }
+
+    private void StepStamina(float deltaTime, bool flapPressed, bool continuousFlap)
+    {
         IsFlapping = enableRhythmFlight
             ? !IsPositionHolding && (_strokeLift.Active || (flapPressed && !IsExhausted))
             : flapPressed && !IsExhausted;
 
         // Gesture stamina was paid once at stroke acceptance; continuous buttons drain over time.
-        if (IsFlapping && (!enableRhythmFlight || RawHardwareFlapPressed))
+        if (IsFlapping && (!enableRhythmFlight || continuousFlap))
         {
-            _stamina -= staminaDrainPerSecond * Time.deltaTime;
+            _stamina -= staminaDrainPerSecond * deltaTime;
             if (_stamina <= 0f)
             {
                 _stamina = 0f;
@@ -930,13 +974,13 @@ public class BeeController : MonoBehaviour
         }
         else
         {
-            _stamina += staminaRegenPerSecond * Time.deltaTime;
+            _stamina += staminaRegenPerSecond * deltaTime;
             _stamina = Mathf.Min(_stamina, maxStamina);
         }
 
         if (_exhausted)
         {
-            _exhaustedTimer -= Time.deltaTime;
+            _exhaustedTimer -= deltaTime;
             if (_exhaustedTimer <= 0f && _stamina >= minStaminaToFlap)
             {
                 _exhausted = false;
@@ -974,23 +1018,33 @@ public class BeeController : MonoBehaviour
         // 1. DI CHUYỂN NGANG THEO JOYSTICK / BÀN PHÍM (Forward / Backward / Strafe)
         // ---------------------------------------------------------------------
         // stick.y: Đẩy tới / phím W (>0) = đi tới; Kéo lui / phím S (<0) = đi lui
-        float targetForward = stick.y * (stick.y >= 0f ? moveSpeed : reverseSpeed);
-        float forwardAccel = Mathf.Abs(targetForward) > Mathf.Abs(_currentForwardSpeed)
-            ? moveAcceleration
-            : moveDeceleration;
-        _currentForwardSpeed = Mathf.MoveTowards(_currentForwardSpeed, targetForward, forwardAccel * Time.deltaTime);
-
-        // stick.x: Lách nhẹ sang hai bên khi rẽ
-        float targetStrafe = stick.x * strafeSpeed;
-        float strafeAccel = Mathf.Abs(targetStrafe) > Mathf.Abs(_currentStrafeSpeed)
-            ? moveAcceleration
-            : moveDeceleration;
-        _currentStrafeSpeed = Mathf.MoveTowards(_currentStrafeSpeed, targetStrafe, strafeAccel * Time.deltaTime);
-
         Quaternion yawRotation = GetMovementRotation();
-        Vector3 forwardDir = yawRotation * Vector3.forward;
-        Vector3 rightDir = yawRotation * Vector3.right;
-        Vector3 horizontalVelocity = forwardDir * _currentForwardSpeed + rightDir * _currentStrafeSpeed;
+        Vector3 horizontalVelocity;
+        if (useWorldGravity && enableRhythmFlight)
+            horizontalVelocity = StepGlideHorizontal(stick, yawRotation, Time.deltaTime);
+        else {
+            float targetForward = stick.y * (stick.y >= 0f ? moveSpeed : reverseSpeed);
+            float forwardAccel = Mathf.Abs(targetForward) > Mathf.Abs(_currentForwardSpeed)
+                ? moveAcceleration
+                : moveDeceleration;
+            if (enableRhythmFlight && stick.sqrMagnitude < 0.001f && !IsFlapping)
+                forwardAccel = Mathf.Min(forwardAccel, Mathf.Max(0.1f, glideDrag));
+            _currentForwardSpeed = Mathf.MoveTowards(_currentForwardSpeed, targetForward, forwardAccel * Time.deltaTime);
+
+            // stick.x: Lách nhẹ sang hai bên khi rẽ
+            float targetStrafe = stick.x * strafeSpeed;
+            float strafeAccel = Mathf.Abs(targetStrafe) > Mathf.Abs(_currentStrafeSpeed)
+                ? moveAcceleration
+                : moveDeceleration;
+            if (enableRhythmFlight && stick.sqrMagnitude < 0.001f && !IsFlapping)
+                strafeAccel = Mathf.Min(strafeAccel, Mathf.Max(0.1f, glideDrag));
+            _currentStrafeSpeed = Mathf.MoveTowards(_currentStrafeSpeed, targetStrafe, strafeAccel * Time.deltaTime);
+
+            Vector3 forwardDir = yawRotation * Vector3.forward;
+            Vector3 rightDir = yawRotation * Vector3.right;
+            horizontalVelocity = forwardDir * _currentForwardSpeed + rightDir * _currentStrafeSpeed;
+
+        }
 
         Speed = horizontalVelocity.magnitude;
 
@@ -1003,8 +1057,17 @@ public class BeeController : MonoBehaviour
         }
         else if (IsFlapping)
         {
-            float liftAcc = flapLift * ExternalFlapThrustScale;
-            _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, maxAscendSpeed, liftAcc * Time.deltaTime);
+            if (useWorldGravity)
+                _verticalVelocity = StepWorldGravity(_verticalVelocity, Time.deltaTime)
+                    + (gravityAcceleration + flapRecoveryAcceleration) * ExternalFlapThrustScale * Time.deltaTime;
+            else {
+                float liftAcc = flapLift * ExternalFlapThrustScale;
+                _verticalVelocity = Mathf.MoveTowards(_verticalVelocity, maxAscendSpeed, liftAcc * Time.deltaTime);
+            }
+        }
+        else if (useWorldGravity)
+        {
+            _verticalVelocity = StepWorldGravity(_verticalVelocity, Time.deltaTime);
         }
         else if (useNaturalFall)
         {
@@ -1040,7 +1103,7 @@ public class BeeController : MonoBehaviour
         }
 
         // Kẹp chặt vận tốc đứng trong ngưỡng an toàn, KHÔNG để vọt quá tốc độ cho phép
-        _verticalVelocity = Mathf.Clamp(_verticalVelocity, -maxFallSpeed, maxAscendSpeed);
+        _verticalVelocity = Mathf.Clamp(_verticalVelocity, -FallSpeedLimit, maxAscendSpeed);
 
         // Trần bay tối đa (nếu có giới hạn)
         if (maxFlightAltitude > 0f && transform.position.y >= maxFlightAltitude)
@@ -1081,6 +1144,8 @@ public class BeeController : MonoBehaviour
         }
 
         _lastFlightVelocity = Time.deltaTime > 0f ? (next - transform.position) / Time.deltaTime : Vector3.zero;
+        if (useWorldGravity && enableRhythmFlight)
+            worldHorizontalVelocity = Vector3.ProjectOnPlane(_lastFlightVelocity, Vector3.up);
         transform.position = next;
 
 

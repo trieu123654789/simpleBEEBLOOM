@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BeeFlapping - Visual + audio feedback for the bee's wing beat.
 // BeeFlapping - Hiệu ứng hình ảnh và âm thanh cho động tác vỗ cánh.
 //
@@ -344,6 +344,11 @@ public class BeeFlapping : MonoBehaviour
         bool flapping = _bee != null && _bee.IsFlapping;
         float strength = syncAudioToWings ? _audibleWingStrength
             : (flapping ? 1f : Mathf.Lerp(0.35f, 1f, speedNorm));
+        if (_bee != null && _bee.IsPositionHolding && !_bee.IsFlowerPerched) strength = Mathf.Max(strength, 0.28f);
+        if (_bee != null) {
+            strength *= Mathf.Lerp(1f, 0.65f, _bee.GlideAmount);
+            strength *= Mathf.Lerp(1f, 0.45f, Mathf.Clamp01(_bee.InteractionAudioFocus));
+        }
         float rate = syncAudioToWings
             ? Mathf.Clamp01(_audibleWingFrequency / Mathf.Max(0.01f, flapFrequency)) : speedNorm;
         float targetPitch = Mathf.Lerp(minPitch, maxPitch, rate);

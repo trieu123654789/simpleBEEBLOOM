@@ -343,6 +343,8 @@ public class BeeCameraRig : MonoBehaviour
         // Capture once, then preserve all physical head movement relative to this origin.
         _cameraLocalOffset = playerRig.InverseTransformPoint(trackedCamera.transform.position);
         _hasTrackedHeadOrigin = IsHeadTracked();
+        var embodiment = GetComponent<BeeEmbodiment>();
+        if (_hasTrackedHeadOrigin && embodiment != null) embodiment.AlignTrackedFloor(_cameraLocalOffset);
     }
 
     /// <summary>Gom renderer cua rieng hai pivot canh (Wing_L / Wing_R).</summary>
@@ -485,13 +487,18 @@ public class BeeCameraRig : MonoBehaviour
     // =============================================================================
     private Vector3 GetEyeWorldPosition()
     {
-        Vector3 eye = transform.TransformPoint(eyeOffset);
+        Vector3 eye = transform.TransformPoint(eyeOffset) + PerchViewOffset;
+        var embodiment = GetComponent<BeeEmbodiment>();
+        if (embodiment != null) eye += Vector3.up * embodiment.HoverOffset;
         if (enableHeadBob && trackedCamera != null && (bee == null || (!bee.enableLeftTriggerHold && !bee.comfortDescent && !bee.IsPositionHolding)))
         {
             eye += trackedCamera.transform.up * _bobHeadOffset;
         }
         return eye;
     }
+
+    // Runtime landing pose, separate from both saved tuning and physical head tracking.
+    public Vector3 PerchViewOffset { get; set; }
 
     // =========================================================================
     // UpdateBob - Tinh pha rung theo nhip canh.

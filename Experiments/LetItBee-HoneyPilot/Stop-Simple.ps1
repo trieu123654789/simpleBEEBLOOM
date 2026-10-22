@@ -14,6 +14,9 @@ foreach ($target in $targets) {
  if (!$process) { continue }
  $command = (Get-CimInstance Win32_Process -Filter "ProcessId=$processId").CommandLine
  $sameStart = [Math]::Abs(($process.StartTime - (Get-Item -LiteralPath $record).LastWriteTime).TotalSeconds) -lt 30
+ if ($process.ProcessName -eq $target.Name -and $sameStart -and [string]::IsNullOrWhiteSpace($command)) {
+  throw "Cannot read the launch command for PID $processId. Open PowerShell with 'Run as administrator' and run Stop-Simple.ps1 again. The recorded PID/start time match, but process ownership cannot be verified from this window. No process was stopped."
+ }
  if ($process.ProcessName -ne $target.Name -or !$sameStart -or !$command -or !$command.Contains($target.Marker)) {
   throw "PID $processId no longer matches this launcher. It was left running."
  }

@@ -41,6 +41,10 @@ foreach ($entry in @(@{File='platform.pid';Marker='simple-compat.mjs'}, @{File='
  $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
  if (!$process) { continue }
  $command = (Get-CimInstance Win32_Process -Filter "ProcessId=$processId").CommandLine
+ if ($process.ProcessName -eq 'node' -and [string]::IsNullOrWhiteSpace($command) -and
+     [Math]::Abs(($process.StartTime - (Get-Item -LiteralPath $record).LastWriteTime).TotalSeconds) -lt 30) {
+  throw "SIMPLE has a recorded running process (PID $processId), but this window cannot read its launch command. Open PowerShell with 'Run as administrator', then use Stop-Simple.ps1 -HeadlessGama and Start-Simple.ps1 -Headless. Existing services were left running."
+ }
  if ($process.ProcessName -eq 'node' -and $command -and $command.Contains($entry.Marker) -and
      [Math]::Abs(($process.StartTime - (Get-Item -LiteralPath $record).LastWriteTime).TotalSeconds) -lt 30) { $ownedRunning++ }
 }

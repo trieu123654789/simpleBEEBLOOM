@@ -40,6 +40,11 @@ namespace LetItBee.HoneyPilot
         readonly HashSet<string> receipts = new HashSet<string>();
         readonly AudioSource notes, gathering;
         readonly AudioClip pickupSound, pollenSound, snapSound, landingSound, gatheringSound, stretchSound;
+        readonly List<AudioClip> generatedSounds = new List<AudioClip>();
+        readonly BeeInteractionAudio audioProfile;
+        readonly float carriedScale;
+        readonly AudioSource[] eventVoices = new AudioSource[6];
+        int nextVoice;
         int count, previousCount, sourceFlower = -1, transferFlower = -1, collectionFlower = -1, landedFlower = -1;
         float clock, amount, intensity = 1f, volume = 0.45f, haptics = 0.6f, flowTime, nextHaptic;
         float sourceAt = -100f, transferAt = -100f, collectAt = -100f, depositAt = -100f, leaveAt = -100f, pickupAt = -100f;
@@ -49,6 +54,7 @@ namespace LetItBee.HoneyPilot
         Vector3 pickupStart;
         Quaternion pickupRotation;
         bool depositChimed, pickupChimed;
+        bool depositSoundStarted;
         public bool Ready => dotsMaterial != null;
         public int VisibleMotes => count;
         public float Formation => amount;
@@ -74,11 +80,15 @@ namespace LetItBee.HoneyPilot
             return SocketCenter + SocketRotation*new Vector3(Mathf.Cos(angle)*Mathf.Abs(e.x)*1.04f*radius,
                 Mathf.Sin(angle)*Mathf.Abs(e.y)*1.04f*radius,Mathf.Abs(e.z)+outset);
         }
-        public bool CollectionAnimating => clock - collectAt < 0.4f;
-        public bool PickupAnimating => clock - pickupAt < 0.34f;
+        float FormationDuration => audioProfile != null ? Mathf.Max(0.38f, audioProfile.formationImpactSeconds) : 0.38f;
+        float PickupDuration => audioProfile != null ? Mathf.Max(0.34f, audioProfile.pickupImpactSeconds) : 0.34f;
+        Vector3 landingPosition; float landingAt = -100f;
+        public void SetLandingSurface(Vector3 position) { landingPosition = position; }
+        public bool CollectionAnimating => clock - collectAt < FormationDuration + 0.02f;
+        public bool PickupAnimating => clock - pickupAt < PickupDuration;
         public bool PickupThreadVisible => pickupThread != null && pickupThread.enabled;
         public float CollectionScale {
-            get { float t = Mathf.Clamp01((clock - collectAt) / 0.38f)-1f; return 1f + 2.1f*t*t*t + 1.1f*t*t; }
+            get { float t = Mathf.Clamp01((clock - collectAt) / FormationDuration)-1f; return 1f + 2.1f*t*t*t + 1.1f*t*t; }
         }
         Transform Flower(int i) => i == 0 ? flowerA : flowerB;
         // Calibrated against the existing Daisy rig: Head is below the corolla.
@@ -87,7 +97,7 @@ namespace LetItBee.HoneyPilot
         public Vector3 NectarRestPosition(int flower) => flowers[flower].Nectar;
 
         public BeeHoneyFeedback(Transform parent, Camera view, Transform a, Transform b, Transform hive, Material nectarSource = null,
-            Renderer socketGeometry = null, Mesh nectarMesh = null)
+            Renderer socketGeometry = null, Mesh nectarMesh = null, BeeInteractionAudio audioSettings = null, float miniatureScale = 1f)
         {
             camera = view; flowerA = a; flowerB = b; slot = hive;
             visualParent = parent; socketArt = socketGeometry;
@@ -139,11 +149,17 @@ namespace LetItBee.HoneyPilot
             honeyHover = Line("Honey grab target",33,true);
             gatherProgress = Line("Nectar hold progress",41,false);
             for (int i = 0; i < waxEchoes.Length; i++) waxEchoes[i] = Line("Wax warmth " + i,7,true);
+            carriedScale = Mathf.Clamp(miniatureScale, 0.05f, 1f);
             notes = Audio("Honey event audio"); gathering = Audio("Nectar gathering audio");
-            pickupSound = Sound(0, 0.28f); pollenSound = Sound(1, 0.65f); snapSound = Sound(2, 0.46f);
-            landingSound = Sound(3, 0.16f); gatheringSound = Sound(4, 1.6f);
-            stretchSound = Sound(5,0.32f);
+            audioProfile = audioSettings != null ? audioSettings : Resources.Load<BeeInteractionAudio>("BeeAudio/InteractionAudio");
+            pickupSound = Clip(audioProfile != null ? audioProfile.honeyFormation : null, 0, 0.28f);
+            pollenSound = Clip(audioProfile != null ? audioProfile.pollenPop : null, 1, 0.65f);
+            snapSound = Clip(audioProfile != null ? audioProfile.hiveDeposit : null, 2, 0.46f);
+            landingSound = Clip(audioProfile != null ? audioProfile.landingClip : null, 3, 0.16f);
+            gatheringSound = Clip(audioProfile != null ? audioProfile.nectarSip : null, 4, 1.6f);
+            stretchSound = Clip(audioProfile != null ? audioProfile.honeyPickup : null, 5, 0.32f);
             gathering.clip = gatheringSound; gathering.loop = true;
+            for (int i = 0; i < eventVoices.Length; i++) eventVoices[i] = Audio("Spatial event voice " + i);
         }
 
         LineRenderer Line(string name, int points, bool loop)
@@ -183,7 +199,7 @@ namespace LetItBee.HoneyPilot
                 if (pollinated) {
                     transferFlower = flower; transferAt = clock; transferStart = carrier;
                     Play(pollenSound, Flower(flower).position, 0.7f); Pulse(XRNode.RightHand, 0.12f, 0.1f);
-                } else { Play(pickupSound, Flower(flower).position, 0.35f); Pulse(XRNode.RightHand, 0.045f, 0.06f); }
+                } else { Play(pollenSound, Flower(flower).position, 0.35f); Pulse(XRNode.RightHand, 0.045f, 0.06f); }
             } else if (kind == "collect") {
                 collectionFlower = flower; collectAt = clock; amount = 0;
                 Play(pickupSound, flower >= 0 ? NectarRestPosition(flower) : chunkPosition, 0.8f); Pulse(XRNode.RightHand, 0.15f, 0.08f);
@@ -191,6 +207,7 @@ namespace LetItBee.HoneyPilot
                 pickupAt = -100f;
                 depositAt = clock; depositStart = chunkPosition; depositRotation = chunkRotation;
                 depositChimed = false;
+                depositSoundStarted = false;
             } else if (kind == "pick") {
                 pickupAt = clock; pickupStart = chunkPosition; pickupRotation = chunkRotation; pickupChimed = false;
                 Play(stretchSound,chunkPosition,0.65f); Pulse(XRNode.RightHand,0.045f,0.06f);
@@ -215,7 +232,7 @@ namespace LetItBee.HoneyPilot
         }
         public void PickupPose(Transform hand, out Vector3 position, out Quaternion rotation)
         {
-            float t = Mathf.Clamp01((clock-pickupAt)/0.34f), ease = 1f-Mathf.Pow(1f-t,3f);
+            float t = Mathf.Clamp01((clock-pickupAt)/PickupDuration), ease = 1f-Mathf.Pow(1f-t,3f);
             Vector3 target = hand.TransformPoint(new Vector3(0f,0.015f,0.12f));
             position = Vector3.Lerp(pickupStart,target,ease) + Vector3.up*(0.024f*Mathf.Sin(t*Mathf.PI));
             rotation = Quaternion.Slerp(pickupRotation,hand.rotation,ease);
@@ -230,18 +247,18 @@ namespace LetItBee.HoneyPilot
         }
         public Vector3 NectarScale(string state)
         {
-            if (state == "ready" && CollectionAnimating) return Vector3.one*Mathf.Max(0.05f,CollectionScale);
+            if (state == "ready" && CollectionAnimating) return Vector3.one*carriedScale*Mathf.Max(0.05f,CollectionScale);
             if (state == "held" && PickupAnimating) {
-                float stretch = Mathf.Sin(Mathf.Clamp01((clock-pickupAt)/0.34f)*Mathf.PI);
-                return new Vector3(1f-stretch*0.055f,1f-stretch*0.055f,1f+stretch*0.14f);
+                float stretch = Mathf.Sin(Mathf.Clamp01((clock-pickupAt)/PickupDuration)*Mathf.PI);
+                return new Vector3(1f-stretch*0.055f,1f-stretch*0.055f,1f+stretch*0.14f)*carriedScale;
             }
             float seat = clock-depositAt;
             if (state == "stored") {
-                Vector3 fit = Vector3.Lerp(Vector3.one,SocketScale,Mathf.SmoothStep(0f,1f,seat/AlignDuration));
+                Vector3 fit = Vector3.Lerp(Vector3.one*carriedScale,SocketScale,Mathf.SmoothStep(0f,1f,seat/AlignDuration));
                 float squeeze = seat >= SeatTime && seat < SeatTime+0.25f ? Mathf.Sin((seat-SeatTime)/0.25f*Mathf.PI) : 0f;
                 return Vector3.Scale(fit,new Vector3(1f+squeeze*0.015f,1f+squeeze*0.015f,1f-squeeze*0.035f));
             }
-            return Vector3.one;
+            return Vector3.one*carriedScale;
         }
         public float FlowerBloom(int flower)
         {
@@ -267,7 +284,7 @@ namespace LetItBee.HoneyPilot
             int nowLanded = settled ? perched : -1;
             if (nowLanded != landedFlower) {
                 if (landedFlower >= 0) { releasedFlower = landedFlower; leaveAt = clock; }
-                if (nowLanded >= 0) { Play(landingSound, Flower(nowLanded).position, 0.55f); Pulse(XRNode.LeftHand, 0.07f, 0.07f); }
+                if (nowLanded >= 0) { landingAt = clock; Play(landingSound, landingPosition, 0.55f); Pulse(XRNode.LeftHand, audioProfile != null ? audioProfile.landingHapticIntensity : 0.07f, 0.07f); }
                 landedFlower = nowLanded;
             }
             for (int i = 0; i < 2; i++) {
@@ -315,13 +332,15 @@ namespace LetItBee.HoneyPilot
                 float angle = i*2.094f+flowTime;
                 float merge = Mathf.SmoothStep(0f,1f,Mathf.InverseLerp(0.35f,0.94f,amount));
                 liquidDrops[i].position = NectarRestPosition(gatheringFlower) + Orbit(angle,0.045f*(1f-merge),0.012f*Mathf.Sin(angle*1.7f)*(1f-merge));
-                liquidDrops[i].localScale = Vector3.one*Mathf.Lerp(0.1f,0.85f,amount);
+                liquidDrops[i].localScale = Vector3.one*carriedScale*Mathf.Lerp(0.1f,0.85f,amount);
             }
             if (gathering != null) {
                 if (gatheringFlower >= 0) gathering.transform.position = Flower(gatheringFlower).position;
-                gathering.volume = volume * amount * 0.28f; gathering.pitch = 0.85f + amount * 0.25f;
-                if (amount > 0.01f && !gathering.isPlaying && Application.isPlaying) gathering.Play();
-                if (amount <= 0.01f && gathering.isPlaying) gathering.Stop();
+                float audioTarget = live && charge > 0f && !waitingCollect ? volume * (audioProfile != null ? audioProfile.sipVolume : 0.28f) : 0f;
+                gathering.volume = Mathf.MoveTowards(gathering.volume, audioTarget, dt / Mathf.Max(0.025f, audioProfile != null ? audioProfile.fadeSeconds : 0.12f));
+                gathering.pitch = Mathf.Lerp(0.96f, 1.04f, charge);
+                if (audioTarget > 0.001f && !gathering.isPlaying && Application.isPlaying) gathering.Play();
+                if (audioTarget == 0f && gathering.volume <= 0.001f && gathering.isPlaying) gathering.Stop();
             }
             if (live && charge > 0f && clock >= nextHaptic) { nextHaptic = clock + 0.18f; Pulse(XRNode.RightHand, 0.025f + charge*0.04f, 0.035f); }
             if (pollenSource >= 0 && pollenSource < 2) {
@@ -334,6 +353,14 @@ namespace LetItBee.HoneyPilot
             if (waitingVisit && contact >= 0) Dot(FlowerSurface(contact) + Vector3.up*0.04f, 0.018f, Cream, 0.35f);
             FlyPollen(sourceAt, sourceFlower, false);
             FlyPollen(transferAt, transferFlower, true);
+            float landingAge = clock - landingAt;
+            if (landingAge >= 0f && landingAge < 0.45f) {
+                int particles = audioProfile != null ? audioProfile.pollenParticleCount : 8;
+                for (int i = 0; i < particles; i++) {
+                    float t = landingAge / 0.45f, angle = i * Mathf.PI * 2f / Mathf.Max(1, particles);
+                    Dot(landingPosition + Orbit(angle, 0.015f + t * 0.055f, 0.01f + 0.035f * Mathf.Sin(t * Mathf.PI)), 0.004f * (1f - t), Nectar, 1f - t);
+                }
+            }
             float pop = clock - collectAt;
             if (collectionFlower >= 0 && pop >= 0f && pop < 0.55f) {
                 for (int i = 0; i < 12; i++) {
@@ -343,14 +370,14 @@ namespace LetItBee.HoneyPilot
             }
             float lift = clock-pickupAt;
             float threadDistance = Vector3.Distance(pickupStart,chunkPosition);
-            bool stretching = chunkState == "held" && lift >= 0f && lift < 0.3f && threadDistance < 0.55f;
+            bool stretching = chunkState == "held" && lift >= 0f && lift < PickupDuration && threadDistance < 0.55f;
             pickupThread.enabled = stretching && intensity > 0f;
             if (stretching) {
                 for (int i = 0; i < pickupThread.positionCount; i++) {
                     float t = (float)i/(pickupThread.positionCount-1);
                     pickupThread.SetPosition(i,Vector3.Lerp(pickupStart,chunkPosition,t)-Vector3.up*(0.026f*Mathf.Sin(t*Mathf.PI)));
                 }
-                Style(pickupThread,Mathf.Lerp(0.009f,0.002f,lift/0.3f),Nectar,0.8f);
+                Style(pickupThread,Mathf.Lerp(0.009f,0.002f,lift/PickupDuration),Nectar,0.8f);
                 pickupThread.endWidth *= 0.45f;
             }
             if (!pickupChimed && lift >= 0.28f && lift < 0.7f && chunkState == "held") {
@@ -370,8 +397,12 @@ namespace LetItBee.HoneyPilot
                 && (camera == null || Vector3.Distance(camera.transform.position,slot.position) <= 2f
                     && Vector3.Dot(camera.transform.position-slot.position,slot.forward) >= -0.05f);
             float snap = clock - depositAt;
+            if (audioProfile != null && !depositSoundStarted && snap >= Mathf.Max(0f, SeatTime - audioProfile.depositImpactSeconds)
+                && snap < SeatTime + 0.85f) {
+                depositSoundStarted = true; Play(snapSound, slot.position, 0.85f);
+            }
             if (!depositChimed && snap >= SeatTime && snap < SeatTime+0.85f) {
-                depositChimed = true; Play(snapSound,slot.position,0.85f); Pulse(XRNode.RightHand,0.2f,0.1f);
+                depositChimed = true; if (audioProfile == null) Play(snapSound,slot.position,0.85f); Pulse(XRNode.RightHand,0.2f,0.1f);
             }
             if (NectarMaterial != null) {
                 NectarMaterial.SetFloat("_Warmth",intensity*Mathf.Max(Mathf.Clamp01(1f-pop/0.55f),Mathf.Clamp01(1f-snap/1.2f)));
@@ -471,7 +502,20 @@ namespace LetItBee.HoneyPilot
             mesh.vertices = vertices; mesh.colors = colors; mesh.RecalculateBounds();
         }
         void Play(AudioClip clip, Vector3 position, float gain)
-        { if (notes != null && Application.isPlaying) { notes.transform.position = position; notes.PlayOneShot(clip,volume*gain); } }
+        {
+            if (notes == null || !Application.isPlaying || clip == null) return;
+            if (audioProfile != null) gain = clip == pollenSound ? audioProfile.pollenVolume
+                : clip == pickupSound ? audioProfile.formationVolume : clip == snapSound ? audioProfile.depositVolume
+                : clip == stretchSound ? audioProfile.pickupVolume : clip == landingSound ? audioProfile.landingVolume : gain;
+            var voice = eventVoices[nextVoice++ % eventVoices.Length];
+            if (voice == null) voice = notes;
+            voice.Stop(); voice.transform.position = position; voice.clip = clip; voice.volume = volume * gain; voice.Play();
+        }
+        AudioClip Clip(AudioClip asset, int kind, float duration)
+        {
+            if (asset != null) return asset;
+            var generated = Sound(kind, duration); generatedSounds.Add(generated); return generated;
+        }
         void Pulse(XRNode node, float amplitude, float duration)
         {
             if (!Application.isPlaying || haptics <= 0f) return;
@@ -508,7 +552,7 @@ namespace LetItBee.HoneyPilot
         public void Dispose()
         {
             Destroy(root); Destroy(mesh); Destroy(dotsMaterial); Destroy(ribbonMaterial); Destroy(NectarMaterial); Destroy(dropletMesh);
-            Destroy(pickupSound); Destroy(pollenSound); Destroy(snapSound); Destroy(landingSound); Destroy(gatheringSound); Destroy(stretchSound);
+            foreach (var generated in generatedSounds) Destroy(generated);
         }
         static Mesh DropletMesh()
         {

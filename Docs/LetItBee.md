@@ -1,6 +1,6 @@
 # Let It Bee — Kế hoạch, tiến độ và hướng dẫn phát triển
 
-Cập nhật: **21/10/2026**. Đây là tài liệu chính của Let It Bee, hợp nhất các bản
+Cập nhật: **22/10/2026**. Đây là tài liệu chính của Let It Bee, hợp nhất các bản
 plan, checklist, tiến độ và hướng dẫn kỹ thuật đã tạo trong quá trình làm việc.
 Khi thay đổi phạm vi hoặc hoàn thành công việc, cập nhật tại đây.
 
@@ -23,6 +23,25 @@ HUD và thông số bay người dùng đã lưu được giữ nguyên; hiệu 
 
 ## 1. Trạng thái và phạm vi đã chốt
 
+### Đậu cánh hoa, lượn và âm thanh — 22/10/2026
+
+Hai hoa hiện có 26 vùng đậu trên **cánh hoa trắng**, thay cho các điểm nhánh xanh
+bị đặt sai trước đây. Bấm trigger trái gần hoa để tự đáp; bấm lại để rời, thả nút
+vẫn bám trên cánh. Trigger trái không còn giữ vị trí giữa không trung trong bản này.
+Khi đã đậu, joystick trái cho đi trên cánh và qua nhụy; tới mép thì giữ lại trên mặt hoa.
+Collider phủ mesh hoa và theo hoạt cảnh. Bản cân bằng bay thay rơi 9,81 m/s²
+bằng gia tốc hạ 1,4 m/s², giới hạn 0,9 m/s và chuyển tiếp 0,3 s sau nhịp quẹt.
+Quẹt tăng lực nâng dần; nhả joystick giữ đà theo thế giới để quay đầu nhìn tự do.
+`Balanced World Flight` độc lập tỷ lệ XR; tốc độ tiến/lùi/ngang đã lưu được giữ nguyên.
+
+Âm bay dùng file Cartoon Flutter được chỉ định. Âm đáp cánh, tạo mật và nhấc mật
+đã tách thành ba clip mới, đồng bộ với tiếp xúc/ngưng tụ/kéo tách. Thông số mới
+hiển thị tiếng Anh. Xem [vị trí chỉnh và kết quả kiểm tra](VR-Embodiment.md).
+
+Kiểm tra Editor và GAMA thật đạt; vẫn cần đeo Quest xác nhận cảm giác tỉ lệ,
+độ dễ đáp, độ lớn âm và độ dễ chịu. Các ghi chép giữ trigger/đậu nhánh phía dưới
+là lịch sử triển khai.
+
 ### Cập nhật vòng đầy tổ — 21/10/2026
 
 Bản mới mở rộng sang **7 ô thật của tổ hiện có**, vẫn dùng hai hoa A/B và chỉ
@@ -39,7 +58,7 @@ mang một cục mật mỗi lần. Các ghi nhận 1/1 phía dưới là lịch
   Đây là nhịp gameplay, không phải tốc độ sinh mật sinh học đã hiệu chuẩn.
 - HUD đọc số ô đã giao và trạng thái mật từ GAMA, không sửa giá trị `BeeGameStats`
   hoặc bố trí HUD đã lưu. Mục tiêu mặc định: đầy tổ và thụ phấn cả hai hoa.
-- Giữ trigger trái để ổn định/đậu; trigger phải để tụ mật; grip phải để cầm,
+- Bấm trigger trái để đậu trên cánh hoa trắng, bấm lại để rời; trigger phải để tụ mật; grip phải để cầm,
   thả tại ô trống phía trước tổ để gắn. Cục mật căn rồi trượt vào đúng mesh ô.
 - Khi thả ngoài tổ, mật hạ xuống bề mặt hợp lệ trong 2 m; nếu không tìm thấy
   bề mặt hoặc gặp water collider, mật trở về hoa nguồn sau xác nhận server.
@@ -180,7 +199,7 @@ của hoạt ảnh vẫn cần người chơi đánh giá.
 | Bước | Thao tác và kết quả |
 | --- | --- |
 | Ghé hoa A | Giữ ổn định, đậu hẳn hoặc chạm/ngắm nhụy chủ động khoảng 0,4 giây; GAMA xác nhận nhận phấn. Bay ngang không tự thụ phấn |
-| Đậu hoa | Giữ trigger trái cạnh cành/lá; ong phanh rồi đáp chậm khi nằm trong vùng tiếp cận. Thả trigger trái để rời cành |
+| Đậu hoa | Bấm trigger trái gần hoa để tự đáp lên cánh trắng; bấm lại để rời. Không cần giữ nút |
 | Lấy mật | Khi đã đậu, giữ trigger phải đủ `Collect Duration`; nếu chưa đậu thì ngắm tâm hoa bằng tay phải. GAMA xác nhận rồi cấp cục mật |
 | Cầm mật | Đưa tay gần hoặc ngắm đúng cục mật, giữ grip phải (cò bên hông, ngón giữa) để cầm; không bắt buộc giữ trigger trái. Trigger phía trước, ngón trỏ, dùng lấy mật |
 | Chuyển phấn | Đậu hoặc chủ động tiếp xúc hoa B của cây khác nhưng cùng mã loài; GAMA xác nhận cây B nhận phấn, kể cả lúc đang mang mật |
