@@ -832,7 +832,7 @@ namespace LetItBee.HoneyPilot
         }
         void BuildViews()
         {
-            chunk = Visual("Pilot nectar chunk", honeyMaterial); chunk.gameObject.SetActive(false);
+            chunk = BeeHoneyPresentationLibrary.CreateNectar(transform, honeyMesh, honeyMaterial, "Pilot nectar chunk"); chunk.gameObject.SetActive(false);
             chargeVisual = Visual("Nectar charge preview", ghostMaterial);
             chargeVisual.gameObject.SetActive(false);
             ghost = Visual("Empty hive slot", ghostMaterial); ghost.position = slot.position; ghost.rotation = slot.rotation;

@@ -38,7 +38,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Caustic_Texture:
-        m_Texture: {fileID: 2800000, guid: fe2f8732316d29640b35c9d616cdad40, type: 3}
+        m_Texture: {fileID: 2800000, guid: a53cf5449d11a15d1100a04b44295342, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise_Blending:
@@ -74,14 +74,14 @@ Material:
     - _Tiling: 5.15
     - _UV_Noise: 12.38
     m_Colors:
-    - _Caustic_Color: {r: 0.56910825, g: 0.7788136, b: 0.8207547, a: 0}
+    - _Caustic_Color: {r: 0.094517596, g: 0.11028722, b: 0.11320752, a: 0}
     - _Color1: {r: 0.9056604, g: 0.9056604, b: 0.9056604, a: 0}
     - _Shadow_Color: {r: 0.9056604, g: 0.9056604, b: 0.9056604, a: 0}
     - _UV_Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _Water_Color: {r: 0.30072978, g: 0.57620126, b: 0.5849056, a: 0}
     - _Water_Color_02: {r: 0.33891064, g: 0.50597805, b: 0.6037736, a: 0}
     - _Water_Color_03: {r: 0.21568629, g: 0.39607847, b: 0.46274513, a: 0}
-    - _Water_Color_Clear: {r: 0.509434, g: 0.3995791, b: 0.15138839, a: 0.7019608}
-    - _Water_Color_Salty: {r: 0.19037023, g: 0.30528346, b: 0.5849056, a: 0}
+    - _Water_Color_Clear: {r: 0.7924528, g: 0.57967514, b: 0.1009256, a: 0.7019608}
+    - _Water_Color_Salty: {r: 0.19215685, g: 0.47691235, b: 0.58431375, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

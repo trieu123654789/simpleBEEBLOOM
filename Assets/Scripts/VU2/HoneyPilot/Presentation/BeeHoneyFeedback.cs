@@ -8,20 +8,21 @@ namespace LetItBee.HoneyPilot
 {
     // Presentation only: never owns inventory, tracking, colliders or flight.
     // Mesh/line buffers are reused; no per-frame GameObjects or particle allocations.
-    public sealed class BeeHoneyFeedback : IDisposable
+    public sealed partial class BeeHoneyFeedback : IDisposable
     {
         const int Capacity = 160;
-        static readonly Color Nectar = new Color(1f, 0.64f, 0.08f);
-        static readonly Color Pollen = new Color(1f, 0.83f, 0.24f);
-        static readonly Color Cream = new Color(1f, 0.94f, 0.63f);
+        Color Nectar => presentation != null ? presentation.nectarColor : new Color(1f, 0.64f, 0.08f);
+        Color Pollen => presentation != null ? presentation.pollenColor : new Color(1f, 0.83f, 0.24f);
+        Color Cream => presentation != null ? presentation.highlightColor : new Color(1f, 0.94f, 0.63f);
         readonly GameObject root;
         readonly Transform flowerA, flowerB, slot;
         readonly Transform visualParent;
         Renderer socketArt;
         public void SetSocket(Renderer value) { socketArt = value; }
         readonly Bounds nectarBounds;
-        const float AlignDuration = 0.36f, InsertDuration = 0.6f;
-        const float SeatTime = AlignDuration + InsertDuration;
+        float AlignDuration => presentation != null ? Mathf.Max(0.05f, presentation.alignmentDuration) : 0.36f;
+        float InsertDuration => presentation != null ? Mathf.Max(0.05f, presentation.insertionDuration) : 0.6f;
+        float SeatTime => AlignDuration + InsertDuration;
         readonly BeeFlowerGeometry[] flowers;
         readonly Camera camera;
         readonly Mesh mesh;
@@ -100,11 +101,17 @@ namespace LetItBee.HoneyPilot
             Renderer socketGeometry = null, Mesh nectarMesh = null, BeeInteractionAudio audioSettings = null, float miniatureScale = 1f)
         {
             camera = view; flowerA = a; flowerB = b; slot = hive;
+            presentation = BeeHoneyPresentationLibrary.Load();
             visualParent = parent; socketArt = socketGeometry;
             nectarBounds = nectarMesh != null ? nectarMesh.bounds : new Bounds(Vector3.zero,new Vector3(0.16f,0.16f,0.07f));
             flowers = new[] { new BeeFlowerGeometry(a), new BeeFlowerGeometry(b) };
             root = new GameObject("Honey feedback (runtime)"); root.layer = 2;
             root.transform.SetParent(parent, false);
+            if (presentation != null && presentation.HasEffectPrefabs) {
+                flowerRig = InstantiateRig(presentation.flowerEffectsPrefab, root.transform);
+                carryRig = InstantiateRig(presentation.carryEffectsPrefab, root.transform);
+                hiveRig = InstantiateRig(presentation.hiveEffectsPrefab, root.transform);
+            }
             var shader = Resources.Load<Shader>("HoneyFeedback");
             if (shader == null) { Debug.LogWarning("Bee Bloom: honey feedback shader missing; using basic cues."); return; }
             dotsMaterial = new Material(shader) { name = "Honey motes (runtime)", hideFlags = HideFlags.DontSave };
@@ -121,11 +128,19 @@ namespace LetItBee.HoneyPilot
                         NectarMaterial.SetTextureOffset("_BaseMap",nectarSource.GetTextureOffset("_BaseMap"));
                     }
                 }
-                dropletMesh = DropletMesh();
+                ownsDropletMesh = presentation == null || presentation.dropletMesh == null;
+                dropletMesh = ownsDropletMesh ? DropletMesh() : presentation.dropletMesh;
                 for (int i = 0; i < liquidDrops.Length; i++) {
-                    var drop = new GameObject("Nectar liquid preview " + i); drop.layer = 2; drop.transform.SetParent(root.transform,false);
-                    drop.AddComponent<MeshFilter>().sharedMesh = dropletMesh;
-                    var draw = drop.AddComponent<MeshRenderer>(); draw.sharedMaterial = NectarMaterial;
+                    var drop = flowerRig != null && flowerRig.droplets.Length > i && flowerRig.droplets[i] != null
+                        ? flowerRig.droplets[i].gameObject : new GameObject("Nectar liquid preview " + i);
+                    drop.layer = 2;
+                    if (drop.transform.parent == null) drop.transform.SetParent(root.transform, false);
+                    var filter = drop.GetComponent<MeshFilter>();
+                    if (filter == null) filter = drop.AddComponent<MeshFilter>();
+                    filter.sharedMesh = dropletMesh;
+                    var draw = drop.GetComponent<MeshRenderer>();
+                    if (draw == null) draw = drop.AddComponent<MeshRenderer>();
+                    draw.sharedMaterial = NectarMaterial;
                     draw.shadowCastingMode = ShadowCastingMode.Off; draw.receiveShadows = false;
                     liquidDrops[i] = drop.transform; drop.SetActive(false);
                 }
@@ -139,8 +154,10 @@ namespace LetItBee.HoneyPilot
                 triangles[t+3] = v; triangles[t+4] = v+2; triangles[t+5] = v+3;
             }
             mesh.vertices = vertices; mesh.colors = colors; mesh.uv = uv; mesh.triangles = triangles;
-            root.AddComponent<MeshFilter>().sharedMesh = mesh;
-            renderer = root.AddComponent<MeshRenderer>(); renderer.sharedMaterial = dotsMaterial;
+            var motesFilter = carryRig != null ? carryRig.motesFilter : root.AddComponent<MeshFilter>();
+            motesFilter.sharedMesh = mesh;
+            renderer = carryRig != null ? carryRig.motesRenderer : root.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = dotsMaterial;
             renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
             for (int i = 0; i < 2; i++) flowerRings[i] = Line("Flower warmth " + i, 41, true);
             for (int i = 0; i < 3; i++) streams[i] = Line("Nectar filament " + i, 20, false);
@@ -151,7 +168,8 @@ namespace LetItBee.HoneyPilot
             for (int i = 0; i < waxEchoes.Length; i++) waxEchoes[i] = Line("Wax warmth " + i,7,true);
             carriedScale = Mathf.Clamp(miniatureScale, 0.05f, 1f);
             notes = Audio("Honey event audio"); gathering = Audio("Nectar gathering audio");
-            audioProfile = audioSettings != null ? audioSettings : Resources.Load<BeeInteractionAudio>("BeeAudio/InteractionAudio");
+            audioProfile = audioSettings != null ? audioSettings : presentation != null && presentation.audioProfile != null
+                ? presentation.audioProfile : Resources.Load<BeeInteractionAudio>("BeeAudio/InteractionAudio");
             pickupSound = Clip(audioProfile != null ? audioProfile.honeyFormation : null, 0, 0.28f);
             pollenSound = Clip(audioProfile != null ? audioProfile.pollenPop : null, 1, 0.65f);
             snapSound = Clip(audioProfile != null ? audioProfile.hiveDeposit : null, 2, 0.46f);
@@ -164,6 +182,8 @@ namespace LetItBee.HoneyPilot
 
         LineRenderer Line(string name, int points, bool loop)
         {
+            var authored = PrefabLine(name);
+            if (authored != null) return authored;
             var go = new GameObject(name); go.layer = 2; go.transform.SetParent(root.transform, false);
             var line = go.AddComponent<LineRenderer>(); line.sharedMaterial = ribbonMaterial;
             line.useWorldSpace = true; line.positionCount = points; line.loop = loop;
@@ -173,6 +193,8 @@ namespace LetItBee.HoneyPilot
         }
         AudioSource Audio(string name)
         {
+            var authored = PrefabAudio(name);
+            if (authored != null) return authored;
             var go = new GameObject(name); go.transform.SetParent(root.transform, false);
             var audio = go.AddComponent<AudioSource>(); audio.playOnAwake = false;
             audio.spatialBlend = 1f; audio.dopplerLevel = 0; audio.minDistance = 0.25f; audio.maxDistance = 5f;
@@ -479,7 +501,7 @@ namespace LetItBee.HoneyPilot
             }
         }
         void Style(LineRenderer line, float width, Color color, float alpha)
-        { line.startWidth = line.endWidth = width; color.a = Mathf.Clamp01(alpha*intensity); line.startColor = line.endColor = color; }
+        { line.startWidth = line.endWidth = width * (presentation != null ? presentation.lineWidthScale : 1f); color.a = Mathf.Clamp01(alpha*intensity); line.startColor = line.endColor = color; }
         void Dot(Vector3 position, float size, Color color, float alpha)
             => Sprite(position,size,size,color,alpha);
         void Spark(Vector3 position, float size, Color color, float alpha)
@@ -488,8 +510,9 @@ namespace LetItBee.HoneyPilot
         {
             if (count >= Capacity || alpha * intensity < 0.001f || width <= 0f || height <= 0f) return;
             if (camera != null && ((position-camera.transform.position).sqrMagnitude < 0.0625f || (position-camera.transform.position).sqrMagnitude > 36f)) return;
-            Vector3 right = (camera != null ? camera.transform.right : Vector3.right)*width;
-            Vector3 up = (camera != null ? camera.transform.up : Vector3.up)*height;
+            float sizeScale = presentation != null ? presentation.particleSizeScale : 1f;
+            Vector3 right = (camera != null ? camera.transform.right : Vector3.right)*width*sizeScale;
+            Vector3 up = (camera != null ? camera.transform.up : Vector3.up)*height*sizeScale;
             int v = count++*4; color.a = Mathf.Clamp01(alpha*intensity);
             vertices[v] = root.transform.InverseTransformPoint(position-right-up); vertices[v+1] = root.transform.InverseTransformPoint(position+right-up);
             vertices[v+2] = root.transform.InverseTransformPoint(position+right+up); vertices[v+3] = root.transform.InverseTransformPoint(position-right+up);
@@ -551,7 +574,7 @@ namespace LetItBee.HoneyPilot
         { if (value == null) return; if (Application.isPlaying) UnityEngine.Object.Destroy(value); else UnityEngine.Object.DestroyImmediate(value); }
         public void Dispose()
         {
-            Destroy(root); Destroy(mesh); Destroy(dotsMaterial); Destroy(ribbonMaterial); Destroy(NectarMaterial); Destroy(dropletMesh);
+            Destroy(root); Destroy(mesh); Destroy(dotsMaterial); Destroy(ribbonMaterial); Destroy(NectarMaterial); if (ownsDropletMesh) Destroy(dropletMesh);
             foreach (var generated in generatedSounds) Destroy(generated);
         }
         static Mesh DropletMesh()

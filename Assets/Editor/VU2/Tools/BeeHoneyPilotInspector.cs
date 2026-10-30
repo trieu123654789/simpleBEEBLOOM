@@ -7,6 +7,7 @@ public sealed class BeeHoneyPilotInspector : Editor
 {
     public override void OnInspectorGUI()
     {
+        HoneyInspectorPreview.Draw((Component)target);
         DrawDefaultInspector();
         var pilot = (BeeHoneyPilot)target;
         if (Application.isPlaying) {

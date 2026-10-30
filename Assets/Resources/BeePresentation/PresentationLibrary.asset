@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dc60ce1bca41fc48b2b8bf9c7f50e34, type: 3}
+  m_Name: PresentationLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::LetItBee.HoneyPilot.BeeHoneyPresentationLibrary
+  nectarPrefab: {fileID: 4232474779478575096, guid: 20f88729ccd76fb4989801cbb224b9a1, type: 3}
+  flowerEffectsPrefab: {fileID: 2998801084928957494, guid: 429aacdacdd4f0a409f5be5319c1f106, type: 3}
+  carryEffectsPrefab: {fileID: 5378275130832411224, guid: 5e4d13497e866104ba4da0be21466cb2, type: 3}
+  hiveEffectsPrefab: {fileID: 3361764185031220880, guid: c1e48471b4824704796caee901b48559, type: 3}
+  dropletMesh: {fileID: 4300000, guid: be2808757c25c3645b288719a0b80926, type: 2}
+  nectarColor: {r: 1, g: 0.64, b: 0.08, a: 1}
+  pollenColor: {r: 1, g: 0.83, b: 0.24, a: 1}
+  highlightColor: {r: 1, g: 0.94, b: 0.63, a: 1}
+  alignmentDuration: 0.36
+  insertionDuration: 0.6
+  lineWidthScale: 1
+  particleSizeScale: 1
+  audioProfile: {fileID: 11400000, guid: a337c66457483034cb551cdc95182558, type: 2}
