@@ -887,6 +887,12 @@ public partial class BeeController : MonoBehaviour
 
     private void Update()
     {
+        if (LetItBee.UI.BeeMenuInput.Blocked) {
+            ClearStrokeLift(); ExternalFlapOverride = false; IsFlapping = false; HoldVisualBob = 0f;
+            _lastFlightVelocity = worldHorizontalVelocity = Vector3.zero;
+            _currentForwardSpeed = _currentStrafeSpeed = _verticalVelocity = 0f;
+            return;
+        }
         if (ExternalMovementLocked)
         {
             ClearStrokeLift();

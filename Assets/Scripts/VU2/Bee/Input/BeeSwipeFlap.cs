@@ -605,6 +605,14 @@ public class BeeSwipeFlap : MonoBehaviour
         }
 
         // Hướng bắn của tia: chuẩn 100% theo hướng chỉ của mũi tay cầm
+        UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor menuRay = null;
+        if (LetItBee.UI.BeeMenuInput.Blocked && anchor != null) {
+            menuRay = anchor.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor>();
+            if (menuRay != null) {
+                Transform origin = menuRay.rayOriginTransform != null ? menuRay.rayOriginTransform : menuRay.transform;
+                worldPos = origin.position; worldRot = origin.rotation;
+            }
+        }
         Vector3 forward = worldRot * Vector3.forward;
 
         // Điểm xuất phát của ray proxy nếu bật
@@ -634,6 +642,9 @@ public class BeeSwipeFlap : MonoBehaviour
         }
 
         // --- 3. Giao ray với mặt phẳng của thanh ngang để tính vị trí quẹt qua thanh ---
+        if (menuRay != null && menuRay.TryGetCurrentUIRaycastResult(out UnityEngine.EventSystems.RaycastResult menuHit))
+            endPoint = menuHit.worldPosition;
+
         Vector3 planePoint = _canvas != null ? _canvas.transform.position : (transform.position + transform.forward * barDepth);
         Vector3 planeNormal = _canvas != null ? -_canvas.transform.forward : -transform.forward;
         Plane plane = new Plane(planeNormal, planePoint);
@@ -747,6 +758,7 @@ public class BeeSwipeFlap : MonoBehaviour
 
     private void PulseFlap(bool isLeft, bool isUpstroke)
     {
+        if (LetItBee.UI.BeeMenuInput.Blocked) return;
         if (bee != null && (bee.IsPositionHolding || bee.ExternalMovementLocked)) return;
         bool paired = false;
         if (RhythmFlight)
@@ -814,7 +826,7 @@ public class BeeSwipeFlap : MonoBehaviour
         UpdateHand(_left, true);
         UpdateHand(_right, false);
         bool bothTouching = _left.touching && _right.touching;
-        if (!RhythmFlight && bothTouching && !_bothHandsTouching && enableFlightAssist && bee != null)
+        if (!LetItBee.UI.BeeMenuInput.Blocked && !RhythmFlight && bothTouching && !_bothHandsTouching && enableFlightAssist && bee != null)
             bee.AddVerticalImpulse(dualHandBonusImpulse);
         _bothHandsTouching = bothTouching;
         UpdateVisuals();

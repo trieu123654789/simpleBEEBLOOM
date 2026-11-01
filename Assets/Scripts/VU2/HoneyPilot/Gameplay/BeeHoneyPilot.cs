@@ -312,6 +312,11 @@ namespace LetItBee.HoneyPilot
         {
             if (chunk == null) return;
             UpdateSlotPose();
+            if (LetItBee.UI.BeeMenuInput.Blocked) {
+                gripIntent.Reset(); collectionElapsedSeconds = Charge01 = touchDwell = 0f;
+                collectNeedsRelease = true; landingButtonDown = true;
+                UpdateViews(); return;
+            }
             float trigger = ReadRightControl(false, rightTrigger?.ReadValue<float>() ?? 0f);
             float grip = ReadRightControl(true, rightGrip?.ReadValue<float>() ?? 0f);
             var device = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
