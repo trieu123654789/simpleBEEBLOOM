@@ -1,6 +1,6 @@
 # River gameplay layout
 
-Scene: `Assets/Scenes/VU2/SCN_LetItBee_Nha_Layout_Review.unity`.
+Scene: `Assets/Scenes/VU2/SCN_LetItBee_Gameplay.unity`.
 
 The environment authored by Nha is retained. Gameplay lives under `GAMEPLAY - River Route`:
 

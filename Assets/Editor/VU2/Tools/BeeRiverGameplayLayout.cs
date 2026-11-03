@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 public static class BeeRiverGameplayLayout
 {
-    const string ScenePath = "Assets/Scenes/VU2/SCN_LetItBee_Nha_Layout_Review.unity";
+    const string ScenePath = "Assets/Scenes/VU2/SCN_LetItBee_Gameplay.unity";
     static Collider ground;
     static float Ground(float x, float z)
     {

@@ -47,7 +47,7 @@ Unity dependencies are recorded in [manifest.json](Packages/manifest.json) and [
 
 ### Setup and connection
 
-1. Open the project in Unity and load `Assets/Scenes/VU2/SCN_LetItBee_Nha_Layout_Review.unity`.
+1. Open the project in Unity and load `Assets/Scenes/VU2/SCN_LetItBee_Gameplay.unity`.
 2. Follow the [host setup guide](Docs/LetItBee.md#4-chạy-simple-và-cấu-hình-chuyển-máy). For a new machine, copy `machine.example.json` to `machine.local.json` inside `Experiments/LetItBee-HoneyPilot/` and set the installed paths.
 3. Install the Quest APK, either separately or with the connection script’s `-InstallApk` option. See [VR build notes](Docs/VR-Embodiment.md) for the latest local build.
 4. Start SIMPLE and headless GAMA from the project root:
