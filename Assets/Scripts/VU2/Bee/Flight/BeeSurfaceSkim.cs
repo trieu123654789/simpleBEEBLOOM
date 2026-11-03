@@ -100,7 +100,7 @@ public sealed class BeeSurfaceSkim : MonoBehaviour
             }
         }
         Intensity = found ? EvaluateIntensity(distance, speed, bee.skimDistance, bee.skimMinSpeed) : 0f;
-        OverWater = found && BeeMapSurfaces.IsWater(hit.collider.name);
+        OverWater = found && BeeMapSurfaces.IsWater(hit.collider);
         emission -= dt; haptic -= dt;
         if (Intensity > 0.03f)
         {

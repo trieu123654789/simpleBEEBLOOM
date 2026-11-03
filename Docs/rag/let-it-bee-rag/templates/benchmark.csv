@@ -1,0 +1,1 @@
+date,device,build_commit,scene,scenario,refresh_hz,run_seconds,render_scale,thermal_state,fps_avg,fps_p1_low,cpu_frame_ms_p95,gpu_frame_ms_p95,app_memory_mb,draw_calls,stale_frames,notes

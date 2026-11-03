@@ -24,7 +24,7 @@ namespace LetItBee.HoneyPilot
         BeePerchPoint LandingPoint(int flower)
         {
             if (selectedLandingPoint != null && (PerchedFlower < 0 || flower == PerchedFlower)) return selectedLandingPoint;
-            var anchor = flower == 0 ? flowerAPerch : flowerBPerch;
+            var anchor = Perch(flower);
             return anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
         }
 
@@ -33,8 +33,8 @@ namespace LetItBee.HoneyPilot
             float best = float.PositiveInfinity;
             selectedLandingPoint = null;
             flower = -1;
-            for (int i = 0; i < 2; i++) {
-                var anchor = i == 0 ? flowerAPerch : flowerBPerch;
+            for (int i = 0; i < FlowerCount; i++) {
+                var anchor = Perch(i);
                 var root = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
                 if (root == null) continue;
                 var points = root.landingPoints.Length > 0 ? root.landingPoints : new[] { root };
@@ -49,8 +49,8 @@ namespace LetItBee.HoneyPilot
 
         void StepPetalResponses()
         {
-            for (int i = 0; i < 2; i++) {
-                var anchor = i == 0 ? flowerAPerch : flowerBPerch;
+            for (int i = 0; i < FlowerCount; i++) {
+                var anchor = Perch(i);
                 var root = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
                 if (root == null) continue;
                 var points = root.landingPoints.Length > 0 ? root.landingPoints : new[] { root };
@@ -61,7 +61,7 @@ namespace LetItBee.HoneyPilot
 
         void RestorePetals()
         {
-            foreach (var anchor in new[] { flowerAPerch, flowerBPerch }) {
+            foreach (var anchor in AllFlowerPerches()) {
                 var root = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
                 if (root == null) continue;
                 root.Restore();

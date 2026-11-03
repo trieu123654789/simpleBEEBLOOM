@@ -29,16 +29,15 @@ namespace LetItBee.HoneyPilot
         {
             var entities = new List<JObject> {
                 Entity("player-bee","bee","Player",pilot.InteractionPosition),
-                Entity("flower-a","flower",pilot.flowerAHead.name,pilot.flowerAHead.position,pilot.speciesId),
-                Entity("flower-b","flower",pilot.flowerBHead.name,pilot.flowerBHead.position,pilot.speciesId),
                 Entity("slot-a","hive","Hive",pilot.slot.position)
             };
+            var heads = pilot.AllFlowerHeads();
+            for (int i = 0; i < heads.Length; i++) entities.Add(Entity(pilot.FlowerId(i), "flower", heads[i].name, heads[i].position, pilot.speciesId));
             foreach (var item in BeeWorldEntity.Active.ToArray()) {
                 if (item == null || !item.isActiveAndEnabled || item.gameObject.scene != pilot.gameObject.scene) continue;
                 // Marking an existing pilot object must not count it twice.
                 Transform at = item.anchor != null ? item.anchor : item.transform;
-                if (Contains(item.transform,pilot.beeRoot) || Contains(item.transform,pilot.flowerAHead)
-                    || Contains(item.transform,pilot.flowerBHead) || Contains(item.transform,pilot.slotMount)
+                if (Contains(item.transform,pilot.beeRoot) || heads.Any(h => Contains(item.transform,h)) || Contains(item.transform,pilot.slotMount)
                     || at == pilot.slot) continue;
                 entities.Add(Entity(item.Id,item.kind.ToString().ToLowerInvariant(),item.name,item.Position,item.speciesId));
             }

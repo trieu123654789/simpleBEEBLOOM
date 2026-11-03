@@ -21,14 +21,14 @@ namespace LetItBee.HoneyPilot
 
         BeeFlowerSurface FlowerSurface(int index)
         {
-            var anchor = index == 0 ? flowerAPerch : flowerBPerch;
+            var anchor = Perch(index);
             return anchor != null ? anchor.GetComponent<BeeFlowerSurface>() : null;
         }
 
         void RefreshFlowerSurfaces(float dt)
         {
             if (!enablePetalWalking || beeRoot == null) return;
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < FlowerCount; i++) {
                 var surface = FlowerSurface(i);
                 if (surface != null && (PerchedFlower == i || Vector3.Distance(beeRoot.position, Head(i).position) < 3f))
                     surface.Refresh(dt);
@@ -107,7 +107,7 @@ namespace LetItBee.HoneyPilot
 
         void UpdateLoadedPetal()
         {
-            var anchor = PerchedFlower == 0 ? flowerAPerch : flowerBPerch;
+            var anchor = Perch(PerchedFlower);
             var root = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
             if (root == null) return;
             float closest = float.PositiveInfinity;

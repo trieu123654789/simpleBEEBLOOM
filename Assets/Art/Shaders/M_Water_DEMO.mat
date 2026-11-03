@@ -63,12 +63,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CausticTiling: 2.46
-    - _NoiseTiling: 20
+    - _CausticTiling: 8.31
+    - _NoiseTiling: 18.65
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Salinity: 2.05
-    - _Salinity_Contrast: 5.32
+    - _Salinity_Contrast: 14.83
     - _Speed: 0.3
     - _Texture: 0
     - _Tiling: 5.15

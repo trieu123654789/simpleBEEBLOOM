@@ -58,11 +58,11 @@ global {
             try {
                 map saved <- json_file(workspace_checkpoint).contents;
                 map candidate <- saved["state"];
-                if ((candidate["schema"] = pilot_schema or candidate["schema"] = legacy_pilot_schema) and length(list(candidate["flowers"])) = 2) {
+                if ((candidate["schema"] = pilot_schema or candidate["schema"] = legacy_pilot_schema) and length(list(candidate["flowers"])) >= 2) {
                     state <- candidate;
                     list fs <- state["flowers"];
                     map a <- fs[0]; map b <- fs[1]; map h <- state["slot"];
-                    flower_positions <- [a["position"],b["position"]];
+                    flower_positions <- fs collect map(each)["position"];
                     slot_coordinates <- h["position"];
                     // Checkpoints contain transactions, not a continuous pose.
                     // Never label this sample as the live player position.
@@ -86,10 +86,10 @@ global {
         } else if (workspace_readonly) { view_status <- "No progress file: choose Progress file in Parameters"; }
     }
     action frame_map {
-        if (length(flower_positions) = 2 and !empty(state)) {
+        if (length(flower_positions) >= 2 and !empty(state)) {
             point a <- point(flower_positions[0]); point b <- point(flower_positions[1]);
             point h <- point(slot_coordinates);
-            list<point> locations <- [a,b,h];
+            list<point> locations <- (flower_positions collect point(each)) + [h];
             if (has_bee_sample) { locations << bee_position; }
             if (state["chunk_state"] != "none") { locations << point(state["chunk_pos"]); }
             loop entry over: world_entities.values { map e <- map(entry); locations << point(e["position"]); }
@@ -99,7 +99,8 @@ global {
             map_left <- min_x-(span-(max_x-min_x))/2;
             map_top <- max_y+(span-(max_y-min_y))/2;
             map_zoom <- 140.0/span;
-            map_flowers <- [project_world(a),project_world(b)];
+            map_flowers <- flower_positions collect project_world(point(each));
+            if (length(pilot_flower) != length(flower_positions)) { ask pilot_flower { do die; } create pilot_flower number: length(flower_positions) { flower_index <- index; } }
             map_slot <- project_world(h); map_bee <- project_world(bee_position);
             map_chunk <- project_world(point(state["chunk_pos"]));
             ask synced_entity { location <- {25+(entity_position.x-map_left)*map_zoom,30+(map_top-entity_position.y)*map_zoom,0}; }
@@ -191,8 +192,8 @@ global {
             state <- ["schema"::pilot_schema, "session"::config["session"], "revision"::0,
                 "flowers"::config["flowers"], "slot"::config["slot"],
                 "contact_radius"::config["contact_radius"], "grab_radius"::config["grab_radius"],
-                "snap_radius"::config["snap_radius"], "nectar"::[1,1],
-                "pollinated"::[false,false], "pollen_source"::-1, "visits"::0, "last_contact"::-1,
+                "snap_radius"::config["snap_radius"], "nectar"::(list(config["flowers"]) collect 1),
+                "pollinated"::(list(config["flowers"]) collect false), "pollen_source"::-1, "visits"::0, "last_contact"::-1,
                 "chunk_id"::"", "chunk_state"::"none", "chunk_pos"::[0.0,0.0,0.0],
                 "stored"::0];
             do persist;
@@ -228,7 +229,7 @@ global {
             state["deposited_slot"] <- state["chunk_state"] = "stored" ? "slot-a" : "";
             state["refill_seconds"] <- max(1.0,config contains_key "nectar_refill_seconds" ? float(config["nectar_refill_seconds"]) : 8.0);
             list old_nectar <- state["nectar"];
-            state["refill_remaining"] <- [int(old_nectar[0]) = 0 ? state["refill_seconds"] : 0.0,int(old_nectar[1]) = 0 ? state["refill_seconds"] : 0.0];
+            state["refill_remaining"] <- (old_nectar collect (int(each) = 0 ? state["refill_seconds"] : 0.0));
             last_contact <- int(state["last_contact"]);
             do persist;
         }
@@ -252,9 +253,7 @@ global {
         }
         last_contact <- int(state["last_contact"]);
         list configured_flowers <- state["flowers"];
-        map configured_a <- configured_flowers[0];
-        map configured_b <- configured_flowers[1];
-        flower_positions <- [configured_a["position"], configured_b["position"]];
+        flower_positions <- configured_flowers collect map(each)["position"];
         nectar_positions <- [];
         flower_surfaces <- []; flower_radii <- [];
         map configured_slot <- state["slot"];
@@ -450,7 +449,7 @@ species pilot_flower {
             list flowers <- state["flowers"]; map f <- flowers[flower_index];
             list ps <- state["pollinated"];
             draw circle(3) at: map_flowers[flower_index] color: (bool(ps[flower_index]) ? #green : #pink) border: #black;
-            draw (flower_index = 0 ? "Flower A" : "Flower B") at: map_flowers[flower_index]+(flower_index = 0 ? {0,8} : {0,-8}) color: #black font: font("SansSerif",14);
+            draw ("Flower " + string(flower_index + 1)) at: map_flowers[flower_index]+(flower_index = 0 ? {0,8} : {0,-8}) color: #black font: font("SansSerif",14);
         }
     }
 }
@@ -482,7 +481,9 @@ species synced_entity {
     aspect default {
         if (entity_kind = "bee") { draw triangle(3) color: #yellow border: #black; }
         if (entity_kind = "flower") {
-            int fi <- entity_id = "flower-a" ? 0 : (entity_id = "flower-b" ? 1 : -1);
+            int fi <- -1;
+            list configured <- state["flowers"];
+            loop i from: 0 to: length(configured)-1 { map f <- configured[i]; if (f["id"] = entity_id) { fi <- i; } }
             bool received <- fi >= 0 ? bool(list(state["pollinated"])[fi]) : false;
             draw circle(2.7) color: (received ? #green : #pink) border: #black;
         }

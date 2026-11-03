@@ -118,10 +118,17 @@ class SimpleGama:
     repeat = core.Gama.repeat
 
     def close(self):
-        self.mon.send('remove_player_headset', id=self.player)
-        self.mon.wait(lambda s:self.player not in s.get('player',{}))
-        self.ws.close()
-        self.mon.close()
+        try:
+            self.mon.send('remove_player_headset', id=self.player)
+            self.mon.wait(lambda s:self.player not in s.get('player',{}))
+            players = self.mon.state.get('player', {})
+            if not any(p.get('connected') for p in players.values()) and self.mon.state['gama']['experiment_state'] != 'NONE':
+                self.mon.send('stop_experiment')
+                self.mon.wait(lambda s:s['gama']['experiment_state'] == 'NONE')
+        finally:
+            self.ws.close()
+            self.mon.close()
+
 
 
 if __name__ == '__main__':

@@ -17,6 +17,19 @@ public static class BeeMapSurfaces
         if (scene.name == "SCN_LetItBee" || scene.name == "SCN_BeeBloom") Install(scene);
     }
 
+    public static bool IsWater(Collider collider)
+    {
+        if (collider == null) return false;
+        var surface = collider.GetComponentInParent<BeeEnvironmentSurface>();
+        return surface != null ? surface.kind == BeeEnvironmentSurface.SurfaceKind.Water : IsWater(collider.name);
+    }
+
+    public static bool IsGround(Collider collider)
+    {
+        if (collider == null) return false;
+        var surface = collider.GetComponentInParent<BeeEnvironmentSurface>();
+        return surface != null ? surface.kind == BeeEnvironmentSurface.SurfaceKind.Ground : IsGround(collider.name);
+    }
     public static bool IsWater(string name) => name.StartsWith("SF_Water_Sea");
     public static bool IsGround(string name) => name == "dike"
         || name.StartsWith("SM_Terrain_Island_01") || name.StartsWith("SM_dat_trong_trot_")

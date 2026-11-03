@@ -29,7 +29,7 @@ public sealed class BeeFlightCollision
         {
             var h = hits[i];
             if (Ignore(h.collider, bee, rig) || h.normal.y < 0.3f) continue;
-            if (!BeeMapSurfaces.IsGround(h.collider.name) && !BeeMapSurfaces.IsWater(h.collider.name)) continue;
+            if (!BeeMapSurfaces.IsGround(h.collider) && !BeeMapSurfaces.IsWater(h.collider)) continue;
             floor = Mathf.Max(floor, h.point.y + Mathf.Max(radius, clearance) + skin);
         }
         if (position.y < floor) { position.y = floor; grounded = true; }

@@ -38,6 +38,10 @@ namespace LetItBee.UI
         readonly Dictionary<Canvas, bool> hudCanvases = new Dictionary<Canvas, bool>();
         readonly Dictionary<UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor, UnityEngine.XR.Interaction.Toolkit.Inputs.Readers.XRInputButtonReader> originalReaders = new Dictionary<UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor, UnityEngine.XR.Interaction.Toolkit.Inputs.Readers.XRInputButtonReader>();
 
+#pragma warning disable CS0618 // Preserve legacy controller compatibility outside the menu.
+        readonly Dictionary<UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor, UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInputInteractor.InputCompatibilityMode> originalInputModes = new Dictionary<UnityEngine.XR.Interaction.Toolkit.Interactors.XRRayInteractor, UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInputInteractor.InputCompatibilityMode>();
+#pragma warning restore CS0618
+
         void Awake() { BeeMenuInput.Blocked = true; }
         IEnumerator Start()
         {
@@ -155,9 +159,16 @@ namespace LetItBee.UI
         {
             if (ray == null || originalReaders.ContainsKey(ray)) return;
             originalReaders.Add(ray, ray.uiPressInput);
+#pragma warning disable CS0618
+            originalInputModes.Add(ray, ray.inputCompatibilityMode);
+            // Automatic chooses the legacy ActionBasedController and ignores uiPressInput.
+            ray.inputCompatibilityMode = UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInputInteractor.InputCompatibilityMode.ForceInputReaders;
+#pragma warning restore CS0618
             var reader = new UnityEngine.XR.Interaction.Toolkit.Inputs.Readers.XRInputButtonReader("Menu press", "Menu press value", false,
                 UnityEngine.XR.Interaction.Toolkit.Inputs.Readers.XRInputButtonReader.InputSourceMode.InputAction);
             reader.inputActionPerformed.AddBinding("<XRController>{" + hand + "}/trigger");
+            reader.inputActionPerformed.AddBinding("<XRController>{" + hand + "}/triggerPressed");
+            reader.inputActionPerformed.AddBinding("<XRController>{" + hand + "}/triggerButton");
             reader.inputActionValue.AddBinding("<XRController>{" + hand + "}/trigger");
             ray.uiPressInput = reader;
             reader.EnableDirectActionIfModeUsed();
@@ -171,9 +182,14 @@ namespace LetItBee.UI
                 var reader = pair.Key.uiPressInput;
                 reader.DisableDirectActionIfModeUsed();
                 pair.Key.uiPressInput = pair.Value;
+#pragma warning disable CS0618
+                if (originalInputModes.TryGetValue(pair.Key, out var mode))
+                    pair.Key.inputCompatibilityMode = mode;
+#pragma warning restore CS0618
                 reader.inputActionPerformed.Dispose(); reader.inputActionValue.Dispose();
             }
             originalReaders.Clear();
+            originalInputModes.Clear();
             if (swipe != null) swipe.showBars = previousBars;
             foreach (var pair in hudCanvases) if (pair.Key != null) pair.Key.enabled = pair.Value;
             hudCanvases.Clear();

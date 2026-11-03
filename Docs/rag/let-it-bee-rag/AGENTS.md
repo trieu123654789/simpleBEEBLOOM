@@ -1,0 +1,2 @@
+# Let It Bee agent rules
+Before performance-related changes, read `agent-skill/SKILL.md`, `sources-manifest.md` and the relevant `knowledge/` notes from this pack. Begin with a read-only audit. Require approval before modifying code, assets, packages or XR configuration. Never claim FPS gains without measured on-device evidence. Preserve XR tracking and GAMA/SIMPLE integration contracts. When docs disagree, report the conflict and validate against installed package versions and hardware.

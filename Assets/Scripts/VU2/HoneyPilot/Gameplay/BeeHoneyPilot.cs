@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -87,7 +88,7 @@ namespace LetItBee.HoneyPilot
         public string LastReason { get; private set; } = "";
         public string EffectiveSimpleEndpoint { get; private set; } = "";
         public float Charge01 { get; private set; }
-        public int ConfirmedPollinations => State == null ? 0 : ((bool)State["pollinated"][0] ? 1 : 0) + ((bool)State["pollinated"][1] ? 1 : 0);
+        public int ConfirmedPollinations => State?["pollinated"] is JArray values ? values.Count(v => (bool)v) : 0;
         public int Stored => (int?)State?["stored"] ?? 0;
         public string ChunkState => (string)State?["chunk_state"] ?? "none";
 
@@ -106,7 +107,7 @@ namespace LetItBee.HoneyPilot
         string lastGripDeviceTrace, lastTriggerDeviceTrace;
         readonly System.Collections.Generic.List<UnityEngine.XR.InputDevice> rightInputDevices = new System.Collections.Generic.List<UnityEngine.XR.InputDevice>();
         bool grabReady;
-        readonly BeeFlowerGeometry[] flowerGeometry = new BeeFlowerGeometry[2];
+        readonly BeeFlowerGeometry[] flowerGeometry = new BeeFlowerGeometry[32];
         public const string InteractionVersion = "Honey interaction 4.0 - full hive";
         BeeFlowerGeometry Geometry(int flower) => flowerGeometry[flower] ?? (flowerGeometry[flower] = new BeeFlowerGeometry(Head(flower)));
         Transform chunk, chargeVisual, ghost, pollen;
@@ -133,7 +134,7 @@ namespace LetItBee.HoneyPilot
         bool leavingPerch;
         float perchTime, perchBlockedTime, previousPerchDistance;
         bool perchArmed = true;
-        readonly Transform[][] perchSupports = new Transform[2][];
+        readonly Transform[][] perchSupports = new Transform[32][];
         string lastLoggedConnectionError;
         FlowerResponse responseA, responseB;
         LineRenderer landingRing;
@@ -177,7 +178,9 @@ namespace LetItBee.HoneyPilot
             rightGrip = new InputAction("HoneyPilotGrip", InputActionType.Value, "<XRController>{RightHand}/grip");
             rightGrip.AddBinding("<XRController>{RightHand}/gripPressed");
             rightTrigger.Enable(); rightGrip.Enable();
+            InitializeAdditionalFlowers();
             BuildViews();
+            BuildAdditionalLabels();
             Debug.Log("[BeeBloom] " + InteractionVersion + "; hold grip to carry, release to place");
             UpdateSlotPose();
             try { configuration = BuildConfiguration(); }
@@ -192,7 +195,7 @@ namespace LetItBee.HoneyPilot
             string checkpoint = checkpointDirectoryOnServer.TrimEnd('/', '\\') + "/" + sessionId + ".json";
             var result = new JObject {
                 ["session"] = sessionId, ["checkpoint"] = checkpoint.Replace('\\', '/'), ["world_source"] = worldSync.Source,
-                ["flowers"] = new JArray(FlowerConfig("flower-a", plantAId, flowerAHead.position), FlowerConfig("flower-b", plantBId, flowerBHead.position)),
+                ["flowers"] = new JArray(Enumerable.Range(0, FlowerCount).Select(i => FlowerConfig(FlowerId(i), PlantId(i), Head(i).position))),
                 ["slot"] = new JObject { ["id"] = "slot-a", ["position"] = ToGama(slot.position) },
                 ["contact_radius"] = contactRadius, ["grab_radius"] = grabRadius, ["snap_radius"] = snapRadius
             };
@@ -239,10 +242,10 @@ namespace LetItBee.HoneyPilot
                     }
                     await client.AskAsync("set_pose", new JObject { ["pose_json"] = new JObject {
                         ["bee"] = ToGama(InteractionPosition), ["hand"] = ToGama(rightHand.position),
-                        ["flowers"] = new JArray(ToGama(flowerAHead.position), ToGama(flowerBHead.position)),
-                        ["nectar_positions"] = new JArray(ToGama(NectarPosition(0)), ToGama(NectarPosition(1))),
-                        ["flower_surfaces"] = new JArray(ToGama(Geometry(0).Surface), ToGama(Geometry(1).Surface)),
-                        ["flower_radii"] = new JArray(Geometry(0).Radius, Geometry(1).Radius),
+                        ["flowers"] = FlowerSamples(i => ToGama(Head(i).position)),
+                        ["nectar_positions"] = FlowerSamples(i => ToGama(NectarPosition(i))),
+                        ["flower_surfaces"] = FlowerSamples(i => ToGama(Geometry(i).Surface)),
+                        ["flower_radii"] = FlowerSamples(i => new JValue(Geometry(i).Radius)),
                         ["slot"] = ToGama(hive != null ? hive.Position(0) : slot.position),
                         ["hive_slots"] = hive != null ? hive.Configuration() : null
                     }.ToString(Newtonsoft.Json.Formatting.None) });
@@ -452,7 +455,7 @@ namespace LetItBee.HoneyPilot
                 return;
             }
             if (PerchedFlower >= 0) {
-                var anchor = PerchedFlower == 0 ? flowerAPerch : flowerBPerch;
+                var anchor = Perch(PerchedFlower);
                 if (!holding && IsFlowerSettled && anchor != null && anchor.GetComponent<BeePerchPoint>() != null
                     && beeController != null && !beeController.ExternalMovementLocked) {
                     leavingPerch = true; perchExitElapsed = 0f; perchExitStart = beeRoot.position;
@@ -498,15 +501,15 @@ namespace LetItBee.HoneyPilot
             if (togglePetalLanding && holding) SelectPetalLanding(ref candidate);
             if (candidate < 0) {
                 float nearest = float.PositiveInfinity;
-                for (int i = 0; i < 2; i++) {
-                    var a = i == 0 ? flowerAPerch : flowerBPerch;
+                for (int i = 0; i < FlowerCount; i++) {
+                    var a = Perch(i);
                     var point = a != null ? a.GetComponent<BeePerchPoint>() : null;
                     if (point == null) continue;
                     float distance = Vector3.Distance(InteractionPosition, point.ViewPosition);
                     if (distance <= point.approachRadius && distance < nearest) { candidate = i; nearest = distance; }
                 }
             }
-            var authored = candidate == 0 ? flowerAPerch : flowerBPerch;
+            var authored = Perch(candidate);
             var perchPoint = togglePetalLanding ? LandingPoint(candidate) : (authored != null ? authored.GetComponent<BeePerchPoint>() : null);
             if (!enableFlowerPerching || !perchArmed || !holding || candidate < 0 || beeController == null
                 || beeController.ExternalMovementLocked || (!togglePetalLanding && (beeController.IsPositionBraking || beeController.Speed > 0.25f))
@@ -568,7 +571,7 @@ namespace LetItBee.HoneyPilot
         {
             Transform head = Head(flower);
             support = eyeTarget = head.position;
-            Transform anchor = flower == 0 ? flowerAPerch : flowerBPerch;
+            Transform anchor = Perch(flower);
             var point = LandingPoint(flower);
             if (point != null) {
                 support = point.SupportPosition; eyeTarget = point.ViewPosition;
@@ -615,7 +618,7 @@ namespace LetItBee.HoneyPilot
         void DrawPerchGizmos()
         {
             if (beeRoot == null || flowerAHead == null || flowerBHead == null) return;
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < FlowerCount; i++) {
                 if (!TryGetPerchView(i, out Vector3 support, out Vector3 view)) continue;
                 Gizmos.color = Color.green; Gizmos.DrawWireSphere(support, 0.06f);
                 Gizmos.color = Color.cyan; Gizmos.DrawWireSphere(view, 0.08f);
@@ -645,7 +648,7 @@ namespace LetItBee.HoneyPilot
         void LateUpdate()
         {
             if (enhancedFeedback && honeyFeedback == null && chunk != null)
-                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh, interactionAudio, beeRoot.GetComponent<BeeEmbodiment>()?.Scale ?? 1f);
+                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh, interactionAudio, beeRoot.GetComponent<BeeEmbodiment>()?.Scale ?? 1f, AllFlowerHeads());
             honeyFeedback?.SetActive(enhancedFeedback);
             if (beeController != null) beeController.InteractionAudioFocus = Charge01 > 0f
                 || (string)pendingRequest?["kind"] == "collect" || (Enhanced && honeyFeedback.DepositAnimating) ? 1f : 0f;
@@ -666,14 +669,15 @@ namespace LetItBee.HoneyPilot
                 Enhanced ? honeyFeedback.FlowerBloom(0) : 0f, Enhanced ? honeyFeedback.FlowerRebound(0) : 0f);
             responseB?.Apply(PerchedFlower == 1 ? perchTime : 0f, contact == 1 ? Charge01 : 0f,
                 Enhanced ? honeyFeedback.FlowerBloom(1) : 0f, Enhanced ? honeyFeedback.FlowerRebound(1) : 0f);
+            StepAdditionalResponses();
             StepPetalResponses();
             RefreshFlowerSurfaces(Time.deltaTime);
             if (landingRing == null) return;
             int cue = contact;
             if (cue < 0) {
                 float nearest = float.PositiveInfinity;
-                for (int i = 0; i < 2; i++) {
-                    var anchor = i == 0 ? flowerAPerch : flowerBPerch;
+                for (int i = 0; i < FlowerCount; i++) {
+                    var anchor = Perch(i);
                     var point = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
                     if (point == null) continue;
                     float d = Vector3.Distance(InteractionPosition, point.ViewPosition);
@@ -683,7 +687,7 @@ namespace LetItBee.HoneyPilot
             landingRing.enabled = !togglePetalLanding && enableFlowerPerching && cue >= 0 && PerchedFlower < 0;
             if (!landingRing.enabled) return;
             if (!TryGetPerchView(cue, out Vector3 support, out Vector3 view)) { landingRing.enabled = false; return; }
-            var authored = cue == 0 ? flowerAPerch : flowerBPerch;
+            var authored = Perch(cue);
             var authoredPoint = authored != null ? authored.GetComponent<BeePerchPoint>() : null;
             Vector3 centre = authoredPoint != null ? support + Vector3.up * 0.015f : view - Vector3.up * 0.18f;
             bool reachable = Vector3.Distance(InteractionPosition, view) <= (authoredPoint != null ? authoredPoint.approachRadius : perchApproachRadius);
@@ -757,15 +761,19 @@ namespace LetItBee.HoneyPilot
 
         int NearestContact()
         {
-            float a = Geometry(0).Distance(InteractionPosition), b = Geometry(1).Distance(InteractionPosition);
-            if (contact >= 0) {
-                float current = contact == 0 ? a : b, other = contact == 0 ? b : a;
-                if (current <= contactRadius + 0.08f && (PerchedFlower == contact || current <= other + 0.12f)) return contact;
+            int nearest = -1; float distance = float.PositiveInfinity;
+            for (int i = 0; i < FlowerCount; i++) {
+                float candidate = Geometry(i).Distance(InteractionPosition);
+                if (candidate < distance) { nearest = i; distance = candidate; }
             }
-            if (a > contactRadius && b > contactRadius) return -1;
-            return a < b ? 0 : 1;
+            if (contact >= 0) {
+                float current = Geometry(contact).Distance(InteractionPosition);
+                if (current <= contactRadius + 0.08f && (PerchedFlower == contact || current <= distance + 0.12f)) return contact;
+            }
+            return distance <= contactRadius ? nearest : -1;
         }
-        Transform Head(int flower) => flower == 0 ? flowerAHead : flowerBHead;
+
+        Transform Head(int flower) => flower < 2 ? (flower == 0 ? flowerAHead : flowerBHead) : additionalFlowers[flower - 2].head;
         Vector3 NectarPosition(int flower) => Geometry(flower).Nectar;
         bool AimedAt(Vector3 point)
         {
@@ -817,7 +825,7 @@ namespace LetItBee.HoneyPilot
             else if (kind == "deposit") { PlayFeedback(depositSound, 0.45f); pulseUntil = Time.time + 1f; EmitAt(slot.position); }
             else if (kind == "pick") { PlayFeedback(collectSound, 0.12f); threadSource = chunk.position; threadUntil = Time.time + 0.25f; }
         }
-        int PollinationMask() => State == null ? 0 : ((bool)State["pollinated"][0] ? 1 : 0) | ((bool)State["pollinated"][1] ? 2 : 0);
+        int PollinationMask() { int mask = 0; if (State?["pollinated"] is JArray values) for (int i = 0; i < values.Count && i < 31; i++) if ((bool)values[i]) mask |= 1 << i; return mask; }
         void EmitAt(Vector3 point) { if (pollenBurst != null) { pollenBurst.transform.position = point; pollenBurst.Emit(18); } }
 
         Transform Visual(string name, Material material)
@@ -861,7 +869,7 @@ namespace LetItBee.HoneyPilot
             feedback = gameObject.AddComponent<AudioSource>(); feedback.playOnAwake = false; feedback.spatialBlend = 0.7f; feedback.volume = 0.22f;
             collectSound = Tone("Nectar pickup", 650, 0.1f); pollinateSound = Tone("Pollen transfer", 950, 0.18f); depositSound = Tone("Hive snap", 480, 0.22f);
             if (enhancedFeedback) {
-                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh, interactionAudio, beeRoot.GetComponent<BeeEmbodiment>()?.Scale ?? 1f);
+                honeyFeedback = new BeeHoneyFeedback(transform, trackedCamera, flowerAHead, flowerBHead, slot, honeyMaterial, slotDecoration, honeyMesh, interactionAudio, beeRoot.GetComponent<BeeEmbodiment>()?.Scale ?? 1f, AllFlowerHeads());
                 honeyFeedback.Configure(feedbackIntensity,feedbackVolume,feedbackHaptics);
             }
         }
@@ -883,7 +891,7 @@ namespace LetItBee.HoneyPilot
                 if (ChunkState == "stored") { target = Enhanced ? honeyFeedback.SocketCenter : slot.position; rotation = Enhanced ? honeyFeedback.SocketRotation : slot.rotation; }
                 if (ChunkState == "ready" || ChunkState == "loose") {
                     int origin = (int?)State["chunk_flower"] ?? -1;
-                    if (Enhanced && ChunkState == "ready" && origin >= 0 && origin < 2) target = honeyFeedback.NectarRestPosition(origin);
+                    if (Enhanced && ChunkState == "ready" && origin >= 0 && origin < FlowerCount) target = honeyFeedback.NectarRestPosition(origin);
                     else if (ChunkState == "ready") target += Vector3.up * 0.06f;
                     target += Vector3.up * (0.008f * Mathf.Sin(Time.time * 3f));
                 }
@@ -940,6 +948,7 @@ namespace LetItBee.HoneyPilot
             }
             PlaceLabel(labelA, Geometry(0).Surface + Vector3.up * 0.25f);
             PlaceLabel(labelB, Geometry(1).Surface + Vector3.up * 0.25f);
+            UpdateAdditionalLabels();
             PlaceLabel(labelSlot, slot.position + Vector3.up * 0.18f);
             PlaceLabel(labelChunk, chunk.position + Vector3.up * 0.13f);
             if (Enhanced) honeyFeedback.SetHoneyHover(grabReady, Busy && (string)pendingRequest?["kind"] == "pick", chunk.position);
@@ -999,6 +1008,7 @@ namespace LetItBee.HoneyPilot
             EndHive();
             honeyFeedback?.Dispose(); honeyFeedback = null;
             responseA?.Restore(); responseB?.Restore();
+            RestoreAdditionalFlowers();
             RestorePetals();
             lifetime?.Cancel(); client?.Dispose(); Live = false;
             rightTrigger?.Dispose(); rightGrip?.Dispose();

@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/VU2/SCN_LetItBee_Nha_Layout_Review.unity
+    guid: 3d3db5818c1877a40913a74b242e829d
   - enabled: 0
     path: Assets/Scenes/VU2/DEMO.unity
     guid: 4c1da4e4655048741bed9dee567ddb4b
@@ -14,7 +17,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/VU2/SCN_VU2_Level2_New.unity
     guid: d7e818b62b730b54c922e79c83f59dec
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/VU2/SCN_LetItBee.unity
     guid: ccfdca7d16e464a419c364666a11e916
   m_configObjects:

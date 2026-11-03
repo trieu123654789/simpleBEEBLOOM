@@ -16,6 +16,7 @@ namespace LetItBee.HoneyPilot
         Color Cream => presentation != null ? presentation.highlightColor : new Color(1f, 0.94f, 0.63f);
         readonly GameObject root;
         readonly Transform flowerA, flowerB, slot;
+        readonly Transform[] flowerHeads;
         readonly Transform visualParent;
         Renderer socketArt;
         public void SetSocket(Renderer value) { socketArt = value; }
@@ -31,7 +32,8 @@ namespace LetItBee.HoneyPilot
         public Material NectarMaterial { get; }
         readonly Vector3[] vertices = new Vector3[Capacity * 4];
         readonly Color[] colors = new Color[Capacity * 4];
-        readonly LineRenderer[] flowerRings = new LineRenderer[2], streams = new LineRenderer[3];
+        readonly LineRenderer[] flowerRings;
+        readonly LineRenderer[] streams = new LineRenderer[3];
         readonly LineRenderer hiveOutline, hiveWave;
         readonly LineRenderer pickupThread, hiveSeal;
         readonly LineRenderer honeyHover, gatherProgress;
@@ -91,20 +93,22 @@ namespace LetItBee.HoneyPilot
         public float CollectionScale {
             get { float t = Mathf.Clamp01((clock - collectAt) / FormationDuration)-1f; return 1f + 2.1f*t*t*t + 1.1f*t*t; }
         }
-        Transform Flower(int i) => i == 0 ? flowerA : flowerB;
+        Transform Flower(int i) => flowerHeads[i];
         // Calibrated against the existing Daisy rig: Head is below the corolla.
         // Follow its saved scale without moving the bone or the GAMA interaction point.
         Vector3 FlowerSurface(int i) => flowers[i].Surface;
         public Vector3 NectarRestPosition(int flower) => flowers[flower].Nectar;
 
         public BeeHoneyFeedback(Transform parent, Camera view, Transform a, Transform b, Transform hive, Material nectarSource = null,
-            Renderer socketGeometry = null, Mesh nectarMesh = null, BeeInteractionAudio audioSettings = null, float miniatureScale = 1f)
+            Renderer socketGeometry = null, Mesh nectarMesh = null, BeeInteractionAudio audioSettings = null, float miniatureScale = 1f, Transform[] sceneFlowers = null)
         {
             camera = view; flowerA = a; flowerB = b; slot = hive;
             presentation = BeeHoneyPresentationLibrary.Load();
             visualParent = parent; socketArt = socketGeometry;
             nectarBounds = nectarMesh != null ? nectarMesh.bounds : new Bounds(Vector3.zero,new Vector3(0.16f,0.16f,0.07f));
-            flowers = new[] { new BeeFlowerGeometry(a), new BeeFlowerGeometry(b) };
+            flowerHeads = sceneFlowers ?? new[] { a, b };
+            flowers = Array.ConvertAll(flowerHeads, head => new BeeFlowerGeometry(head));
+            flowerRings = new LineRenderer[flowers.Length];
             root = new GameObject("Honey feedback (runtime)"); root.layer = 2;
             root.transform.SetParent(parent, false);
             if (presentation != null && presentation.HasEffectPrefabs) {
@@ -159,7 +163,7 @@ namespace LetItBee.HoneyPilot
             renderer = carryRig != null ? carryRig.motesRenderer : root.AddComponent<MeshRenderer>();
             renderer.sharedMaterial = dotsMaterial;
             renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
-            for (int i = 0; i < 2; i++) flowerRings[i] = Line("Flower warmth " + i, 41, true);
+            for (int i = 0; i < flowers.Length; i++) flowerRings[i] = Line("Flower warmth " + i, 41, true);
             for (int i = 0; i < 3; i++) streams[i] = Line("Nectar filament " + i, 20, false);
             hiveOutline = Line("Hive socket rim", 7, true); hiveWave = Line("Hive confirmation wave", 7, true);
             pickupThread = Line("Viscous nectar lift",25,false); hiveSeal = Line("Wax rim sealing",49,false);
@@ -309,7 +313,7 @@ namespace LetItBee.HoneyPilot
                 if (nowLanded >= 0) { landingAt = clock; Play(landingSound, landingPosition, 0.55f); Pulse(XRNode.LeftHand, audioProfile != null ? audioProfile.landingHapticIntensity : 0.07f, 0.07f); }
                 landedFlower = nowLanded;
             }
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < flowers.Length; i++) {
                 Vector3 centre = FlowerSurface(i);
                 float near = live && contact == i
                     ? Mathf.Clamp01(1f - Vector3.Distance(camera != null ? camera.transform.position : hand.position, centre) / 2.8f) : 0f;
@@ -365,7 +369,7 @@ namespace LetItBee.HoneyPilot
                 if (audioTarget == 0f && gathering.volume <= 0.001f && gathering.isPlaying) gathering.Stop();
             }
             if (live && charge > 0f && clock >= nextHaptic) { nextHaptic = clock + 0.18f; Pulse(XRNode.RightHand, 0.025f + charge*0.04f, 0.035f); }
-            if (pollenSource >= 0 && pollenSource < 2) {
+            if (pollenSource >= 0 && pollenSource < flowers.Length) {
                 for (int i = 0; i < 3; i++) {
                     float a = i * 2.39996f + clock * 0.65f;
                     Dot(carrier + Orbit(a, 0.015f + (i%3)*0.009f, 0.012f*Mathf.Sin(a*1.3f)), 0.006f + (i%3)*0.0015f, Pollen, 0.8f);
