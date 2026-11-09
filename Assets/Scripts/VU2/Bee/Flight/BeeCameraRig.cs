@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BeeCameraRig - FIRST-PERSON VR rig cho vai con ong (giống ảnh mẫu: Bee POV).
 // BeeCameraRig - Rig VR goc nhin thu nhat cho nhan vat ong.
 //
@@ -266,7 +266,7 @@ public class BeeCameraRig : MonoBehaviour
         Quaternion targetRotation = GetTargetRigRotation();
         playerRig.rotation = targetRotation;
 
-        playerRig.position = GetEyeWorldPosition() - playerRig.TransformVector(_cameraLocalOffset);
+        playerRig.position = KeepEyesAboveSurface(GetEyeWorldPosition() - playerRig.TransformVector(_cameraLocalOffset));
     }
 
     /// <summary>Chuyen doi nhanh giua first-person va third-person.</summary>
@@ -443,9 +443,37 @@ public class BeeCameraRig : MonoBehaviour
             targetPosition = Vector3.Lerp(playerRig.position, targetPosition, t);
         }
 
+        targetPosition = KeepEyesAboveSurface(targetPosition);
+
         // _rigVelocity giu lai de tien cho hieu ung rut lien tuong lai
         _rigVelocity = (targetPosition - playerRig.position) / Mathf.Max(Time.deltaTime, 0.0001f);
         playerRig.position = targetPosition;
+    }
+
+    // Check the tracked eye as well as the flight body: leaning and the forward
+    // eye offset can otherwise enter an uphill bank while the body remains clear.
+    private Vector3 KeepEyesAboveSurface(Vector3 rigPosition)
+    {
+        if (bee == null || !bee.groundCollision || trackedCamera == null) return rigPosition;
+        Vector3 eye = trackedCamera.transform.position + rigPosition - playerRig.position;
+        float clearance = Mathf.Max(0.08f, trackedCamera.nearClipPlane * 2f);
+        float floor = float.NegativeInfinity;
+        int mask = bee.groundMask.value != 0 ? bee.groundMask.value : Physics.DefaultRaycastLayers;
+        foreach (var hit in Physics.RaycastAll(eye + Vector3.up * 2f, Vector3.down,
+            2f + clearance, mask, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.transform.IsChildOf(transform) || hit.transform.IsChildOf(playerRig)) continue;
+            if (!BeeMapSurfaces.IsGround(hit.collider) && !BeeMapSurfaces.IsWater(hit.collider)) continue;
+            if (hit.normal.y < 0.3f) continue;
+            floor = Mathf.Max(floor, hit.point.y + clearance);
+        }
+        if (eye.y < floor)
+        {
+            Vector3 correction = Vector3.up * (floor - eye.y);
+            transform.position += correction;
+            rigPosition += correction;
+        }
+        return rigPosition;
     }
 
     /// <summary>Goc quay cua XR Origin: chi ap yaw ngang cua ong de giu the gioi va tay cam thang dung, khong bi nghieng lech.</summary>

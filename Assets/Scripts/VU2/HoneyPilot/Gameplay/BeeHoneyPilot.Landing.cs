@@ -5,17 +5,33 @@ namespace LetItBee.HoneyPilot
     public sealed partial class BeeHoneyPilot
     {
         [Header("Petal Landing Input")]
-        [Tooltip("Press left trigger once to land; press again to leave. Replaces airborne position hold.")]
+        [Tooltip("Tap left trigger to land or leave a petal. Hold it in flight to brake and hover.")]
         public bool togglePetalLanding;
+        [Min(0.1f), Tooltip("Maximum press duration for a landing/takeoff tap. Longer presses only hover.")]
+        public float landingTapDuration = 0.25f;
         bool landingRequested, landingButtonDown;
+        float landingPressElapsed;
+        [Header("Petal Flyby Response")]
+        [Min(0.1f)] public float petalFlybyRadius = 2.5f;
+        [Range(0f, 0.5f)] public float petalFlybyStrength = 0.3f;
         BeePerchPoint selectedLandingPoint;
 
-        bool SampleLandingInput(bool pressed)
+        bool SampleLandingInput(bool pressed, float deltaTime)
         {
-            bool rising = pressed && !landingButtonDown;
+            if (beeController != null && beeController.ExternalMovementLocked) {
+                landingButtonDown = pressed;
+                landingPressElapsed = landingTapDuration + 1f;
+                return PerchedFlower >= 0;
+            }
+            if (pressed) {
+                if (!landingButtonDown) landingPressElapsed = 0f;
+                landingPressElapsed += Mathf.Max(0f, deltaTime);
+            }
+            bool tap = !pressed && landingButtonDown && landingPressElapsed <= landingTapDuration;
             landingButtonDown = pressed;
-            if (rising && !leavingPerch) {
-                landingRequested = !landingRequested;
+            if (tap && !leavingPerch) {
+                // A request lasts one interaction step unless a petal actually accepts it.
+                landingRequested = PerchedFlower < 0;
                 perchArmed = true;
             }
             return landingRequested;
@@ -54,8 +70,15 @@ namespace LetItBee.HoneyPilot
                 var root = anchor != null ? anchor.GetComponent<BeePerchPoint>() : null;
                 if (root == null) continue;
                 var points = root.landingPoints.Length > 0 ? root.landingPoints : new[] { root };
-                foreach (var point in points) if (point != null)
-                    point.ApplyPressure(PerchedFlower == i && point == LandingPoint(i) && IsFlowerSettled ? PetalPressure(point) : 0f);
+                foreach (var point in points) if (point != null) {
+                    float pressure = PerchedFlower == i && point == LandingPoint(i) && IsFlowerSettled ? PetalPressure(point) : 0f;
+                    if (PerchedFlower < 0 && beeController != null && !beeController.ExternalMovementLocked
+                        && !LetItBee.UI.BeeMenuInput.Blocked) {
+                        float proximity = 1f - Mathf.Clamp01(Vector3.Distance(InteractionPosition, point.transform.position) / petalFlybyRadius);
+                        pressure = proximity * proximity * Mathf.Clamp01(beeController.Speed / 3f) * petalFlybyStrength;
+                    }
+                    point.ApplyPressure(pressure);
+                }
             }
         }
 

@@ -66,6 +66,12 @@ species unity_linker parent: abstract_unity_linker {
                         ask world { do transact(string(payload["request_json"])); }
                     } else if (op = "sync_world") {
                         ask world { do sync_world(string(payload["world_json"])); }
+                    } else if (op = "configure_water") {
+                        ask world { do configure_water(string(payload["water_json"])); do read_water; }
+                    } else if (op = "set_water_running") {
+                        ask world { do set_water_running(bool(payload["running"])); do read_water; }
+                    } else if (op = "read_water") {
+                        ask world { do read_water; }
                     } else if (op != "snapshot") { fault <- "unknown_operation"; }
                 }
             }
@@ -80,7 +86,8 @@ species unity_linker parent: abstract_unity_linker {
                 "correlation"::envelope["correlation"],"fault"::fault,
                 "snapshot"::["state"::state,"response"::response,"cycle"::cycle,
                     "flower_positions"::flower_positions,"slot_position"::slot_coordinates,
-                    "bee_position"::[bee_position.x,bee_position.y,bee_position.z],"world_sync"::world_response]],
+                    "bee_position"::[bee_position.x,bee_position.y,bee_position.z],"world_sync"::world_response,
+                    "water_response"::water_response,"water"::(op = "read_water" or op = "configure_water" or op = "set_water_running" ? water_state : [])]],
                 "bee_bloom"::[
                 "correlation"::envelope["correlation"],"fault"::fault,
                 "snapshot"::["state"::legacy_state,"response"::response,"cycle"::cycle,

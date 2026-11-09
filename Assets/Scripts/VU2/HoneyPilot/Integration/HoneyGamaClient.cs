@@ -14,7 +14,7 @@ namespace LetItBee.HoneyPilot
         public const string Schema = "letitbee-honey-pilot-v1";
         public const string LegacySchema = "beebloom-honey-pilot-v1";
         public static bool IsSupportedSchema(string schema) => schema == Schema || schema == LegacySchema;
-        public const string SnapshotExpression = "to_json([\"state\"::state,\"response\"::response,\"cycle\"::cycle,\"flower_positions\"::flower_positions,\"slot_position\"::slot_coordinates,\"world_sync\"::world_response])";
+        public const string SnapshotExpression = "to_json([\"state\"::state,\"response\"::response,\"cycle\"::cycle,\"flower_positions\"::flower_positions,\"slot_position\"::slot_coordinates,\"world_sync\"::world_response,\"water_response\"::water_response,\"water\"::water_state])";
         readonly ConcurrentDictionary<int, TaskCompletionSource<JToken>> pending = new();
         readonly TaskCompletionSource<string> hello = new(TaskCreationOptions.RunContinuationsAsynchronously);
         WebSocket socket;

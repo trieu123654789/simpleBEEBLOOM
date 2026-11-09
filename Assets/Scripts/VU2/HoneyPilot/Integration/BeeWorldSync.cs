@@ -27,10 +27,14 @@ namespace LetItBee.HoneyPilot
         }
         public JArray Capture(BeeHoneyPilot pilot)
         {
-            var entities = new List<JObject> {
-                Entity("player-bee","bee","Player",pilot.InteractionPosition),
-                Entity("slot-a","hive","Hive",pilot.slot.position)
-            };
+            Transform view = pilot.trackedCamera != null ? pilot.trackedCamera.transform : pilot.beeRoot;
+            var player = Entity("player-bee", "bee", "Player", view.position);
+            if (pilot.trackedCamera != null) player["forward"] = BeeHoneyPilot.ToGama(view.forward);
+            player["perched_flower_id"] = pilot.IsFlowerSettled ? pilot.FlowerId(pilot.PerchedFlower) : "";
+            var entities = new List<JObject> { player };
+            foreach (JObject cell in pilot.WorldHiveSlots) entities.Add(new JObject {
+                ["id"] = cell["id"].DeepClone(), ["kind"] = "hive", ["label"] = "Hive cell",
+                ["species"] = "", ["position"] = cell["position"].DeepClone() });
             var heads = pilot.AllFlowerHeads();
             for (int i = 0; i < heads.Length; i++) entities.Add(Entity(pilot.FlowerId(i), "flower", heads[i].name, heads[i].position, pilot.speciesId));
             foreach (var item in BeeWorldEntity.Active.ToArray()) {
@@ -59,7 +63,8 @@ namespace LetItBee.HoneyPilot
             string content = entities.ToString(Formatting.None);
             if (!force && content == acknowledged) return null;
             pending = new JObject { ["schema"] = Schema, ["source"] = Source,
-                ["sequence"] = ++Sequence, ["entities"] = entities.DeepClone() };
+                ["sequence"] = ++Sequence, ["observed_at"] = DateTime.UtcNow.ToString("O"),
+                ["observed_time"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0, ["entities"] = entities.DeepClone() };
             return (JObject)pending.DeepClone();
         }
         public void Accept(JObject reply)

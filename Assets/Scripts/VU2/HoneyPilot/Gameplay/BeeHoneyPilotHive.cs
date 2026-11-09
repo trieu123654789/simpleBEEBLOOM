@@ -13,6 +13,8 @@ namespace LetItBee.HoneyPilot
         [Tooltip("Optional ordered inserts. Empty discovers the seven inserts of the current coconut asset.")]
         public Renderer[] hiveCells;
         [Min(1f)] public float nectarRefillSeconds = 8f;
+        [Tooltip("Allow harvested flowers to refill. Disabled for the finite Story route.")]
+        public bool autoRefillNectar;
         [Min(0f)] public float gatherGraceSeconds = 0.18f;
         public bool requirePollinationForCompletion = true;
         public int HiveCapacity => (int?)State?["hive_capacity"] ?? (hive != null ? hive.Count : 1);
@@ -20,6 +22,7 @@ namespace LetItBee.HoneyPilot
         public bool RoundComplete => HiveFull && (!requirePollinationForCompletion || ConfirmedPollinations >= 2);
         public string WorldSyncWarning { get; private set; } = "";
         public string PerchHint { get; private set; } = "";
+        public JArray WorldHiveSlots => hive != null ? hive.Configuration() : new JArray(new JObject { ["id"] = "slot-a", ["position"] = ToGama(slotMount != null ? slotMount.TransformPoint(slotMountLocalPoint) : slot.position) });
         BeeHiveLayout hive;
         Transform savedSlot;
         int selectedCell;
@@ -99,8 +102,14 @@ namespace LetItBee.HoneyPilot
             try {
                 var reply = await source.AskAsync("sync_world", new JObject { ["world_json"] = world.ToString(Newtonsoft.Json.Formatting.None) });
                 if (token.IsCancellationRequested || source != client) return;
-                worldSync.Accept((JObject)reply["world_sync"]); WorldSyncWarning = "";
-            } catch (Exception ex) { if (!token.IsCancellationRequested && source == client) WorldSyncWarning = ex.Message; }
+                // SIMPLE returns a snapshot; the direct GAMA ask endpoint may return no payload.
+                var acknowledgement = (reply as JObject)?["world_sync"] as JObject;
+                if (acknowledgement == null) acknowledgement = (JObject)(await source.SnapshotAsync())["world_sync"];
+                if (token.IsCancellationRequested || source != client) return;
+                worldSync.Accept(acknowledgement); WorldSyncWarning = "";
+            } catch (Exception ex) {
+                if (!token.IsCancellationRequested && source == client) { WorldSyncWarning = ex.Message; throw; }
+            }
         }
         bool TryDropSurface(Vector3 point, out Vector3 landing)
         {

@@ -12,6 +12,13 @@ namespace LetItBee.HoneyPilot
         [Min(0.02f)] public float surfaceProbeDistance = 0.35f;
         [Range(0f, 0.03f)] public float edgeMargin = 0.008f;
         [Min(0.005f)] public float maxSurfaceStepHeight = 0.04f;
+        [Header("Perch Camera Comfort")]
+        [Range(0f, 1f), Tooltip("Fraction of vertical petal movement felt by the player. Zero keeps the view steady.")]
+        public float cameraMotionInfluence = 0.35f;
+        [Range(0f, 0.05f), Tooltip("Maximum vertical camera displacement from petal movement, in world metres.")]
+        public float maxPerchCameraMotion = 0.025f;
+        [Min(0.05f)] public float perchCameraSmoothTime = 0.16f;
+        float passivePetalHeight, visiblePetalHeight, petalCameraVelocity;
         public bool IsWalkingOnFlower => surfaceWalking && walkVelocity.sqrMagnitude > 0.0009f;
         bool surfaceWalking;
         Vector3 walkVelocity, walkingContact;
@@ -48,6 +55,7 @@ namespace LetItBee.HoneyPilot
                 walkingContact = entry.point; walkingTriangle = entry.triangleIndex; walkingBarycentric = entry.barycentricCoordinate;
                 walkingSurface = surface;
                 surfaceWalking = true; walkVelocity = Vector3.zero;
+                passivePetalHeight = visiblePetalHeight = petalCameraVelocity = 0f;
             }
             dt = Mathf.Clamp(dt, 0f, 0.1f);
             walkVelocity = Vector3.MoveTowards(walkVelocity, Vector3.ClampMagnitude(input, 1f) * petalWalkSpeed,
@@ -74,8 +82,6 @@ namespace LetItBee.HoneyPilot
                 }
             }
             walkingContact = contact;
-            // Cancel flower spring motion at the eye, but keep deliberate walking movement visible.
-            if (perchRig != null) perchRig.PerchViewOffset -= passiveMotion;
             Vector3 target = contact + Vector3.up * (Mathf.Max(beeController.BodyRadius, beeController.groundClearance) + 0.006f);
             // A horizontal sweep prevents walking through unrelated map obstacles.
             if (beeController.groundCollision) {
@@ -88,6 +94,17 @@ namespace LetItBee.HoneyPilot
                 } else target.y = Mathf.Max(target.y, swept.y);
             }
             beeRoot.position = perchAnchor = target;
+            // Follow the surface with the body, but pass only bounded, smoothed vertical
+            // spring motion to the view. Walking and tracked head rotation stay untouched.
+            if (perchRig != null) {
+                passivePetalHeight += passiveMotion.y;
+                float previousHeight = visiblePetalHeight;
+                float desiredHeight = Mathf.Clamp(passivePetalHeight * cameraMotionInfluence,
+                    -maxPerchCameraMotion, maxPerchCameraMotion);
+                visiblePetalHeight = Mathf.SmoothDamp(visiblePetalHeight, desiredHeight,
+                    ref petalCameraVelocity, perchCameraSmoothTime, Mathf.Infinity, dt);
+                perchRig.PerchViewOffset += -passiveMotion + Vector3.up * (visiblePetalHeight - previousHeight);
+            }
             perchViewTarget = perchRig != null ? perchRig.PerchViewOffset : Vector3.zero;
             previousPerchDistance = perchBlockedTime = 0f;
             UpdateLoadedPetal();
@@ -128,6 +145,7 @@ namespace LetItBee.HoneyPilot
         void StopSurfaceWalking()
         {
             surfaceWalking = false; walkingSurface = null; walkVelocity = Vector3.zero;
+            passivePetalHeight = visiblePetalHeight = petalCameraVelocity = 0f;
         }
     }
 }

@@ -121,6 +121,22 @@ import GamaConnector from $connectorImport;
 import PlayerManager from $playersImport;
 import { installHeartbeatCleanup } from $heartbeatImport;
 installHeartbeatCleanup(PlayerManager);
+// Water grids contain up to 4096 cells and exceed uWS default 16 KiB.
+// Patch this process only; keep the official WebPlatform source untouched.
+import { createRequire } from 'node:module';
+const requirePlatform = createRequire($platformJson + '/package.json');
+const uws = requirePlatform('uWebSockets.js');
+const createApp = uws.App;
+uws.App = (...args) => {
+ const app = createApp(...args);
+ const registerWebSocket = app.ws;
+ app.ws = function(pattern, behavior) {
+  return registerWebSocket.call(this, pattern, {
+   ...behavior, maxPayloadLength: behavior.maxPayloadLength ?? 1024 * 1024
+  });
+ };
+ return app;
+};
 const headless = $isHeadless;
 const connectGama = GamaConnector.prototype.connectGama;
 GamaConnector.prototype.connectGama = function () {

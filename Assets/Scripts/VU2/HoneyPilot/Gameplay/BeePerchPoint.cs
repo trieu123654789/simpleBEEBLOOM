@@ -21,6 +21,8 @@ namespace LetItBee.HoneyPilot
         public BeePerchPoint[] landingPoints = new BeePerchPoint[0];
         [Min(0.1f), Tooltip("Natural spring frequency in Hz.")] public float springFrequency = 1.6f;
         [Range(0.1f, 2f)] public float dampingRatio = 0.6f;
+        [Range(0f, 0.5f), Tooltip("Small resting sway in degrees while this petal carries the bee.")]
+        public float perchSwayAmplitude = 0.15f;
         Quaternion supportRotationLocal;
         GameObject support;
         bool ownsSupport, ownsBranchCollider;
@@ -125,7 +127,8 @@ namespace LetItBee.HoneyPilot
             Vector3 direction = branchVisual.TransformVector(contactCached ? branchContactLocal : Vector3.forward);
             Vector3 axis = branchVisual.InverseTransformDirection(Vector3.Cross(direction.normalized, Vector3.down));
             if (axis.sqrMagnitude < 0.0001f) axis = Vector3.right;
-            appliedRotation = baseRotation * Quaternion.AngleAxis(load * landingBendDegrees, axis.normalized);
+            float sway = Mathf.Sin(Time.time * Mathf.PI * 2f * 0.8f) * perchSwayAmplitude * Mathf.Clamp01(load);
+            appliedRotation = baseRotation * Quaternion.AngleAxis(load * landingBendDegrees + sway, axis.normalized);
             branchVisual.localRotation = appliedRotation; deformed = true;
             SyncSupport();
         }

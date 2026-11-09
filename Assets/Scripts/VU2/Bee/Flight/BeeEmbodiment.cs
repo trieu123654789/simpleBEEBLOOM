@@ -8,6 +8,8 @@ public sealed class BeeEmbodiment : MonoBehaviour
 {
     [Range(0.05f, 1f)] public float playerScale = 0.15f;
     public bool alignFloorAtFirstTracking = true;
+    [Tooltip("Use authored flight speeds in world units; keep XR body and interaction scale unchanged.")]
+    public bool useWorldSpaceFlightSpeeds;
     [Range(0f, 1f)] public float hoverViewStrength = 0.35f;
     public bool reducedMotion;
     [Min(1f), Tooltip("Extra continuous-button flight time at miniature scale. Gesture strokes keep their existing cost.")]
@@ -37,6 +39,9 @@ public sealed class BeeEmbodiment : MonoBehaviour
         foreach (string name in new[] { "moveSpeed", "reverseSpeed", "strafeSpeed", "moveAcceleration", "moveDeceleration", "glideDrag",
             "maxAscendSpeed", "maxFallSpeed", "gravity", "fallAcceleration", "comfortFallAcceleration", "comfortMaxFallSpeed",
             "flapLift", "strokeLiftScale", "restGlideSinkSpeed", "restGlideDeceleration", "hoverDescentRate", "skimDistance", "skimMinSpeed" }) {
+            if (useWorldSpaceFlightSpeeds && bee.useWorldGravity &&
+                (name == "moveSpeed" || name == "reverseSpeed" || name == "strafeSpeed" || name == "moveAcceleration"
+                || name == "moveDeceleration" || name == "glideDrag" || name == "maxAscendSpeed")) continue;
             var field = typeof(BeeController).GetField(name);
             float value = (float)field.GetValue(bee); motionBefore[field] = value; field.SetValue(bee, value * Scale);
         }
@@ -64,7 +69,7 @@ public sealed class BeeEmbodiment : MonoBehaviour
         if (float.IsNegativeInfinity(best)) return;
         Vector3 position = transform.position;
         position.y = best + rig.playerRig.TransformVector(initialHeadOffset).y - transform.TransformVector(rig.eyeOffset).y;
-        position.y = Mathf.Max(best + bee.groundClearance, position.y);
+        position.y = Mathf.Max(transform.position.y, Mathf.Max(best + bee.groundClearance, position.y));
         transform.position = position; floorAligned = true;
     }
 

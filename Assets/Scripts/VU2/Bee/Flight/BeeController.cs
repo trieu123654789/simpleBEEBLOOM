@@ -139,7 +139,7 @@ public partial class BeeController : MonoBehaviour
 
     private bool ReadLeftHoldTrigger()
     {
-        return !LeftHandLandingOwnsInput && enableLeftTriggerHold && ReadLeftTrigger(IsPositionHolding);
+        return !IsFlowerPerched && enableLeftTriggerHold && LeftLandingTriggerPressed;
     }
     private bool ReadLeftTrigger(bool releaseThreshold)
     {

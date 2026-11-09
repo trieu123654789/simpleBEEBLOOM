@@ -32,8 +32,15 @@ public partial class BeeController
             // Residual wing lift fades after the stroke. Velocity is never reset at this boundary.
             float buttonLift = continuousFlap
                 ? (descent + flapRecoveryAcceleration) * Mathf.Max(0f, ExternalFlapThrustScale) * dt : 0f;
-            velocity += Mathf.Max(lift, buttonLift) - descent * dt;
-            velocity *= Mathf.Exp(-Mathf.Max(0f, fallAirDrag) * dt);
+            // Approach terminal descent smoothly instead of accelerating into a hard speed clamp.
+            if (velocity <= 0f && descent > 0f)
+                velocity = -FallSpeedLimit + (velocity + FallSpeedLimit)
+                    * Mathf.Exp(-descent * dt / Mathf.Max(0.01f, FallSpeedLimit));
+            else {
+                velocity -= descent * dt;
+                velocity *= Mathf.Exp(-Mathf.Max(0f, fallAirDrag) * dt);
+            }
+            velocity += Mathf.Max(lift, buttonLift);
             velocity = Mathf.Clamp(velocity, -FallSpeedLimit, maxAscendSpeed);
             remaining -= dt;
         }

@@ -15,4 +15,21 @@
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>gama.ui.application.gamaNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>external/7ee73c1111574a6c9a5707104a6e0c6e.json</name>
+			<type>1</type>
+			<location>C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/Runtime/checkpoints/7ee73c1111574a6c9a5707104a6e0c6e.json</location>
+		</link>
+		<link>
+			<name>external/7ee73c1111574a6c9a5707104a6e0c6e.json.observations.json</name>
+			<type>1</type>
+			<location>C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/Runtime/checkpoints/7ee73c1111574a6c9a5707104a6e0c6e.json.observations.json</location>
+		</link>
+		<link>
+			<name>external/7ee73c1111574a6c9a5707104a6e0c6e.json.water.json</name>
+			<type>1</type>
+			<location>C:/Projects/Unity/simple.CTU.VU2/Experiments/LetItBee-HoneyPilot/Runtime/checkpoints/7ee73c1111574a6c9a5707104a6e0c6e.json.water.json</location>
+		</link>
+	</linkedResources>
 </projectDescription>

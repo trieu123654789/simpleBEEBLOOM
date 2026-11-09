@@ -13,7 +13,7 @@ namespace LetItBee.HoneyPilot
     [DisallowMultipleComponent, DefaultExecutionOrder(150)]
     public sealed partial class BeeHoneyPilot : MonoBehaviour
     {
-        [Header("Scene references — flight/HUD settings are never changed")]
+        [Header("Scene references â€” flight/HUD settings are never changed")]
         public Transform beeRoot, rightHand, flowerAHead, flowerBHead, slot;
         public Animator flowerAAnimator, flowerBAnimator;
         public RuntimeAnimatorController pilotFlowerIdle;
@@ -62,7 +62,7 @@ namespace LetItBee.HoneyPilot
         [Min(0.1f)] public float perchApproachSpeed = 0.65f;
         [Min(0.1f)] public float perchSmoothTime = 0.4f;
         [Min(0.1f)] public float perchReleaseDuration = 0.45f;
-        [Header("Honey presentation — runtime only, no bee body parts")]
+        [Header("Honey presentation â€” runtime only, no bee body parts")]
         public bool enhancedFeedback = true;
         public BeeInteractionAudio interactionAudio;
         [Range(0f, 1.5f)] public float feedbackIntensity = 1f;
@@ -194,7 +194,7 @@ namespace LetItBee.HoneyPilot
             if (!Guid.TryParse(sessionId, out _)) throw new InvalidOperationException("Pilot session ID is missing or invalid");
             string checkpoint = checkpointDirectoryOnServer.TrimEnd('/', '\\') + "/" + sessionId + ".json";
             var result = new JObject {
-                ["session"] = sessionId, ["checkpoint"] = checkpoint.Replace('\\', '/'), ["world_source"] = worldSync.Source,
+                ["session"] = sessionId, ["checkpoint"] = checkpoint.Replace('\\', '/'), ["world_source"] = worldSync.Source, ["allow_layout_update"] = true,
                 ["flowers"] = new JArray(Enumerable.Range(0, FlowerCount).Select(i => FlowerConfig(FlowerId(i), PlantId(i), Head(i).position))),
                 ["slot"] = new JObject { ["id"] = "slot-a", ["position"] = ToGama(slot.position) },
                 ["contact_radius"] = contactRadius, ["grab_radius"] = grabRadius, ["snap_radius"] = snapRadius
@@ -203,6 +203,7 @@ namespace LetItBee.HoneyPilot
                 result["slot"] = hive.Configuration()[0].DeepClone();
                 result["hive_slots"] = hive.Configuration();
                 result["nectar_refill_seconds"] = Mathf.Max(1f,nectarRefillSeconds);
+                result["nectar_refill_enabled"] = autoRefillNectar;
             }
             return result;
         }
@@ -216,7 +217,6 @@ namespace LetItBee.HoneyPilot
         {
             DateTime profileCheck = DateTime.MinValue;
             DateTime nextWorldSync = DateTime.MinValue;
-            Task worldTask = Task.CompletedTask;
             while (!token.IsCancellationRequested) {
                 try {
                     if (useSimpleToolchain && DateTime.UtcNow >= profileCheck) {
@@ -234,7 +234,7 @@ namespace LetItBee.HoneyPilot
                         JObject first = await client.ConnectAsync(useSimpleToolchain ? EffectiveSimpleEndpoint : endpoint, modelOnServer, configuration);
                         if (token.IsCancellationRequested) break;
                         ValidateServerHive(configuration, (JObject)first["state"]);
-                        State = (JObject)first["state"]; Live = true; ConnectionStatus = useSimpleToolchain ? "LIVE · SIMPLE → LinkToUnity → GAMA" : "LIVE · direct test";
+                        State = (JObject)first["state"]; Live = true; ConnectionStatus = useSimpleToolchain ? "LIVE Â· SIMPLE â†’ LinkToUnity â†’ GAMA" : "LIVE Â· direct test";
                         lastLoggedConnectionError = null;
                         Debug.Log("[BeeBloom] GAMA ready; session " + sessionId);
                         reportedPollinationMask = PollinationMask();
@@ -257,11 +257,14 @@ namespace LetItBee.HoneyPilot
                     if (request != null && (string)snapshot["response"]?["event_id"] == (string)request["event_id"]) {
                         CompleteInteractionRequest(request,(JObject)snapshot["response"]);
                     }
-                    if (pendingRequest == null && worldTask.IsCompleted && DateTime.UtcNow >= nextWorldSync) {
-                        try { worldTask = SyncWorld(client, worldSync.Prepare(worldSync.Capture(this)), token); }
-                        catch (Exception ex) { WorldSyncWarning = ex.Message; }
-                        nextWorldSync = DateTime.UtcNow.AddSeconds(string.IsNullOrEmpty(WorldSyncWarning) ? 0.25 : 2);
+                    // Serialize observations with gameplay RPCs, even during a pending interaction.
+                    // A failed acknowledgement goes through the normal reconnect path.
+                    if (DateTime.UtcNow >= nextWorldSync) {
+                        await SyncWorld(client, worldSync.Prepare(worldSync.Capture(this), true), token);
+                        nextWorldSync = DateTime.UtcNow.AddSeconds(0.25);
                     }
+                    var waterGrid = GetComponent<BeeWaterGrid>();
+                    if (waterGrid != null) await waterGrid.SynchronizeAsync(client);
                     await Task.Delay(100, token);
                 } catch (OperationCanceledException) { break; }
                 catch (Exception ex) {
@@ -317,7 +320,7 @@ namespace LetItBee.HoneyPilot
             UpdateSlotPose();
             if (LetItBee.UI.BeeMenuInput.Blocked) {
                 gripIntent.Reset(); collectionElapsedSeconds = Charge01 = touchDwell = 0f;
-                collectNeedsRelease = true; landingButtonDown = true;
+                collectNeedsRelease = true; landingButtonDown = true; landingPressElapsed = landingTapDuration + 1f;
                 UpdateViews(); return;
             }
             float trigger = ReadRightControl(false, rightTrigger?.ReadValue<float>() ?? 0f);
@@ -435,8 +438,8 @@ namespace LetItBee.HoneyPilot
         void StepFlowerPerching(float dt, bool holding)
         {
             RefreshFlowerSurfaces(0f);
-            if (togglePetalLanding) holding = SampleLandingInput(holding);
-            PerchHint = togglePetalLanding ? (PerchedFlower >= 0 ? "BAM TRIGGER TRAI DE ROI HOA" : "BAM TRIGGER TRAI GAN HOA DE DAU") : (!holding ? "GIU TRIGGER TRAI DE DAU" : "TOI GAN DAU CANH HON");
+            if (togglePetalLanding) holding = SampleLandingInput(holding, dt);
+            PerchHint = togglePetalLanding ? (PerchedFlower >= 0 ? "BAM TRIGGER TRAI DE ROI HOA" : "CHAM TRIGGER TRAI DE DAU - GIU DE LO LUNG") : (!holding ? "GIU TRIGGER TRAI DE DAU" : "TOI GAN DAU CANH HON");
             if (holding && beeController != null && (beeController.IsPositionBraking || beeController.Speed > 0.25f)) PerchHint = "CHAM LAI DE DAU";
             if (!holding) perchArmed = true;
             if (leavingPerch) {
@@ -730,11 +733,15 @@ namespace LetItBee.HoneyPilot
                 for (int i = 0; i < petals.Length; i++) {
                     var bone = petals[i];
                     if (!applied || Quaternion.Angle(bone.localRotation, petalApplied[i]) > 0.001f) petalBase[i] = bone.localRotation;
-                    Vector3 radial = Vector3.ProjectOnPlane(bone.position - head.position, head.up);
+                    // Root joints sit almost at the flower centre. Use the petal's length
+                    // to find its bend axis, otherwise small root offsets twist neighbours differently.
+                    Vector3 tip = bone.childCount > 0 ? bone.GetChild(0).position : bone.position;
+                    Vector3 radial = Vector3.ProjectOnPlane(tip - head.position, head.up);
                     if (radial.sqrMagnitude < 0.000001f) radial = head.TransformDirection(Quaternion.Euler(0f,i*360f/Mathf.Max(1,petals.Length),0f)*Vector3.right);
                     Vector3 axis = Vector3.Cross(head.up, radial.normalized);
                     if (bone.parent != null) axis = bone.parent.InverseTransformDirection(axis);
-                    petalApplied[i] = Quaternion.AngleAxis(pressure*0.7f - bloom*3f,axis) * petalBase[i];
+                    // Landing pressure belongs to the contacted petal's spring, not every root joint.
+                    petalApplied[i] = Quaternion.AngleAxis(-Mathf.Clamp01(bloom),axis) * petalBase[i];
                     bone.localRotation = petalApplied[i];
                 }
                 applied = true;
@@ -1032,7 +1039,16 @@ namespace LetItBee.HoneyPilot
             Gizmos.color = Color.yellow;
             if (flowerAHead != null) Gizmos.DrawWireSphere(flowerAHead.position, contactRadius);
             if (flowerBHead != null) Gizmos.DrawWireSphere(flowerBHead.position, contactRadius);
-            Gizmos.color = Color.cyan; if (slot != null) Gizmos.DrawWireSphere(slot.position, snapRadius);
+            Vector3 socketPosition = slotMount != null ? slotMount.TransformPoint(slotMountLocalPoint)
+                : slot != null ? slot.position : transform.position;
+            var controller = beeRoot != null ? beeRoot.GetComponent<BeeController>() : null;
+            bool aboveCeiling = controller != null && controller.maxFlightAltitude > 0f
+                && socketPosition.y > controller.maxFlightAltitude;
+            Gizmos.color = aboveCeiling ? Color.red : Color.cyan;
+            if (slot != null || slotMount != null) Gizmos.DrawWireSphere(socketPosition, snapRadius);
+#if UNITY_EDITOR
+            if (aboveCeiling) UnityEditor.Handles.Label(socketPosition, "Hive is above Max Flight Altitude");
+#endif
         }
     }
 }

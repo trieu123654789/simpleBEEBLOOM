@@ -2,20 +2,33 @@
 import copy
 import json
 import pathlib
+import shutil
 import sys
 import uuid
 import websocket
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SNAPSHOT = 'to_json(["state"::state,"response"::response,"cycle"::cycle])'
+_isolated_model = None
+
+def model_snapshot():
+    """Compile this run's source, including imports, instead of GAMA's cached path."""
+    global _isolated_model
+    if _isolated_model is None:
+        folder=ROOT/'Runtime'/('model-check-'+uuid.uuid4().hex)
+        folder.mkdir(parents=True)
+        for name in ('LetItBeeHoneyPilot.gaml','LetItBeeWater.gaml'):
+            shutil.copy2(ROOT/'GAMA'/name,folder/name)
+        _isolated_model=folder/'LetItBeeHoneyPilot.gaml'
+    return _isolated_model
 
 class Gama:
-    def __init__(self, config, port=6873):
+    def __init__(self, config, port=6873, model_path=None):
         self.config = config
         self.ws = websocket.create_connection(f'ws://127.0.0.1:{port}', timeout=45)
         self.hello = json.loads(self.ws.recv())['content']
         self.sequence, self.experiment = 0, None
-        self.experiment = self.command('load', model=str(ROOT/'GAMA/LetItBeeHoneyPilot.gaml'), experiment='HoneyPilot', console=False)
+        self.experiment = self.command('load', model=str(model_path or model_snapshot()), experiment='HoneyPilot', console=False)
         self.ask('configure', config_json=json.dumps(config))
     def command(self, kind, **fields):
         self.sequence += 1
