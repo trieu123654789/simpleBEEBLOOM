@@ -123,13 +123,13 @@ namespace LetItBee.HoneyPilot
             }
             return false;
         }
-        public string ObjectiveHint => !Live ? "Đang nối SIMPLE/GAMA"
-            : RoundComplete ? "Tổ đầy • Thụ phấn hoàn tất"
-            : HiveFull ? "Tổ đầy • Thụ phấn " + ConfirmedPollinations + "/2"
-            : ChunkState == "held" ? "Đưa mật vào ô trống • Thụ phấn " + ConfirmedPollinations + "/2"
-            : ChunkState == "ready" || ChunkState == "loose" ? "Giữ grip phải để cầm mật"
-            : (int?)State?["pollen_source"] >= 0 && ConfirmedPollinations < 2 ? "Mang phấn sang hoa khác"
-            : "Đậu hoa • Lấy mật • Lấp tổ";
+        public string ObjectiveHint => !Live ? "Connecting to SIMPLE/GAMA"
+            : RoundComplete ? "Hive full • Pollination complete"
+            : HiveFull ? "Hive full • Pollinated " + ConfirmedPollinations + "/2"
+            : ChunkState == "held" ? "Fill a cell • Pollinated " + ConfirmedPollinations + "/2"
+            : ChunkState == "ready" || ChunkState == "loose" ? "Hold right grip to grab"
+            : (int?)State?["pollen_source"] >= 0 && ConfirmedPollinations < 2 ? "Carry pollen to another flower"
+            : "Land • Collect nectar • Fill hive";
         string ConnectionHint => ConnectionStatus.Contains("GAMA_MODEL_OUTDATED") ? "GAMA DANG DUNG MODEL CU\nKHOI DONG LAI EXPERIMENT SIMPLE/GAMA"
             : ConnectionStatus.Contains("geometry") ? "BO TRI DA DOI - KIEM TRA LUOT CHOI"
             : client is HoneySimpleClient simple && simple.WaitingForAdmission ? "CHO THEM KINH VAO SIMPLE"

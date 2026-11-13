@@ -7570,8 +7570,8 @@ MonoBehaviour:
   honeyDelivered: 0
   nectar01: 0.45
   autoDeliverWhenFull: 1
-  questTitle: "Thu th\u1EADp m\u1EADt hoa"
-  questSubtitle: "\u0110\u01B0a m\u1EADt v\u1EC1 t\u1ED5"
+  questTitle: "Collect nectar"
+  questSubtitle: "Return nectar to the hive"
   dangerActive: 0
   dangerHoldSeconds: 3
 --- !u!114 &470914493
@@ -7603,7 +7603,7 @@ MonoBehaviour:
   viewportFill: 0.95
   referenceResolution: {x: 1280, y: 720}
   font: {fileID: 11400000, guid: f53d3384978d3d646a72ca9cfd78d0b7, type: 2}
-  flapHintMain: "Qu\u1EB9t \u0111\u1EC3 bay"
+  flapHintMain: "Swipe to fly"
   nectarSource: 0
   alwaysShowDangerBanner: 0
   blinkDangerBanner: 1

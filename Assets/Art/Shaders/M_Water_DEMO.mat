@@ -63,7 +63,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CausticTiling: 8.31
+    - _CausticTiling: 9.37
     - _NoiseTiling: 18.65
     - _QueueControl: 0
     - _QueueOffset: 0

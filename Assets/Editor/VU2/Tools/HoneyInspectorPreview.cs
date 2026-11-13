@@ -85,7 +85,13 @@ public static class HoneyInspectorPreview
                 var clips = pilot.pilotFlowerIdle.animationClips;
                 if (clips.Length > 0) clips[0].SampleAnimation(flower,.45f);
                 head = flower.GetComponentsInChildren<Transform>(true).First(x=>x.name==pilot.flowerAHead.name);
-                flower.transform.position = pilot.flowerAAnimator.transform.position + Vector3.right * 6f;
+                Vector3 source = pilot.flowerAAnimator.transform.position;
+                Vector3 destination = source + Vector3.right * 6f;
+                float sourceGround, destinationGround;
+                if (TryGroundHeight(source, selected.gameObject.scene, out sourceGround)
+                    && TryGroundHeight(destination, selected.gameObject.scene, out destinationGround))
+                    destination.y += destinationGround - sourceGround;
+                flower.transform.position = destination;
             }
             second = Anchor("Inactive flower", head.position + Vector3.left * 3f);
             slot = Anchor("Preview socket", origin + Vector3.right * .6f);
@@ -127,6 +133,19 @@ public static class HoneyInspectorPreview
             EditorApplication.update += Update;
             SceneView.RepaintAll();
         } catch (Exception ex) { Reset(); LastError = ex.Message; Debug.LogException(ex); }
+    }
+
+    static bool TryGroundHeight(Vector3 position, Scene scene, out float height)
+    {
+        var hits = Physics.RaycastAll(position + Vector3.up * 50f, Vector3.down, 100f,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        foreach (var hit in hits.OrderBy(h => Mathf.Abs(h.point.y - position.y))) {
+            if (hit.collider.gameObject.scene != scene || !BeeMapSurfaces.IsGround(hit.collider)) continue;
+            height = hit.point.y;
+            return true;
+        }
+        height = 0f;
+        return false;
     }
 
     static Transform Anchor(string name, Vector3 position)

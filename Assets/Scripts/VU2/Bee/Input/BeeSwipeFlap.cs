@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BeeSwipeFlap - Quẹt ray qua thanh ngang cố định trong khung nhìn = vỗ cánh bay.
 // Phiên bản nâng cấp:
 //   1. Thanh vàng nối liền ngang (Single Continuous Bar) thay vì 2 thanh 2 bên.
@@ -779,6 +779,13 @@ public class BeeSwipeFlap : MonoBehaviour
         _glideTimer = glideFloatDuration;
 
         HandState hand = isLeft ? _left : _right;
+        var controllerAnchor = isLeft ? leftControllerAnchor : rightControllerAnchor;
+        if (controllerAnchor != null)
+        {
+            var controller = controllerAnchor.GetComponent<UnityEngine.XR.Interaction.Toolkit.XRBaseController>();
+            var modelRoot = controller != null && controller.modelParent != null ? controller.modelParent : controllerAnchor;
+            modelRoot.GetComponentInChildren<BeeControllerWings>()?.Stroke(isUpstroke);
+        }
         hand.flash = 0.16f;
         _mainBarFlashTimer = paired ? 0.28f : 0.16f;
         if (paired) _left.flash = _right.flash = 0.28f;

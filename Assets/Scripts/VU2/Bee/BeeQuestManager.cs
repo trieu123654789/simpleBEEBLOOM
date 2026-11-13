@@ -44,8 +44,8 @@ public class BeeQuestManager : MonoBehaviour
     [Serializable]
     public class Quest
     {
-        public string title      = "Nhiệm vụ";
-        public string subtitle   = "Hoàn thành nhiệm vụ";
+        public string title      = "Quest";
+        public string subtitle   = "Complete the quest";
         public QuestType type    = QuestType.CollectNectar;
 
         [Tooltip("Số mục tiêu cần đạt (tuỳ QuestType).")]
@@ -284,8 +284,8 @@ public class BeeQuestManager : MonoBehaviour
         float pct = q.targetAmount > 0 ? Mathf.Clamp01(q.progress / q.targetAmount) : 0f;
         playerStats.questSubtitle = q.type switch
         {
-            QuestType.ReachThriving  => $"Điểm tổng: {sustainability?.TotalScore:F0}/70",
-            QuestType.SurviveTime    => $"Thời gian: {q.progress:F0}/{q.targetAmount:F0}s",
+            QuestType.ReachThriving  => $"Total score: {sustainability?.TotalScore:F0}/70",
+            QuestType.SurviveTime    => $"Time: {q.progress:F0}/{q.targetAmount:F0}s",
             _                        => $"{q.subtitle} ({q.progress:F0}/{q.targetAmount:F0})"
         };
     }
@@ -324,40 +324,40 @@ public class BeeQuestManager : MonoBehaviour
         {
             new Quest
             {
-                title = "Thu thập mật hoa",
-                subtitle = "Hút mật từ các bông hoa",
+                title = "Collect nectar",
+                subtitle = "Gather nectar from flowers",
                 type = QuestType.CollectNectar,
                 targetAmount = 3f,
                 ecoReward = 10f
             },
             new Quest
             {
-                title = "Thụ phấn",
-                subtitle = "Mang phấn đến hoa cùng loài",
+                title = "Pollinate flowers",
+                subtitle = "Visit another flower of the same species",
                 type = QuestType.PollinateFlowers,
                 targetAmount = 5f,
                 envReward = 15f, socReward = 10f
             },
             new Quest
             {
-                title = "Giao mật về tổ",
-                subtitle = "Bay về tổ ong khi đầy mật",
+                title = "Deliver nectar",
+                subtitle = "Return to the hive when full",
                 type = QuestType.DeliverHoney,
                 targetAmount = 5f,
                 ecoReward = 20f
             },
             new Quest
             {
-                title = "Đa dạng sinh học",
-                subtitle = "Thụ phấn đủ 3 loài hoa",
+                title = "Biodiversity",
+                subtitle = "Pollinate three flower species",
                 type = QuestType.PollinateSpecies,
                 targetAmount = 3f,
                 socReward = 30f
             },
             new Quest
             {
-                title = "Hệ sinh thái bội thu",
-                subtitle = "Đưa điểm tổng lên 70",
+                title = "A thriving ecosystem",
+                subtitle = "Reach a total score of 70",
                 type = QuestType.ReachThriving,
                 targetAmount = 70f,
                 envReward = 10f, ecoReward = 10f, socReward = 10f

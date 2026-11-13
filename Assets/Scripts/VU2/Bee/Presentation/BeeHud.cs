@@ -95,7 +95,7 @@ public class BeeHud : MonoBehaviour
 
     [Header("Swipe Hint / Chu goi y vo canh")]
     [Tooltip("Chu tren goi y goc duoi - co che vo canh moi: quet ray qua thanh (BeeSwipeFlap).")]
-    public string flapHintMain = "Quẹt để bay";
+    public string flapHintMain = "Swipe to fly";
 
     // =========================================================================
     // DATA / DU LIEU
@@ -299,7 +299,7 @@ public class BeeHud : MonoBehaviour
 
         // --- Thanh mat hoa (goc duoi trai) ---
         if (pilotActive) {
-            if (_questTitleText != null) _questTitleText.text = honeyPilot.RoundComplete ? "Hoàn thành" : "Lấp đầy tổ ong";
+            if (_questTitleText != null) _questTitleText.text = honeyPilot.RoundComplete ? "Complete" : "Fill the hive";
             if (_questSubText != null) _questSubText.text = honeyPilot.ObjectiveHint;
         }
         float nectar = pilotActive ? (honeyPilot.ChunkState == "held" || honeyPilot.ChunkState == "ready" || honeyPilot.ChunkState == "loose" ? 1f : honeyPilot.Charge01) : nectarSource == NectarSource.Stats
@@ -363,7 +363,7 @@ public class BeeHud : MonoBehaviour
 
         if (_speedText != null)
         {
-            _speedText.text = "Độ cao " + altitude.ToString("0.0") + " m";
+            _speedText.text = "Altitude " + altitude.ToString("0.0") + " m";
         }
     }
 
@@ -572,11 +572,11 @@ public class BeeHud : MonoBehaviour
             BeeHudSprites.Hexagon(96), amberColor);
 
         _questTitleText = NewText(panel.transform, "Title", new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(78f, -20f), new Vector2(240f, 34f), "Thu thập mật hoa", 26f, textColor,
+            new Vector2(78f, -20f), new Vector2(240f, 34f), "Collect nectar", 26f, textColor,
             TextAlignmentOptions.Left, FontStyles.Bold);
 
         _questSubText = NewText(panel.transform, "Subtitle", new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(78f, -54f), new Vector2(240f, 30f), "Đưa mật về tổ", 22f, textDimColor,
+            new Vector2(78f, -54f), new Vector2(240f, 30f), "Return nectar to the hive", 22f, textDimColor,
             TextAlignmentOptions.Left);
 
         _questCounterText = NewText(panel.transform, "Counter", new Vector2(0f, 1f), new Vector2(0f, 1f),
@@ -600,7 +600,7 @@ public class BeeHud : MonoBehaviour
             BeeHudSprites.Hexagon(96), amberColor);
 
         _nectarLabelText = NewText(panel.transform, "Label", new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(80f, -14f), new Vector2(200f, 30f), "Mật hoa", 24f, textColor,
+            new Vector2(80f, -14f), new Vector2(200f, 30f), "Nectar", 24f, textColor,
             TextAlignmentOptions.Left, FontStyles.Bold);
 
         RectTransform track = NewBarTrack(panel.transform, "Bar", new Vector2(0f, 1f), new Vector2(0f, 1f),
@@ -679,11 +679,11 @@ public class BeeHud : MonoBehaviour
             TextAlignmentOptions.Center, FontStyles.Bold);
 
         _dangerTitleText = NewText(panel.transform, "Title", new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(86f, -14f), new Vector2(206f, 32f), "Kẻ thù", 26f,
+            new Vector2(86f, -14f), new Vector2(206f, 32f), "Enemy", 26f,
             new Color(1f, 0.35f, 0.30f, 1f), TextAlignmentOptions.Left, FontStyles.Bold);
 
         _dangerSubText = NewText(panel.transform, "Subtitle", new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(86f, -48f), new Vector2(206f, 30f), "Tránh xa ong dịch", 22f, textDimColor,
+            new Vector2(86f, -48f), new Vector2(206f, 30f), "Avoid enemy bees", 22f, textDimColor,
             TextAlignmentOptions.Left);
     }
 
@@ -703,7 +703,7 @@ public class BeeHud : MonoBehaviour
             new Vector2(0f, 20f), new Vector2(26f, 26f), BeeHudSprites.TriangleUp(64), amberColor);
 
         _speedText = NewText(root, "SpeedText", new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-            new Vector2(0f, 68f), new Vector2(300f, 30f), "Độ cao 0.0 m", 22f, textDimColor,
+            new Vector2(0f, 68f), new Vector2(300f, 30f), "Altitude 0.0 m", 22f, textDimColor,
             TextAlignmentOptions.Center);
     }
 
@@ -754,7 +754,7 @@ public class BeeHud : MonoBehaviour
         NewText(root, "Label", corner, corner, new Vector2(0f, 34f), new Vector2(212f, 30f),
             flapHintMain, 22f, textDimColor, TextAlignmentOptions.Center);
         NewText(root, "Side", corner, corner, new Vector2(0f, 6f), new Vector2(212f, 28f),
-            isLeft ? "(trái)" : "(phải)", 22f, textDimColor, TextAlignmentOptions.Center);
+            isLeft ? "(left)" : "(right)", 22f, textDimColor, TextAlignmentOptions.Center);
     }
 
     // =========================================================================

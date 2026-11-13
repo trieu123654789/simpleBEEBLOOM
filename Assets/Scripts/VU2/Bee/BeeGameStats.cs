@@ -45,8 +45,8 @@ public class BeeGameStats : MonoBehaviour
     // QUEST / NHIEM VU (panel goc tren trai)
     // =========================================================================
     [Header("Quest / Nhiệm vụ")]
-    public string questTitle = "Thu thập mật hoa";
-    public string questSubtitle = "Đưa mật về tổ";
+    public string questTitle = "Collect nectar";
+    public string questSubtitle = "Return nectar to the hive";
 
     // =========================================================================
     // DANGER / NGUY HIEM (banner do ben phai)
